@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+    const code = new URLSearchParams(window.location.search).get("code");
+    verifyAndExchangeCode(code).then(token => {
+      set("spotify-sdk:AuthorizationCodeWithPKCEStrategy:token", token, token.expires_in * 1000);
+      window.location.href = "http://127.0.0.1:5500/";
+    }).catch(console.error);
+
+    // Below functions taken and adapted from @spotify/web-api-ts-sdk
+    async function verifyAndExchangeCode(code) {
+      const cachedItemStr = await localStorage.getItem("spotify-sdk:verifier");
+      const cachedItem = cachedItemStr ? JSON.parse(cachedItemStr) : null;
+      const verifier = cachedItem?.verifier;
+      if (!verifier) {
+        throw new Error("No verifier found in cache - can't validate query string callback parameters.");
+      }
+      return await exchangeCodeForToken(code, verifier);
+    }
+
+    async function exchangeCodeForToken(code, verifier) {
+      const params = new URLSearchParams();
+
+      // TODO: Store client ID and redirect URI in localStorage on main page?
+      params.append("client_id", "2211a17ab92042db90b6e94f3dcb3988");
+      params.append("grant_type", "authorization_code");
+      params.append("code", code);
+      params.append("redirect_uri", "http://127.0.0.1:5500/spotify/");
+      params.append("code_verifier", verifier);
+      const result = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params
+      });
+      const text = await result.text();
+      if (!result.ok) {
+        throw new Error(`Failed to exchange code for token: ${result.statusText}, ${text}`);
+      }
+      const json = JSON.parse(text);
+      return json;
+    }
+
+    function set(cacheKey, value, expiresIn) {
+      const expires = Date.now() + expiresIn;
+      const cacheItem = { ...value, expires };
+      setCacheItem(cacheKey, cacheItem);
+    }
+
+    function setCacheItem(cacheKey, cacheItem) {
+      const asString = JSON.stringify(cacheItem);
+      localStorage.setItem(cacheKey, asString);
+    }
+  </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
