@@ -14,6 +14,15 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.1.18
         version: 4.1.18(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2))
+      '@tidal-music/api':
+        specifier: ^0.8.1
+        version: 0.8.1
+      '@tidal-music/auth':
+        specifier: ^1.4.0
+        version: 1.4.0
+      '@tidal-music/common':
+        specifier: ^0.2.0
+        version: 0.2.0
       react:
         specifier: ^19.2.0
         version: 19.2.3
@@ -578,6 +587,18 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
+  '@tidal-music/api@0.8.1':
+    resolution: {integrity: sha512-x2K9lzdnoMF9FiLcRSow9RS3L5PUf7bPylEns+lbYbVm+CRb0cNLhiwTmSxi/NUXJqJbFibeZdaMhJih3zSShg==}
+
+  '@tidal-music/auth@1.4.0':
+    resolution: {integrity: sha512-b/8n6aHYoMuzGbNTT4QOwm9xjTosHCn9F+Vi26Nq1x1OuK+XK9zbuAkSwma/C5eYHy4fPBTcSw82us5K5mUHmA==}
+
+  '@tidal-music/common@0.2.0':
+    resolution: {integrity: sha512-XBNzRiN6rRQL0gu5cIigMdSQy1U4zEx5nJ9caaIACNXSu+RGGkYpoxWp8CBJTHtkQ3oSF2SMugNEo71i8LPP3g==}
+
+  '@tidal-music/true-time@0.3.0':
+    resolution: {integrity: sha512-nO9DfLKLu5sCI/v6Yp8DSseu8qis0RI1r6l7oIFCusOAedkIbQT/K+ELaaz7cxXR4cboopUZGW55v4RVwxHE/g==}
+
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
 
@@ -1064,6 +1085,12 @@ packages:
 
   node-releases@2.0.27:
     resolution: {integrity: sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==}
+
+  openapi-fetch@0.16.0:
+    resolution: {integrity: sha512-EVLlvcUOugBYMXhuITAm2Ihv9EmQ7b9gJYn7hg2wvcf/GxbanhQ9olDz9I3DcS0Jr4Jv/53I2oVuIYQsFHa9mA==}
+
+  openapi-typescript-helpers@0.0.15:
+    resolution: {integrity: sha512-opyTPaunsklCBpTK8JGef6mfPhLSnyy5a0IN9vKtx3+4aExf+KxEqYwIy3hqkedXIB97u357uLMJsOnm3GVjsw==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -1678,6 +1705,19 @@ snapshots:
       tailwindcss: 4.1.18
       vite: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)
 
+  '@tidal-music/api@0.8.1':
+    dependencies:
+      openapi-fetch: 0.16.0
+
+  '@tidal-music/auth@1.4.0':
+    dependencies:
+      '@tidal-music/common': 0.2.0
+      '@tidal-music/true-time': 0.3.0
+
+  '@tidal-music/common@0.2.0': {}
+
+  '@tidal-music/true-time@0.3.0': {}
+
   '@types/babel__core@7.20.5':
     dependencies:
       '@babel/parser': 7.28.5
@@ -2189,6 +2229,12 @@ snapshots:
   natural-compare@1.4.0: {}
 
   node-releases@2.0.27: {}
+
+  openapi-fetch@0.16.0:
+    dependencies:
+      openapi-typescript-helpers: 0.0.15
+
+  openapi-typescript-helpers@0.0.15: {}
 
   optionator@0.9.4:
     dependencies:

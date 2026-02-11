@@ -12,6 +12,9 @@
   "dependencies": {
     "@spotify/web-api-ts-sdk": "1.2.0",
     "@tailwindcss/vite": "4.1.18",
+    "@tidal-music/api": "^0.8.1",
+    "@tidal-music/auth": "^1.4.0",
+    "@tidal-music/common": "^0.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "4.1.18"
