@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { spotifyApi } from './api-helpers/spotify';
-import { checkIfTidalAuthed, tidalApi } from './api-helpers/tidal';
+import { checkIfTidalAuthed } from './api-helpers/tidal';
 import { SpotifyLoginButton } from './components/SpotifyLoginButton';
 import { TidalLoginButton } from './components/TidalLoginButton';
 
@@ -20,10 +20,6 @@ function App() {
       .catch(console.error);
   }, []);
 
-  const handleTidalClick = useCallback(() => {
-    tidalApi.GET('/users/me').then(console.log).catch(console.error)
-  }, []);
-
   return <div className='flex flex-col gap-2'>
     <h1>Spotify Tidal Importer</h1>
     {spotifyAuthed
@@ -34,7 +30,6 @@ function App() {
       ? <p>Logged in to Tidal!</p>
       : <TidalLoginButton />
     }
-    <button onClick={handleTidalClick}>Click Mee</button>
   </div>
 }
 
