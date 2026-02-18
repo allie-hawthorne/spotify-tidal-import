@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { initialiseTidal, spotifyApi, tidalApi } from './ids'
+import { spotifyApi } from './api-helpers/spotify';
+import { initialiseTidal, tidalApi } from './api-helpers/tidal';
 import type { AccessToken } from '@spotify/web-api-ts-sdk';
 import { SpotifyLoginButton } from './components/SpotifyLoginButton';
 import { TidalLoginButton } from './components/TidalLoginButton';
