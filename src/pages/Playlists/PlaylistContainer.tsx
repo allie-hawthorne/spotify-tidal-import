@@ -1,8 +1,7 @@
-import type { Playlist, TrackItem } from "@spotify/web-api-ts-sdk";
 import type { Service } from "../../components/LoginButton";
 
 interface PlaylistContainerProps {
-  playlists?: Playlist<TrackItem>[]
+  playlists: string[]
   provider: Service
 }
 export const PlaylistContainer = ({ playlists, provider }: PlaylistContainerProps) => {
@@ -11,7 +10,7 @@ export const PlaylistContainer = ({ playlists, provider }: PlaylistContainerProp
         <div className="h-50 w-96 overflow-scroll">
           {playlists && <ul>
             {playlists.map(playlist => (
-              <li key={playlist.id}>{playlist.name}</li>
+              <li key={playlist}>{playlist}</li>
             ))}
           </ul>}
         </div>
