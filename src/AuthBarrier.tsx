@@ -3,7 +3,7 @@ import { spotifyApi } from './api-helpers/spotify';
 import { checkIfTidalAuthed } from './api-helpers/tidal';
 import { SpotifyLoginButton } from './components/SpotifyLoginButton';
 import { TidalLoginButton } from './components/TidalLoginButton';
-import { Home } from './pages/Home';
+import { Home } from './pages/Playlists/Playlists';
 
 export const AuthBarrier = () => {
   const [spotifyAuthed, setSpotifyAuthed] = useState(false);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { spotifyApi } from "../api-helpers/spotify";
+import { spotifyApi } from "../../api-helpers/spotify";
 import type { Page, Playlist, TrackItem } from "@spotify/web-api-ts-sdk";
 
 
