@@ -12,11 +12,11 @@ export const Home = () => {
     spotifyApi.playlists.getUsersPlaylists('1121194900').then(setSpotifyPlaylists).catch(console.error);
   }, []);
   
-  return <>
-    <h1 className='text-center text-7xl'>Welcome!</h1>
+  return <div className="flex flex-col gap-5 items-center">
+    <h1 className='text-center text-6xl'>Welcome!</h1>
     <div className='flex gap-2'>
       <PlaylistContainer playlists={spotifyPlaylists?.items} provider={Service.Spotify} />
       <PlaylistContainer provider={Service.Tidal} />
     </div>
-  </>
+  </div>
 }
