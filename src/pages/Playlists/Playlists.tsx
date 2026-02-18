@@ -4,15 +4,19 @@ import { tidalApi } from "../../api-helpers/tidal";
 import { PlaylistContainer } from "./PlaylistContainer";
 import { Service } from "../../components/LoginButton";
 
+export interface Playlist {
+  name: string;
+  id: string;
+}
 
 export const Home = () => {
-  const [spotifyPlaylists, setSpotifyPlaylists] = useState<string[]>([]);
-  const [tidalPlaylists, setTidalPlaylists] = useState<string[]>([]);
+  const [spotifyPlaylists, setSpotifyPlaylists] = useState<Playlist[]>([]);
+  const [tidalPlaylists, setTidalPlaylists] = useState<Playlist[]>([]);
 
   useEffect(() => {
     // TODO: get user id from spotify api instead of hardcoding it
     spotifyApi.playlists.getUsersPlaylists('1121194900')
-      .then(d => setSpotifyPlaylists(d.items.map(p => p.name)))
+      .then(d => setSpotifyPlaylists(d.items.map(({id, name}) => ({id, name}))))
       .catch(console.error);
   }, []);
 
@@ -20,7 +24,10 @@ export const Home = () => {
     // TODO: get user id from tidal api instead of hardcoding it
     // TODO: could probably do with tidying this up for readability
     tidalApi.GET('/playlists', {params: {query: {"filter[owners.id]": ["207473666"]}}})
-      .then(d => setTidalPlaylists(d.data?.data.map(p => p.attributes?.name ?? '') ?? []))
+      .then(d => setTidalPlaylists(d.data?.data.map(({id, attributes}) => ({
+        id,
+        name: attributes?.name ?? '',
+      })) ?? []))
       .catch(console.error);
   }, []);
   
