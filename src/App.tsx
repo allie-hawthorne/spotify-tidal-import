@@ -1,35 +1,11 @@
-import { useEffect, useState } from 'react';
-import { spotifyApi } from './api-helpers/spotify';
-import { checkIfTidalAuthed } from './api-helpers/tidal';
-import { SpotifyLoginButton } from './components/SpotifyLoginButton';
-import { TidalLoginButton } from './components/TidalLoginButton';
+import { AuthBarrier } from './AuthBarrier';
 
 function App() {
-  const [spotifyAuthed, setSpotifyAuthed] = useState(false);
-  const [tidalAuthed, setTidalAuthed] = useState(false);
-
-  useEffect(() => {
-    spotifyApi.getAccessToken()
-      .then(token => setSpotifyAuthed(!!token))
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    checkIfTidalAuthed()
-      .then(setTidalAuthed)
-      .catch(console.error);
-  }, []);
-
-  return <div className='flex flex-col gap-2'>
-    <h1>Spotify Tidal Importer</h1>
-    {spotifyAuthed
-      ? <p>Logged in to Spotify!</p>
-      : <SpotifyLoginButton />
-    }
-    {tidalAuthed
-      ? <p>Logged in to Tidal!</p>
-      : <TidalLoginButton />
-    }
+  return <div className='flex flex-col min-h-screen bg-violet-950 text-white py-5'>
+    <h1 className='text-center'>Spotify Tidal Importer</h1>
+    <div className="flex flex-1 flex-col h-full items-center justify-center">
+      <AuthBarrier />
+    </div>
   </div>
 }
 
