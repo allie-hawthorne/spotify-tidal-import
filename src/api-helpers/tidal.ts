@@ -11,10 +11,16 @@ const tidalParams = {
 };
 
 export const tidalApi = createAPIClient(credentialsProvider);
-export const initialiseTidal = () => init(tidalParams);
+export const checkIfTidalAuthed = async () => {
+    await init(tidalParams);
+    const response = await tidalApi.GET('/users/me');
+    if (!response || 'error' in response) {
+        console.log('Tidal authentication check failed. Try (re)logging into Tidal');
+        return false;
+    }
+    return 'data' in response;
+};
 export const authenticateTidal = async () => {
-    await init(tidalParams)
-
     // We need these on the static redirect page
     localStorage.setItem('tidalClientId', TIDAL_API_KEY);
     localStorage.setItem('tidalRedirectUri', TIDAL_REDIRECT_URI);
