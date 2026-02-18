@@ -1,4 +1,4 @@
-import { spotifyApi } from "../ids"
+import { spotifyApi } from "../api-helpers/spotify"
 import { LoginButton, Service } from "./LoginButton"
 
 export const SpotifyLoginButton = () => {

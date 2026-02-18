@@ -1,4 +1,4 @@
-import { authenticateTidal } from "../ids"
+import { authenticateTidal } from "../api-helpers/tidal"
 import { LoginButton, Service } from "./LoginButton"
 
 export const TidalLoginButton = () => {
