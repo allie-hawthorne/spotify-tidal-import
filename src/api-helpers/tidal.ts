@@ -7,7 +7,7 @@ const TIDAL_REDIRECT_URI = 'http://127.0.0.1:5500/tidal/';
 const tidalParams = {
     clientId: TIDAL_API_KEY,
     credentialsStorageKey: 'authorisationCode',
-    scopes: ['user.read']   
+    scopes: ['user.read', 'playlists.read', 'playlists.write'], 
 };
 
 export const tidalApi = createAPIClient(credentialsProvider);
