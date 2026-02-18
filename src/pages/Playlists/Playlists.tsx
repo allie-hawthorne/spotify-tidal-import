@@ -13,6 +13,9 @@ export const Home = () => {
   const [spotifyPlaylists, setSpotifyPlaylists] = useState<Playlist[]>([]);
   const [tidalPlaylists, setTidalPlaylists] = useState<Playlist[]>([]);
 
+  const [selectedSpotifyPlaylists, setSelectedSpotifyPlaylists] = useState<Playlist[]>([]);
+  const [selectedTidalPlaylists, setSelectedTidalPlaylists] = useState<Playlist[]>([]);
+
   useEffect(() => {
     // TODO: get user id from spotify api instead of hardcoding it
     spotifyApi.playlists.getUsersPlaylists('1121194900')
@@ -34,8 +37,18 @@ export const Home = () => {
   return <div className="flex flex-col gap-5 items-center">
     <h1 className='text-center text-6xl'>Welcome!</h1>
     <div className='flex gap-2'>
-      <PlaylistContainer playlists={spotifyPlaylists} provider={Service.Spotify} />
-      <PlaylistContainer playlists={tidalPlaylists} provider={Service.Tidal} />
+      <PlaylistContainer
+        playlists={spotifyPlaylists}
+        provider={Service.Spotify}
+        selectedPlaylists={selectedSpotifyPlaylists}
+        setSelectedPlaylists={setSelectedSpotifyPlaylists}
+      />
+      <PlaylistContainer
+        playlists={tidalPlaylists}
+        provider={Service.Tidal}
+        selectedPlaylists={selectedTidalPlaylists}
+        setSelectedPlaylists={setSelectedTidalPlaylists}
+      />
     </div>
   </div>
 }
