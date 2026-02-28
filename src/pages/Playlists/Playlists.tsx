@@ -3,6 +3,7 @@ import { spotifyApi } from "../../api-helpers/spotify";
 import { tidalApi } from "../../api-helpers/tidal";
 import { PlaylistContainer } from "./PlaylistContainer";
 import { Service } from "../../components/LoginButton";
+import { ImportButton } from "../../components/ImportButton";
 
 export interface Playlist {
   name: string;
@@ -50,5 +51,9 @@ export const Home = () => {
         setSelectedPlaylists={setSelectedTidalPlaylists}
       />
     </div>
-  </div>
+    <ImportButton onClick={() => {
+      console.log('Selected Spotify playlists:', selectedSpotifyPlaylists);
+      console.log('Selected Tidal playlists:', selectedTidalPlaylists);
+    }}/>
+  </div>;
 }

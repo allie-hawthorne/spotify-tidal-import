@@ -1,3 +1,5 @@
+import { Button } from "./Button"
+
 export enum Service {
   Spotify = 'Spotify',
   Tidal = 'Tidal'
@@ -8,7 +10,7 @@ interface LoginButtonProps {
   onClick: () => void
 }
 export const LoginButton = ({ service, onClick }: LoginButtonProps) => {
-  return <button className="bg-blue-500 rounded-2xl cursor-pointer p-1" onClick={onClick}>
+  return <Button onClick={onClick}>
     Log in with {service}
-  </button>
+  </Button>
 }
