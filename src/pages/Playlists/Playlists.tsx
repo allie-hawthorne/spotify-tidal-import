@@ -14,8 +14,8 @@ export const Home = () => {
   const [spotifyPlaylists, setSpotifyPlaylists] = useState<Playlist[]>([]);
   const [tidalPlaylists, setTidalPlaylists] = useState<Playlist[]>([]);
 
-  const [selectedSpotifyPlaylists, setSelectedSpotifyPlaylists] = useState<Playlist[]>([]);
-  const [selectedTidalPlaylists, setSelectedTidalPlaylists] = useState<Playlist[]>([]);
+  const [selectedPlaylists, setSelectedPlaylists] = useState<Playlist[]>([]);
+  const [importSource, setImportSource] = useState<Service>();
 
   useEffect(() => {
     // TODO: get user id from spotify api instead of hardcoding it
@@ -34,26 +34,42 @@ export const Home = () => {
       })) ?? []))
       .catch(console.error);
   }, []);
+
+  const onPlaylistSelect = (id: string, provider: Service) => {
+    const isSelected = selectedPlaylists.some(p => p.id === id);
+    // TODO: this is dumb and not extensible
+    const setPlaylistsFn = provider === Service.Spotify ? spotifyPlaylists : tidalPlaylists;
+    const thisPlaylist = setPlaylistsFn.find(p => p.id === id);
+    
+    if (!thisPlaylist) return;
+
+    setImportSource(provider);
+    setSelectedPlaylists(prev => {
+      if (provider !== importSource) return [thisPlaylist!];
+      return isSelected
+        ? prev.filter(p => p.id !== id)
+        : [...prev, thisPlaylist!];
+    });
+  };
   
   return <div className="flex flex-col gap-5 items-center">
     <h1 className='text-center text-6xl'>Welcome!</h1>
     <div className='flex gap-2'>
       <PlaylistContainer
         playlists={spotifyPlaylists}
+        selectedPlaylists={selectedPlaylists}
+        onPlaylistSelect={onPlaylistSelect}
         provider={Service.Spotify}
-        selectedPlaylists={selectedSpotifyPlaylists}
-        setSelectedPlaylists={setSelectedSpotifyPlaylists}
       />
       <PlaylistContainer
         playlists={tidalPlaylists}
+        selectedPlaylists={selectedPlaylists}
+        onPlaylistSelect={onPlaylistSelect}
         provider={Service.Tidal}
-        selectedPlaylists={selectedTidalPlaylists}
-        setSelectedPlaylists={setSelectedTidalPlaylists}
       />
     </div>
     <ImportButton onClick={() => {
-      console.log('Selected Spotify playlists:', selectedSpotifyPlaylists);
-      console.log('Selected Tidal playlists:', selectedTidalPlaylists);
+      console.log('Importing:', selectedPlaylists, 'from', importSource);
     }}/>
   </div>;
 }
