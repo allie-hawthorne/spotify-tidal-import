@@ -61,12 +61,20 @@ export const Home = () => {
       <PlaylistContainer
         playlists={spotifyPlaylists}
         selectedPlaylists={selectedPlaylists}
+        onSelectAll={() => {
+          setSelectedPlaylists(spotifyPlaylists);
+          setImportSource(Service.Spotify);
+        }}
         onPlaylistSelect={onPlaylistSelect}
         provider={Service.Spotify}
       />
       <PlaylistContainer
         playlists={tidalPlaylists}
         selectedPlaylists={selectedPlaylists}
+        onSelectAll={() => {
+          setSelectedPlaylists(tidalPlaylists);
+          setImportSource(Service.Tidal);
+        }}
         onPlaylistSelect={onPlaylistSelect}
         provider={Service.Tidal}
       />
