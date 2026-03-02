@@ -23,12 +23,12 @@ const searchTidalForTrack = async (title: string, artists: string[]) => {
   }
   if (searchResults.response.status !== 200) {
     console.error('Error searching for track on Tidal:', query, searchResults);
-    return null;
+    return;
   }
   const track = searchResults.data?.data?.[0];
   if (!track?.id) {
     console.warn('No search results for track on Tidal:', query);
-    return null;
+    return;
   }
   return track;
 };
@@ -52,6 +52,20 @@ const addTracksToTidalPlaylist = async (playlistId: string, trackIds: string[]) 
   return true;
 };
 
+const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): Promise<T | undefined> => {
+    let result: Awaited<ReturnType<typeof requestFn>>;
+    do {
+      result = await requestFn();
+      // If we get rate limited, wait 5 seconds and try again
+      if (result === 429) await new Promise(resolve => setTimeout(resolve, 5000));
+    } while (result === 429);
+    if (!result) {
+      console.warn('Could not find track on Tidal');
+      return;
+    }
+    return result;
+}
+
 export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
   const getTracksForSpotifyPlaylists = useCallback(async () => {
     const selectedSpotifyPlaylists = spotifyPlaylists.filter(p => selectedPlaylists.some(sp => sp.id === p.id));
@@ -73,25 +87,14 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
       if (!playlistId) return;
 
       for (const {title, artists} of items) {
-        let tidalTrack: Awaited<ReturnType<typeof searchTidalForTrack>>;
-        do {
-          tidalTrack = await searchTidalForTrack(title, artists);
-          // If we get rate limited, wait 5 seconds and try again
-          if (tidalTrack === 429) await new Promise(resolve => setTimeout(resolve, 5000));
-        } while (tidalTrack === 429);
-        if (!tidalTrack) {
-          console.warn('Could not find track on Tidal, skipping:', title, artists);
-          continue;
-        }
+        const tidalTrack = await performRateLimitedRequest(() => searchTidalForTrack(title, artists));
+
+        if (!tidalTrack) continue;
+        
         console.log('Found track on Tidal:', title, artists, tidalTrack);
 
-        let result: Awaited<ReturnType<typeof addTracksToTidalPlaylist>>;
-        do {
-          // TODO: batch add tracks - I think the max is 20
-          result = await addTracksToTidalPlaylist(playlistId, [tidalTrack.id]);
-          // If we get rate limited, wait 5 seconds and try again
-          if (result === 429) await new Promise(resolve => setTimeout(resolve, 5000));
-        } while (result === 429);
+        const addedTrack = await performRateLimitedRequest(() => addTracksToTidalPlaylist(playlistId, [tidalTrack.id]));
+        if (addedTrack) console.log('Added track to Tidal playlist:', title, artists, playlistName);
       }
     }));
   }, [getTracksForSpotifyPlaylists, createTidalPlaylist, searchTidalForTrack, addTracksToTidalPlaylist]);
