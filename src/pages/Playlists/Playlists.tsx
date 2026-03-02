@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { spotifyApi } from "../../api-helpers/spotify";
 import { tidalApi } from "../../api-helpers/tidal";
 import { PlaylistContainer } from "./PlaylistContainer";
@@ -50,7 +50,15 @@ export const Home = () => {
       return isSelected ? allButThisPlaylist : [...prev, thisPlaylist!];
     });
   };
-  
+
+  const onImport = useCallback(async () => {
+    const selectedSpotifyPlaylists = spotifyPlaylists.filter(p => selectedPlaylists.some(sp => sp.id === p.id));
+
+    const tmp = await Promise.all(selectedSpotifyPlaylists.map(p => spotifyApi.playlists.getPlaylistItems(p.id)));
+    const tracks = tmp.flatMap(({items}) => items.map(({track}) => ({title: track.name, artists: track.artists.map(a => a.name)})));
+    console.log('Spotify tracks to import:', tracks);
+  }, [selectedPlaylists, spotifyPlaylists]);
+
   return <div className="flex flex-col gap-5 items-center">
     <h1 className='text-center text-6xl'>Welcome!</h1>
     <div className='flex gap-2'>
@@ -67,8 +75,6 @@ export const Home = () => {
         provider={Service.Tidal}
       />
     </div>
-    <ImportButton importSource={importSource} onClick={() => {
-      console.log('Importing:', selectedPlaylists, 'from', importSource);
-    }}/>
+    <ImportButton importSource={importSource} onClick={onImport} />
   </div>;
 }
