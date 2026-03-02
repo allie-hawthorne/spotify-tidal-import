@@ -40,15 +40,14 @@ export const Home = () => {
     // TODO: this is dumb and not extensible
     const setPlaylistsFn = provider === Service.Spotify ? spotifyPlaylists : tidalPlaylists;
     const thisPlaylist = setPlaylistsFn.find(p => p.id === id);
-    
+    const allButThisPlaylist = selectedPlaylists.filter(p => p.id !== id);
+
     if (!thisPlaylist) return;
 
-    setImportSource(provider);
+    setImportSource(!isSelected || allButThisPlaylist.length ? provider : undefined);
     setSelectedPlaylists(prev => {
       if (provider !== importSource) return [thisPlaylist!];
-      return isSelected
-        ? prev.filter(p => p.id !== id)
-        : [...prev, thisPlaylist!];
+      return isSelected ? allButThisPlaylist : [...prev, thisPlaylist!];
     });
   };
   
@@ -68,7 +67,7 @@ export const Home = () => {
         provider={Service.Tidal}
       />
     </div>
-    <ImportButton onClick={() => {
+    <ImportButton importSource={importSource} onClick={() => {
       console.log('Importing:', selectedPlaylists, 'from', importSource);
     }}/>
   </div>;
