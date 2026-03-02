@@ -55,8 +55,38 @@ export const Home = () => {
     const selectedSpotifyPlaylists = spotifyPlaylists.filter(p => selectedPlaylists.some(sp => sp.id === p.id));
 
     const tmp = await Promise.all(selectedSpotifyPlaylists.map(p => spotifyApi.playlists.getPlaylistItems(p.id)));
-    const tracks = tmp.flatMap(({items}) => items.map(({track}) => ({title: track.name, artists: track.artists.map(a => a.name)})));
-    console.log('Spotify tracks to import:', tracks);
+    const playlistTracks = tmp.map(({items}, i) => ({name: selectedSpotifyPlaylists[i].name, items: items.map(({track}) => ({title: track.name, artists: track.artists.map(a => a.name)}))}));
+    console.log('Spotify tracks to import:', playlistTracks);
+    await Promise.all(playlistTracks.map(async ({name: playlistName, items}) => {
+      const newPlaylist = await tidalApi.POST('/playlists', {body: {data: {attributes: {name: playlistName}, type: "playlists"}}});
+      if (!newPlaylist.data?.data.id) {
+        console.error('Failed to create playlist on Tidal');
+        return;
+      }
+      const searchResults = await Promise.all(items.map(async ({title, artists}) => {
+        return tidalApi.GET('/searchResults/{id}/relationships/tracks', {
+          params: {path: {id: `${title} ${artists.join(', ')}`}}
+        });
+      }));
+      console.log('Search results for tracks:', searchResults);
+      return tidalApi.POST(`/playlists/{id}/relationships/items`, {
+        params: {path: {id: newPlaylist.data.data.id}},
+        body: {
+          data: searchResults.map(searchResult => {
+            const track = searchResult.data?.data?.[0];
+            if (!track?.id) {
+              console.warn('No search results for track, skipping:', searchResult);
+              return;
+            }
+            return {
+              id: track.id,
+              // TODO: try to remove typecast?
+              type: track.type as 'tracks' | 'videos',
+            };
+          }).filter(x => !!x)
+        }
+      }).then(d => console.log('Tidal import response:', d)).catch(console.error);
+    }));
   }, [selectedPlaylists, spotifyPlaylists]);
 
   return <div className="flex flex-col gap-5 items-center">
