@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { chunk } from "lodash";
 import type { Playlist } from "./Playlists";
 import { spotifyApi } from "../../api-helpers/spotify";
 import { tidalApi } from "../../api-helpers/tidal";
@@ -52,18 +53,14 @@ const addTracksToTidalPlaylist = async (playlistId: string, trackIds: string[]) 
   return true;
 };
 
-const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): Promise<T | undefined> => {
-    let result: Awaited<ReturnType<typeof requestFn>>;
-    do {
-      result = await requestFn();
-      // If we get rate limited, wait 5 seconds and try again
-      if (result === 429) await new Promise(resolve => setTimeout(resolve, 5000));
-    } while (result === 429);
-    if (!result) {
-      console.warn('Could not find track on Tidal');
-      return;
-    }
-    return result;
+const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): Promise<T> => {
+  let result: Awaited<ReturnType<typeof requestFn>>;
+  do {
+    result = await requestFn();
+    // If we get rate limited, wait 5 seconds and try again
+    if (result === 429) await new Promise(resolve => setTimeout(resolve, 1000));
+  } while (result === 429);
+  return result;
 }
 
 export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
@@ -86,18 +83,28 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
 
       if (!playlistId) return;
 
+      const tidalTracksToAdd: string[] = [];
       for (const {title, artists} of items) {
         const tidalTrack = await performRateLimitedRequest(() => searchTidalForTrack(title, artists));
 
         if (!tidalTrack) continue;
+        tidalTracksToAdd.push(tidalTrack.id);
         
         console.log('Found track on Tidal:', title, artists, tidalTrack);
+      }
 
-        const addedTrack = await performRateLimitedRequest(() => addTracksToTidalPlaylist(playlistId, [tidalTrack.id]));
-        if (addedTrack) console.log('Added track to Tidal playlist:', title, artists, playlistName);
+      const batchSize = 20; 
+      const batches = chunk(tidalTracksToAdd, batchSize);
+      for (const [index, batch] of batches.entries()) {
+        const success = await performRateLimitedRequest(() => addTracksToTidalPlaylist(playlistId, batch));
+        if (success) {
+          console.log(`Added batch ${index + 1}/${batches.length} of tracks to Tidal playlist:`, playlistName, batch);
+        } else {
+          console.error(`Failed to add batch ${index + 1}/${batches.length} of tracks to Tidal playlist:`, playlistName, batch);
+        }
       }
     }));
-  }, [getTracksForSpotifyPlaylists, createTidalPlaylist, searchTidalForTrack, addTracksToTidalPlaylist]);
+  }, [getTracksForSpotifyPlaylists]);
   
   return { onImportClick };
 }
