@@ -15,8 +15,11 @@ const createTidalPlaylist = async (name: string) => {
 
 const searchTidalForTrack = async (title: string, artists: string[]) => {
   const query = `${title} ${artists.join(', ')}`;
+  // TODO: Is this better than just removing the character?
+  const encodedQuery = query.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
+
   const searchResults = await tidalApi.GET('/searchResults/{id}/relationships/tracks', {
-    params: {path: {id: query}}
+    params: {path: {id: encodedQuery}}
   });
   if (searchResults.response.status === 429) {
     console.warn('Rate limited by Tidal API when searching for track:', query);
@@ -72,12 +75,12 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
     const playlistTracks = playlistTracksRes.map(({items}, i) => ({name: selectedSpotifyPlaylists[i].name, items: items.map(({track}) => ({title: track.name, artists: track.artists.map(a => a.name)}))}));
     return playlistTracks;
   }, [spotifyPlaylists, selectedPlaylists]);
-  
+
   const onImportClick = useCallback(async () => {
     const playlistTracks = await getTracksForSpotifyPlaylists();
 
     console.log('Playlists to import from Spotify:', playlistTracks);
-    
+
     await Promise.all(playlistTracks.map(async ({name: playlistName, items}) => {
       const playlistId = await createTidalPlaylist(playlistName);
 
@@ -89,7 +92,7 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
 
         if (!tidalTrack) continue;
         tidalTracksToAdd.push(tidalTrack.id);
-        
+
         console.log('Found track on Tidal:', title, artists, tidalTrack);
       }
 
