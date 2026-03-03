@@ -7,8 +7,9 @@ import { ImportButton } from "../../components/ImportButton";
 import { useImportSpotify } from "./useImportSpotify";
 
 export interface Playlist {
-  name: string;
   id: string;
+  name: string;
+  trackCount: number;
 }
 
 export const Home = () => {
@@ -23,7 +24,7 @@ export const Home = () => {
   useEffect(() => {
     // TODO: get user id from spotify api instead of hardcoding it
     spotifyApi.playlists.getUsersPlaylists('1121194900')
-      .then(d => setSpotifyPlaylists(d.items.map(({id, name}) => ({id, name}))))
+      .then(d => setSpotifyPlaylists(d.items.map(({id, name, tracks}) => ({id, name, trackCount: tracks.total}))))
       .catch(console.error);
   }, []);
 
@@ -34,6 +35,7 @@ export const Home = () => {
       .then(d => setTidalPlaylists(d.data?.data.map(({id, attributes}) => ({
         id,
         name: attributes?.name ?? '',
+        trackCount: attributes?.numberOfItems ?? 0
       })) ?? []))
       .catch(console.error);
   }, []);

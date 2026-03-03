@@ -21,7 +21,10 @@ export const PlaylistContainer = ({ playlists, provider, selectedPlaylists, onSe
       {playlists && <ul className="flex flex-col gap-2 mt-2">
         {playlists.map(playlist => (
           <li className={`hover:opacity-60 cursor-pointer ${getSelectedStyle(playlist)}`} key={playlist.id} onClick={() => onClick(playlist.id)}>
-              {playlist.name}
+            <div className="flex justify-between items-center">
+              <p>{playlist.name}</p>
+              <p className="text-xs opacity-70">{playlist.trackCount ? `${playlist.trackCount}` : 'No'} tracks</p>
+            </div>
           </li>
         ))}
       </ul>}
