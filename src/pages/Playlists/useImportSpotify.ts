@@ -6,8 +6,16 @@ import { tidalApi } from "../../api-helpers/tidal";
 
 const createTidalPlaylist = async (name: string) => {
   const newPlaylist = await tidalApi.POST('/playlists', {body: {data: {attributes: {name}, type: "playlists"}}});
+  if (newPlaylist.response.status === 429) {
+    console.warn('Rate limited by Tidal API when creating playlist:', name);
+    return 429;
+  }
+  if (newPlaylist.response.status !== 201) {
+    console.error('Error creating playlist on Tidal:', name, newPlaylist);
+    return;
+  }
   if (!newPlaylist.data?.data.id) {
-    console.error('Failed to create playlist on Tidal');
+    console.error('No playlist ID returned from Tidal API when creating playlist:', name, newPlaylist);
     return;
   }
   return newPlaylist.data.data.id;
@@ -82,7 +90,7 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
     console.log('Playlists to import from Spotify:', playlistTracks);
 
     await Promise.all(playlistTracks.map(async ({name: playlistName, items}) => {
-      const playlistId = await createTidalPlaylist(playlistName);
+      const playlistId = await performRateLimitedRequest(() => createTidalPlaylist(playlistName));
 
       if (!playlistId) return;
 
