@@ -20,7 +20,7 @@ export const Home = () => {
   const [selectedPlaylists, setSelectedPlaylists] = useState<Playlist[]>([]);
   const [importSource, setImportSource] = useState<Service>();
 
-  const { onImportClick, importingPlaylists, importingTracks } = useImportSpotify(spotifyPlaylists, selectedPlaylists);
+  const { onImportClick, currentPlaylists, currentTracks } = useImportSpotify(spotifyPlaylists, selectedPlaylists);
 
   useEffect(() => {
     getSpotifyPlaylists().then(setSpotifyPlaylists)
@@ -72,8 +72,8 @@ export const Home = () => {
       />
     </div>
     <ImportButton importSource={importSource} onClick={onImportClick} />
-    {!!importingPlaylists.length && importingPlaylists.map((p, i) => 
-      <p key={i}>{p}: {importingTracks[i] ?? 'Unknown track'}</p>
+    {!!currentPlaylists.length && currentPlaylists.map((p, i) => 
+      <p key={i}>{p}: {currentTracks[i] ?? 'Unknown track'}</p>
     )}
   </div>;
 }

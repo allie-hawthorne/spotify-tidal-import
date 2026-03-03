@@ -18,8 +18,8 @@ const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): 
 }
 
 export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
-  const [importingPlaylists, setImportingPlaylists] = useState<string[]>([]);
-  const [importingTracks, setImportingTracks] = useState<string[]>([]);
+  const [currentPlaylists, setCurrentPlaylists] = useState<string[]>([]);
+  const [currentTracks, setCurrentTracks] = useState<string[]>([]);
   
   const onImportClick = useCallback(async () => {
     const spotify = new SpotifyImporter();
@@ -31,7 +31,7 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
     
     const playlistChunks = chunk(playlistTracks, PLAYLISTS_CHUNK_SIZE);
     for (const [index, playlistChunk] of playlistChunks.entries()) {
-      setImportingPlaylists(playlistChunk.map(p => p.name));
+      setCurrentPlaylists(playlistChunk.map(p => p.name));
       console.log(`Importing chunk ${index + 1}/${playlistChunks.length}`, playlistChunk);
 
       await Promise.all(playlistChunk.map(async ({name: playlistName, items}, playlistIndex) => {
@@ -41,7 +41,7 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
 
         const tidalTracksToAdd: string[] = [];
         for (const {title, artists} of items) {
-          setImportingTracks(prev => {
+          setCurrentTracks(prev => {
             const newPrev = [...prev];
             newPrev[playlistIndex] = `${title} by ${artists.join(', ')}`;
             return newPrev;
@@ -67,5 +67,5 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
     };
   }, [spotifyPlaylists, selectedPlaylists]);
   
-  return { onImportClick, importingPlaylists, importingTracks };
+  return { onImportClick, currentPlaylists, currentTracks };
 }
