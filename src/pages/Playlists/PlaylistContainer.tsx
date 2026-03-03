@@ -1,3 +1,4 @@
+import { decode } from 'he';
 import type { Service } from "../../components/LoginButton";
 import type { Playlist } from "./Playlists";
 
@@ -22,7 +23,10 @@ export const PlaylistContainer = ({ playlists, provider, selectedPlaylists, onSe
         {playlists.map(playlist => (
           <li className={`hover:opacity-60 cursor-pointer ${getSelectedStyle(playlist)}`} key={playlist.id} onClick={() => onClick(playlist.id)}>
             <div className="flex justify-between items-center">
-              <p>{playlist.name}</p>
+              <div>
+                <p>{playlist.name}</p>
+                <p className="text-xs opacity-70">{decode(playlist.description)}</p>
+              </div>
               <p className="text-xs opacity-70">{playlist.trackCount ? `${playlist.trackCount}` : 'No'} tracks</p>
             </div>
           </li>
