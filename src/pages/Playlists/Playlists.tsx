@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { spotifyApi } from "../../api-helpers/spotify";
-import { tidalApi } from "../../api-helpers/tidal";
+import { getSpotifyPlaylists } from "../../api-helpers/spotify";
+import { getTidalPlaylists } from "../../api-helpers/tidal";
 import { PlaylistContainer } from "./PlaylistContainer";
 import { Service } from "../../components/LoginButton";
 import { ImportButton } from "../../components/ImportButton";
@@ -23,23 +23,11 @@ export const Home = () => {
   const { onImportClick, importingPlaylists, importingTracks } = useImportSpotify(spotifyPlaylists, selectedPlaylists);
 
   useEffect(() => {
-    // TODO: get user id from spotify api instead of hardcoding it
-    spotifyApi.playlists.getUsersPlaylists('1121194900')
-      .then(d => setSpotifyPlaylists(d.items.map(({id, name, tracks, description}) => ({id, name, description, trackCount: tracks.total}))))
-      .catch(console.error);
+    getSpotifyPlaylists().then(setSpotifyPlaylists)
   }, []);
 
   useEffect(() => {
-    // TODO: get user id from tidal api instead of hardcoding it
-    // TODO: could probably do with tidying this up for readability
-    tidalApi.GET('/playlists', {params: {query: {"filter[owners.id]": ["207473666"]}}})
-      .then(d => setTidalPlaylists(d.data?.data.map(({id, attributes}) => ({
-        id,
-        name: attributes?.name ?? '',
-        description: attributes?.description ?? '',
-        trackCount: attributes?.numberOfItems ?? 0
-      })) ?? []))
-      .catch(console.error);
+    getTidalPlaylists().then(setTidalPlaylists)
   }, []);
 
   const onPlaylistSelect = (id: string, provider: Service) => {
