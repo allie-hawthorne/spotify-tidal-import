@@ -19,7 +19,7 @@ const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): 
 
 export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
   const [importingPlaylists, setImportingPlaylists] = useState<string[]>([]);
-  const [importingTracks, setImportingTracks] = useState<string[]>(new Array(PLAYLISTS_CHUNK_SIZE).fill(''));
+  const [importingTracks, setImportingTracks] = useState<string[]>([]);
   
   const onImportClick = useCallback(async () => {
     const spotify = new SpotifyImporter();
