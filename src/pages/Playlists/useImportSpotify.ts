@@ -1,8 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { chunk } from "lodash";
 import type { Playlist } from "./Playlists";
 import { spotifyApi } from "../../api-helpers/spotify";
 import { tidalApi } from "../../api-helpers/tidal";
+
+const PLAYLISTS_CHUNK_SIZE = 2;
+const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time
 
 const createTidalPlaylist = async (name: string) => {
   const newPlaylist = await tidalApi.POST('/playlists', {body: {data: {attributes: {name}, type: "playlists"}}});
@@ -75,6 +78,9 @@ const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): 
 }
 
 export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
+  const [importingPlaylists, setImportingPlaylists] = useState<string[]>([]);
+  const [importingTracks, setImportingTracks] = useState<string[]>(new Array(PLAYLISTS_CHUNK_SIZE).fill(''));
+  
   const getTracksForSpotifyPlaylists = useCallback(async () => {
     const selectedSpotifyPlaylists = spotifyPlaylists.filter(p => selectedPlaylists.some(sp => sp.id === p.id));
 
@@ -88,34 +94,44 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
     const playlistTracks = await getTracksForSpotifyPlaylists();
 
     console.log('Playlists to import from Spotify:', playlistTracks);
+    
+    const playlistChunks = chunk(playlistTracks, PLAYLISTS_CHUNK_SIZE);
+    for (const [index, playlistChunk] of playlistChunks.entries()) {
+      setImportingPlaylists(playlistChunk.map(p => p.name));
+      console.log(`Importing chunk ${index + 1}/${playlistChunks.length}`, playlistChunk);
 
-    await Promise.all(playlistTracks.map(async ({name: playlistName, items}) => {
-      const playlistId = await performRateLimitedRequest(() => createTidalPlaylist(playlistName));
+      await Promise.all(playlistChunk.map(async ({name: playlistName, items}, playlistIndex) => {
+        const playlistId = await performRateLimitedRequest(() => createTidalPlaylist(playlistName));
 
-      if (!playlistId) return;
+        if (!playlistId) return;
 
-      const tidalTracksToAdd: string[] = [];
-      for (const {title, artists} of items) {
-        const tidalTrack = await performRateLimitedRequest(() => searchTidalForTrack(title, artists));
+        const tidalTracksToAdd: string[] = [];
+        for (const {title, artists} of items) {
+          setImportingTracks(prev => {
+            const newPrev = [...prev];
+            newPrev[playlistIndex] = `${title} by ${artists.join(', ')}`;
+            return newPrev;
+          });
+          const tidalTrack = await performRateLimitedRequest(() => searchTidalForTrack(title, artists));
 
-        if (!tidalTrack) continue;
-        tidalTracksToAdd.push(tidalTrack.id);
+          if (!tidalTrack) continue;
+          tidalTracksToAdd.push(tidalTrack.id);
 
-        console.log('Found track on Tidal:', title, artists, tidalTrack);
-      }
-
-      const batchSize = 20; 
-      const batches = chunk(tidalTracksToAdd, batchSize);
-      for (const [index, batch] of batches.entries()) {
-        const success = await performRateLimitedRequest(() => addTracksToTidalPlaylist(playlistId, batch));
-        if (success) {
-          console.log(`Added batch ${index + 1}/${batches.length} of tracks to Tidal playlist:`, playlistName, batch);
-        } else {
-          console.error(`Failed to add batch ${index + 1}/${batches.length} of tracks to Tidal playlist:`, playlistName, batch);
+          console.log('Found track on Tidal:', title, artists, tidalTrack);
         }
-      }
-    }));
-  }, [getTracksForSpotifyPlaylists]);
+
+        const batches = chunk(tidalTracksToAdd, MAX_TRACKS_PER_BATCH);
+        for (const [batchIndex, batch] of batches.entries()) {
+          const success = await performRateLimitedRequest(() => addTracksToTidalPlaylist(playlistId, batch));
+          if (success) {
+            console.log(`Added batch ${batchIndex + 1}/${batches.length} of tracks to Tidal playlist:`, playlistName, batch);
+          } else {
+            console.error(`Failed to add batch ${batchIndex + 1}/${batches.length} of tracks to Tidal playlist:`, playlistName, batch);
+          }
+        }
+      }));
+    };
+  }, [getTracksForSpotifyPlaylists, importingPlaylists, importingTracks]);
   
-  return { onImportClick };
+  return { onImportClick, importingPlaylists, importingTracks };
 }
