@@ -25,7 +25,7 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
     const spotify = new SpotifyImporter();
     const tidal = new TidalImporter();
 
-    const playlistTracks = await spotify.getTracksFromPlaylist(spotifyPlaylists, selectedPlaylists);
+    const playlistTracks = await spotify.getTracksFromPlaylists(spotifyPlaylists, selectedPlaylists);
 
     console.log('Playlists to import from Spotify:', playlistTracks);
     

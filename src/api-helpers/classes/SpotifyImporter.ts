@@ -4,7 +4,7 @@ import { spotifyApi } from "../spotify";
 export class SpotifyImporter {
   constructor() {}
 
-  getTracksFromPlaylist = async (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
+  getTracksFromPlaylists = async (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
     const selectedSpotifyPlaylists = spotifyPlaylists.filter(p => selectedPlaylists.some(sp => sp.id === p.id));
 
     // TODO: should probably protect against rate limiting but spotify's is super high
