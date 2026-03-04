@@ -13,9 +13,6 @@ export const AuthBarrier = () => {
     spotifyApi.getAccessToken()
       .then(token => setSpotifyAuthed(!!token))
       .catch(console.error);
-  }, []);
-
-  useEffect(() => {
     checkIfTidalAuthed()
       .then(setTidalAuthed)
       .catch(console.error);

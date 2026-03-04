@@ -19,9 +19,6 @@ export const Home = () => {
 
   useEffect(() => {
     getSpotifyPlaylists().then(setSpotifyPlaylists)
-  }, []);
-
-  useEffect(() => {
     getTidalPlaylists().then(setTidalPlaylists)
   }, []);
 
