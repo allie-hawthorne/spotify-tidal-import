@@ -40,7 +40,6 @@ const mapTidalPlaylistToPlaylist = (playlist: TidalPlaylistType): Playlist => ({
 });
 
 export const getTidalPlaylists = async () => {
-  // TODO: get user id from tidal api instead of hardcoding it
-  const response = await tidalApi.GET('/playlists', {params: {query: {"filter[owners.id]": ["207473666"]}}});
+  const response = await tidalApi.GET('/playlists', {params: {query: {"filter[owners.id]": ["me"], include: ['coverArt']}}});
   return response.data?.data.map(mapTidalPlaylistToPlaylist) ?? [];
 }
