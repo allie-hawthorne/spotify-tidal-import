@@ -34,6 +34,9 @@ export const useImport = (sourcePlaylists: Playlist[], setShowImportStatus: Disp
     for (const [, playlistChunk] of playlistChunks.entries()) {
       updatePlaylistStatus(playlistChunk);
       
+      // TODO: because we're awaiting each playlist chunk sequentially, if one playlist takes a long time to import, it will hold up the second slot.
+      // We could sort playlists by track count so that longer ones are grouped together
+      // or we could have a different approach to chunking overall maybe
       await Promise.all(playlistChunk.map(async ({id: sourcePlaylistId, name: playlistName, items}) => {
         const destPlaylistId = await performRateLimitedRequest(() => tidal.createPlaylist(playlistName));
 
