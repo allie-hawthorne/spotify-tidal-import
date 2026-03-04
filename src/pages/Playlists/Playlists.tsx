@@ -6,20 +6,7 @@ import { Service } from "../../components/LoginButton";
 import { ImportButton } from "../../components/ImportButton";
 import { useImportSpotify } from "./useImportSpotify";
 import { PlaylistImportStatus } from "./PlaylistImportStatus";
-
-interface Item {
-  title: string;
-  artists: string[];
-};
-export interface Playlist {
-  id: string;
-  name: string;
-  description: string;
-  trackCount: number;
-}
-export interface PlaylistWithItems extends Playlist {
-  items: Item[];
-}
+import type { Playlist } from "../../types";
 
 export const Home = () => {
   const [spotifyPlaylists, setSpotifyPlaylists] = useState<Playlist[]>([]);

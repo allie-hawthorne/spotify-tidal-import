@@ -1,6 +1,6 @@
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import { chunk } from "lodash";
-import type { Playlist, PlaylistWithItems } from "./Playlists";
+import type { Playlist, PlaylistWithItems } from "../../types";
 import { SpotifyImporter } from "../../api-helpers/classes/SpotifyImporter";
 import { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 
