@@ -7,13 +7,18 @@ import { ImportButton } from "../../components/ImportButton";
 import { useImportSpotify } from "./useImportSpotify";
 import { PlaylistImportStatus } from "./PlaylistImportStatus";
 
-export type PlaylistWithItems = Required<Playlist>
+interface Item {
+  title: string;
+  artists: string[];
+};
 export interface Playlist {
   id: string;
   name: string;
   description: string;
   trackCount: number;
-  items?: {title: string, artists: string[]}[];
+}
+export interface PlaylistWithItems extends Playlist {
+  items: Item[];
 }
 
 export const Home = () => {
