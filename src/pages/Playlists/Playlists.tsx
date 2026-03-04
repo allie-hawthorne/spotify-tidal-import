@@ -4,7 +4,7 @@ import { getTidalPlaylists } from "../../api-helpers/tidal";
 import { PlaylistContainer } from "./PlaylistContainer";
 import { Service } from "../../components/LoginButton";
 import { ImportButton } from "../../components/ImportButton";
-import { useImportSpotify } from "./useImportSpotify";
+import { useImport } from "./useImportSpotify";
 import { PlaylistImportStatus } from "./PlaylistImportStatus";
 import type { Playlist } from "../../types";
 
@@ -15,7 +15,7 @@ export const Home = () => {
   const [importSource, setImportSource] = useState<Service>();
   const [showImportStatus, setShowImportStatus] = useState(false);
 
-  const { onImportClick, allPlaylists } = useImportSpotify(spotifyPlaylists, selectedPlaylists, setShowImportStatus);
+  const { onImportClick, allPlaylists } = useImport(spotifyPlaylists, selectedPlaylists, setShowImportStatus);
 
   useEffect(() => {
     getSpotifyPlaylists().then(setSpotifyPlaylists)
