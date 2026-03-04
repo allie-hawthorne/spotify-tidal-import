@@ -1,9 +1,9 @@
-import type { Playlist, PlaylistWithItems } from "../../types";
+import type { Playlist, PlaylistWithTracks } from "../../types";
 import { PlaylistTracksImportStatus } from "./PlaylistTracksImportStatus";
 
 interface PlaylistImportStatusProps {
   selectedPlaylists: Playlist[];
-  allPlaylists: PlaylistWithItems[];
+  allPlaylists: PlaylistWithTracks[];
 }
 export const PlaylistImportStatus = ({ selectedPlaylists, allPlaylists }: PlaylistImportStatusProps) => {
   return <>

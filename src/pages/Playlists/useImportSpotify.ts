@@ -1,6 +1,6 @@
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import { chunk } from "lodash";
-import type { Playlist, PlaylistWithItems } from "../../types";
+import type { Playlist, PlaylistWithTracks } from "../../types";
 import { SpotifyImporter } from "../../api-helpers/classes/SpotifyImporter";
 import { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 
@@ -18,7 +18,7 @@ const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): 
 }
 
 export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[], setShowImportStatus: Dispatch<SetStateAction<boolean>>) => {
-  const [allPlaylists, setAllPlaylists] = useState<PlaylistWithItems[]>([]);
+  const [allPlaylists, setAllPlaylists] = useState<PlaylistWithTracks[]>([]);
   const [currentPlaylists, setCurrentPlaylists] = useState<string[]>([]);
   const [currentTracks, setCurrentTracks] = useState<string[]>([]);
   

@@ -1,7 +1,7 @@
-import type { PlaylistWithItems } from "../../types";
+import type { PlaylistWithTracks } from "../../types";
 
 interface PlaylistTracksImportStatusProps {
-  playlistTracks: PlaylistWithItems
+  playlistTracks: PlaylistWithTracks
 }
 export const PlaylistTracksImportStatus = ({ playlistTracks }: PlaylistTracksImportStatusProps) => {
   return <>

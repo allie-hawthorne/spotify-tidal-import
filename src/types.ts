@@ -1,4 +1,4 @@
-interface Item {
+interface Track {
   title: string;
   artists: string[];
 };
@@ -8,6 +8,6 @@ export interface Playlist {
   description: string;
   trackCount: number;
 }
-export interface PlaylistWithItems extends Playlist {
-  items: Item[];
+export interface PlaylistWithTracks extends Playlist {
+  items: Track[];
 }
