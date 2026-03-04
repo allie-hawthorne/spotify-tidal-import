@@ -1,4 +1,5 @@
 import type { Playlist, PlaylistWithItems } from "./Playlists";
+import { PlaylistTracksImportStatus } from "./PlaylistTracksImportStatus";
 
 interface PlaylistImportStatusProps {
   selectedPlaylists: Playlist[];
@@ -14,15 +15,7 @@ export const PlaylistImportStatus = ({ selectedPlaylists, allPlaylists }: Playli
         return <div key={i} className="border p-2">
         <p>Playlist: {p.name}</p>
         {thisPlaylistTracks
-          // TODO: new component here
-          ? <div>
-              <p>Tracks:</p>
-              <ul>
-                {thisPlaylistTracks.items.map((item, index) => (
-                  <li key={index}>{item.title} by {item.artists.join(', ')}</li>
-                ))}
-              </ul>
-          </div>
+          ? <PlaylistTracksImportStatus playlistTracks={thisPlaylistTracks} />
           : <p>Loading tracks...</p>
         }
         <p>{p.name}: {thisPlaylistTracks?.items[0] ? `${thisPlaylistTracks.items[0].title} by ${thisPlaylistTracks.items[0].artists.join(', ')}` : 'No tracks'}</p>
