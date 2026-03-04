@@ -1,6 +1,6 @@
 import { decode } from 'he';
 import type { Service } from "../../components/LoginButton";
-import type { Playlist } from "./Playlists";
+import type { Playlist } from '../../types';
 
 interface PlaylistContainerProps {
   playlists: Playlist[]

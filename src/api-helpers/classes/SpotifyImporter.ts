@@ -1,4 +1,4 @@
-import type { Playlist, PlaylistWithItems } from "../../pages/Playlists/Playlists";
+import type { Playlist, PlaylistWithItems } from "../../types";
 import { spotifyApi } from "../spotify";
 
 export class SpotifyImporter {

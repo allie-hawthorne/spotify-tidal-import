@@ -1,4 +1,4 @@
-import type { Playlist, PlaylistWithItems } from "./Playlists";
+import type { Playlist, PlaylistWithItems } from "../../types";
 import { PlaylistTracksImportStatus } from "./PlaylistTracksImportStatus";
 
 interface PlaylistImportStatusProps {

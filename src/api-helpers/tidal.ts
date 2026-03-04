@@ -1,6 +1,6 @@
 import { createAPIClient } from '@tidal-music/api';
 import { credentialsProvider, init, initializeLogin } from '@tidal-music/auth';
-import type { Playlist } from '../pages/Playlists/Playlists';
+import type { Playlist } from '../types';
 
 const TIDAL_API_KEY = 'TDiZl2ekSxNNwrYL';
 const TIDAL_REDIRECT_URI = 'http://127.0.0.1:5500/tidal/';
