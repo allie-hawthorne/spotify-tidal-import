@@ -29,7 +29,6 @@ export const PlaylistImportStatus = ({ selectedPlaylists, allPlaylists }: Playli
           ? <PlaylistTracksImportStatus playlistTracks={thisPlaylistTracks} />
           : <p>Loading tracks...</p>
         }
-        <p>{p.name}: {thisPlaylistTracks?.items[0] ? `${thisPlaylistTracks.items[0].title} by ${thisPlaylistTracks.items[0].artists.join(', ')}` : 'No tracks'}</p>
       </div>
       })}
     </div>

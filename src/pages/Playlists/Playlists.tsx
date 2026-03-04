@@ -43,7 +43,6 @@ export const Home = () => {
   
   return <div className="flex flex-col gap-5 items-center">
     <h1 className='text-center text-6xl'>Welcome!</h1>
-    {/* TODO: New component here */}
     <div className='flex gap-2'>
       <PlaylistContainer
         playlists={spotifyPlaylists}
