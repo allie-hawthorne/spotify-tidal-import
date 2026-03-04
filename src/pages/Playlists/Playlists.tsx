@@ -5,6 +5,7 @@ import { PlaylistContainer } from "./PlaylistContainer";
 import { Service } from "../../components/LoginButton";
 import { ImportButton } from "../../components/ImportButton";
 import { useImportSpotify } from "./useImportSpotify";
+import { PlaylistImportStatus } from "./PlaylistImportStatus";
 
 export type PlaylistWithItems = Required<Playlist>
 export interface Playlist {
@@ -48,35 +49,8 @@ export const Home = () => {
     });
   };
 
-
-  if (showImportStatus) {
-    // TODO: new component here
-    return <>
-      <p>Imported Playlists:</p>
-      <div className="grid grid-cols-2">
-        {selectedPlaylists.map((p, i) => {
-          const thisPlaylistTracks = allPlaylists.find(pl => pl.id === p.id);
-
-          return <div key={i} className="border p-2">
-          <p>Playlist: {p.name}</p>
-          {thisPlaylistTracks
-            // TODO: new component here
-            ? <div>
-                <p>Tracks:</p>
-                <ul>
-                  {thisPlaylistTracks.items.map((item, index) => (
-                    <li key={index}>{item.title} by {item.artists.join(', ')}</li>
-                  ))}
-                </ul>
-            </div>
-            : <p>Loading tracks...</p>
-          }
-          <p>{p.name}: {thisPlaylistTracks?.items[0] ? `${thisPlaylistTracks.items[0].title} by ${thisPlaylistTracks.items[0].artists.join(', ')}` : 'No tracks'}</p>
-        </div>
-        })}
-      </div>
-    </>;
-  }
+  // TODO: consider using rest or similar to avoid prop nightmare
+  if (showImportStatus) return <PlaylistImportStatus allPlaylists={allPlaylists} selectedPlaylists={selectedPlaylists} />;
   
   return <div className="flex flex-col gap-5 items-center">
     <h1 className='text-center text-6xl'>Welcome!</h1>
