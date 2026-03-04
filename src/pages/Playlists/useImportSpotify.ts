@@ -25,20 +25,15 @@ export const useImport = (sourcePlaylists: Playlist[], setShowImportStatus: Disp
     const spotify = new SpotifyImporter();
     const tidal = new TidalImporter();
 
-    // TODO: maybe just have UI be dependent on import status?
     setShowImportStatus(true);
     
     const playlistTracks = await spotify.getTracksFromPlaylists(sourcePlaylists);
     addAllPlaylists(playlistTracks);
 
-    // console.log('Playlists to import from Spotify:', playlistTracks);
-    
     const playlistChunks = chunk(playlistTracks, PLAYLISTS_CHUNK_SIZE);
     for (const [, playlistChunk] of playlistChunks.entries()) {
       updatePlaylistStatus(playlistChunk);
       
-      // console.log(`Importing chunk ${index + 1}/${playlistChunks.length}`, playlistChunk);
-
       await Promise.all(playlistChunk.map(async ({id: sourcePlaylistId, name: playlistName, items}) => {
         const destPlaylistId = await performRateLimitedRequest(() => tidal.createPlaylist(playlistName));
 
@@ -52,8 +47,6 @@ export const useImport = (sourcePlaylists: Playlist[], setShowImportStatus: Disp
 
           if (!destTrack) continue;
           destTracksToAdd.push(destTrack.id);
-
-          // console.log('Found track on destination:', title, artists, destTrack);
         }
 
         const batches = chunk(destTracksToAdd, MAX_TRACKS_PER_BATCH);

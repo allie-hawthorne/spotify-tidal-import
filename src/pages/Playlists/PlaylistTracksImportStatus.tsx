@@ -9,11 +9,8 @@ export const PlaylistTracksImportStatus = ({ playlistTracks }: PlaylistTracksImp
     <p>Tracks:</p>
     <ul>
       {playlistTracks.items.map((item, index) => {
-        return <li
-          className={getColorClassForStatus(item.status)}
-          key={index}
-        >
-          {item.title} by {item.artists.join(', ')}
+        return <li className={getColorClassForStatus(item.status)} key={index}>
+          {item.title} - {item.artists.join(', ')}
         </li>
       })}
     </ul>
