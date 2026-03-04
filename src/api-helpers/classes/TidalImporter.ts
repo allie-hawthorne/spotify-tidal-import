@@ -49,8 +49,7 @@ export class TidalImporter {
     const response = await tidalApi.POST(`/playlists/{id}/relationships/items`, {
       params: {path: {id: playlistId}},
       body: {
-        // TODO: try to remove typecast?
-        data: trackIds.map(id => ({id, type: 'tracks' as 'tracks'}))
+        data: trackIds.map(id => ({id, type: 'tracks' as const}))
       }
     });
     if (response.response.status === 429) {
