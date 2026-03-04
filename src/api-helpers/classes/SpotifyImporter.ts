@@ -1,16 +1,23 @@
-import type { Playlist } from "../../pages/Playlists/Playlists";
+import type { Playlist, PlaylistWithItems } from "../../pages/Playlists/Playlists";
 import { spotifyApi } from "../spotify";
 
 export class SpotifyImporter {
   constructor() {}
 
-  getTracksFromPlaylists = async (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
+  getTracksFromPlaylists = async (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]): Promise<PlaylistWithItems[]> => {
     const selectedSpotifyPlaylists = spotifyPlaylists.filter(p => selectedPlaylists.some(sp => sp.id === p.id));
 
     // TODO: should probably protect against rate limiting but spotify's is super high
     const playlistTracksRes = await Promise.all(selectedSpotifyPlaylists.map(p => spotifyApi.playlists.getPlaylistItems(p.id)));
-    // For some reason the response doesn't include the playlist name, so we're using the index
-    const playlistTracks = playlistTracksRes.map(({items}, i) => ({name: selectedSpotifyPlaylists[i].name, items: items.map(({track}) => ({title: track.name, artists: track.artists.map(a => a.name)}))}));
-    return playlistTracks;
+
+    const updatedPlaylists: PlaylistWithItems[] = selectedSpotifyPlaylists.map((_, i) => {
+      const items = playlistTracksRes[i].items;
+      return {
+        ...selectedSpotifyPlaylists[i],
+        items: items.map(({track}) => ({title: track.name, artists: track.artists.map(a => a.name)}))
+      };
+    });
+
+    return updatedPlaylists;
   };
 }

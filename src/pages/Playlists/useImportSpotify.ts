@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import { chunk } from "lodash";
-import type { Playlist } from "./Playlists";
+import type { Playlist, PlaylistWithItems } from "./Playlists";
 import { SpotifyImporter } from "../../api-helpers/classes/SpotifyImporter";
 import { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 
@@ -17,7 +17,8 @@ const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): 
   return result;
 }
 
-export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[]) => {
+export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists: Playlist[], setShowImportStatus: Dispatch<SetStateAction<boolean>>) => {
+  const [allPlaylists, setAllPlaylists] = useState<PlaylistWithItems[]>([]);
   const [currentPlaylists, setCurrentPlaylists] = useState<string[]>([]);
   const [currentTracks, setCurrentTracks] = useState<string[]>([]);
   
@@ -25,7 +26,10 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
     const spotify = new SpotifyImporter();
     const tidal = new TidalImporter();
 
+    setShowImportStatus(true);
+    
     const playlistTracks = await spotify.getTracksFromPlaylists(spotifyPlaylists, selectedPlaylists);
+    setAllPlaylists(playlistTracks);
 
     console.log('Playlists to import from Spotify:', playlistTracks);
     
@@ -64,8 +68,9 @@ export const useImportSpotify = (spotifyPlaylists: Playlist[], selectedPlaylists
           }
         }
       }));
+      setShowImportStatus(false);
     };
-  }, [spotifyPlaylists, selectedPlaylists]);
+  }, [spotifyPlaylists, selectedPlaylists, setShowImportStatus]);
   
-  return { onImportClick, currentPlaylists, currentTracks };
-}
+  return { onImportClick, currentPlaylists, currentTracks, allPlaylists };
+};
