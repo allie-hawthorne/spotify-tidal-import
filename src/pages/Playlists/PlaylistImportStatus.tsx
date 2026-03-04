@@ -1,9 +1,20 @@
-import type { Playlist, PlaylistWithTracks } from "../../types";
+import { ImportStatus, type Playlist, type PlaylistForImport } from "../../types";
 import { PlaylistTracksImportStatus } from "./PlaylistTracksImportStatus";
+
+export const getColorClassForStatus = (status?: ImportStatus) => {
+  switch (status) {
+    case ImportStatus.Completed:
+      return 'text-green-500';
+    case ImportStatus.InProgress:
+      return 'text-yellow-500';
+    default:
+      return 'text-gray-500';
+  }
+};
 
 interface PlaylistImportStatusProps {
   selectedPlaylists: Playlist[];
-  allPlaylists: PlaylistWithTracks[];
+  allPlaylists: PlaylistForImport[];
 }
 export const PlaylistImportStatus = ({ selectedPlaylists, allPlaylists }: PlaylistImportStatusProps) => {
   return <>
@@ -13,7 +24,7 @@ export const PlaylistImportStatus = ({ selectedPlaylists, allPlaylists }: Playli
         const thisPlaylistTracks = allPlaylists.find(pl => pl.id === p.id);
 
         return <div key={i} className="border p-2">
-        <p>Playlist: {p.name}</p>
+        <p className={getColorClassForStatus(thisPlaylistTracks?.status)}> {p.name}</p>
         {thisPlaylistTracks
           ? <PlaylistTracksImportStatus playlistTracks={thisPlaylistTracks} />
           : <p>Loading tracks...</p>
