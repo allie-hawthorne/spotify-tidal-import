@@ -18,7 +18,7 @@ const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): 
   return result;
 }
 
-export const useImport = (sourcePlaylists: Playlist[], selectedPlaylists: Playlist[], setShowImportStatus: Dispatch<SetStateAction<boolean>>) => {
+export const useImport = (sourcePlaylists: Playlist[], setShowImportStatus: Dispatch<SetStateAction<boolean>>) => {
   const { allPlaylists, addAllPlaylists, markPlaylistCompleted, updatePlaylistStatus, updateTrackStatus } = useImportStatusManager();
 
   const onImportClick = useCallback(async () => {
@@ -28,7 +28,7 @@ export const useImport = (sourcePlaylists: Playlist[], selectedPlaylists: Playli
     // TODO: maybe just have UI be dependent on import status?
     setShowImportStatus(true);
     
-    const playlistTracks = await spotify.getTracksFromPlaylists(sourcePlaylists, selectedPlaylists);
+    const playlistTracks = await spotify.getTracksFromPlaylists(sourcePlaylists);
     addAllPlaylists(playlistTracks);
 
     // console.log('Playlists to import from Spotify:', playlistTracks);
@@ -70,7 +70,7 @@ export const useImport = (sourcePlaylists: Playlist[], selectedPlaylists: Playli
       }));
     };
     setShowImportStatus(false);
-  }, [sourcePlaylists, selectedPlaylists, setShowImportStatus]);
+  }, [sourcePlaylists, setShowImportStatus]);
   
   return { onImportClick, allPlaylists };
 };

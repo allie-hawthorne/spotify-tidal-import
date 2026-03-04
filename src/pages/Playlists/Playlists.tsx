@@ -15,7 +15,7 @@ export const Home = () => {
   const [importSource, setImportSource] = useState<Service>();
   const [showImportStatus, setShowImportStatus] = useState(false);
 
-  const { onImportClick, allPlaylists } = useImport(spotifyPlaylists, selectedPlaylists, setShowImportStatus);
+  const { onImportClick, allPlaylists } = useImport(spotifyPlaylists, setShowImportStatus);
 
   useEffect(() => {
     getSpotifyPlaylists().then(setSpotifyPlaylists)
