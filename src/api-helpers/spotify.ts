@@ -1,5 +1,6 @@
 import { SpotifyApi, type SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
 import type { Playlist } from '../types';
+import { TIDAL_PLACEHOLDER_IMAGE_URL } from './tidal';
 
 const SPOTIFY_CLIENT_ID = '2211a17ab92042db90b6e94f3dcb3988';
 const SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5500/spotify/';
@@ -9,7 +10,8 @@ export const spotifyApi = SpotifyApi.withUserAuthorization(SPOTIFY_CLIENT_ID, SP
   id: playlist.id,
   name: playlist.name,
   description: playlist.description,
-  trackCount: playlist.tracks?.total ?? 0
+  trackCount: playlist.tracks?.total ?? 0,
+  imageUrl: playlist.images?.[0]?.url ?? TIDAL_PLACEHOLDER_IMAGE_URL
 });
 
 export const getSpotifyPlaylists = async () => {

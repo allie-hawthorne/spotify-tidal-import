@@ -23,6 +23,10 @@ export const PlaylistContainer = ({ playlists, provider, selectedPlaylists, onSe
         {playlists.map(playlist => (
           <li className={`hover:opacity-60 cursor-pointer ${getSelectedStyle(playlist)}`} key={playlist.id} onClick={() => onClick(playlist.id)}>
             <div className="flex justify-between items-center">
+              {playlist.imageUrl
+                ? <img className="w-12 h-12 object-cover rounded-md mr-2" src={playlist.imageUrl} alt={`${playlist.name} cover art`} />
+                : <div className="w-12 h-12 bg-gray-300 rounded-md mr-2" />
+              }
               <div>
                 <p>{playlist.name}</p>
                 <p className="text-xs opacity-70">{decode(playlist.description)}</p>

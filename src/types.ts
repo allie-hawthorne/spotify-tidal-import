@@ -16,6 +16,7 @@ export interface Playlist {
   name: string;
   description: string;
   trackCount: number;
+  imageUrl: string;
 }
 export interface PlaylistForImport extends Playlist {
   items: TrackForImport[];
