@@ -3,7 +3,7 @@ import { spotifyApi } from './api-helpers/spotify';
 import { checkIfTidalAuthed } from './api-helpers/tidal';
 import { SpotifyLoginButton } from './components/SpotifyLoginButton';
 import { TidalLoginButton } from './components/TidalLoginButton';
-import { Home } from './pages/Playlists/Playlists';
+import { Playlists } from './pages/Playlists/Playlists';
 
 export const AuthBarrier = () => {
   const [spotifyAuthed, setSpotifyAuthed] = useState(false);
@@ -18,7 +18,7 @@ export const AuthBarrier = () => {
       .catch(console.error);
   }, []);
 
-  if (spotifyAuthed && tidalAuthed) return <Home />;
+  if (spotifyAuthed && tidalAuthed) return <Playlists />;
 
   return <div className='flex flex-col gap-2'>
     {spotifyAuthed || <SpotifyLoginButton />}

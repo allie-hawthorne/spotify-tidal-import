@@ -8,7 +8,7 @@ import { useImport } from "./useImportSpotify";
 import { PlaylistImportStatus } from "./PlaylistImportStatus";
 import type { Playlist } from "../../types";
 
-export const Home = () => {
+export const Playlists = () => {
   const [spotifyPlaylists, setSpotifyPlaylists] = useState<Playlist[]>([]);
   const [tidalPlaylists, setTidalPlaylists] = useState<Playlist[]>([]);
   const [selectedPlaylists, setSelectedPlaylists] = useState<Playlist[]>([]);
