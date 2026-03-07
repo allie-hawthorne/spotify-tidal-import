@@ -14,7 +14,6 @@ export interface TrackForImport extends Track {
 export interface Playlist {
   id: string;
   name: string;
-  description: string;
   trackCount: number;
   imageUrl: string;
 }

@@ -40,7 +40,6 @@ type TidalPlaylistType = NonNullable<TidalGETPlaylistsResponse['data']>['data'][
 const mapTidalPlaylistToPlaylist = (playlist: TidalPlaylistType, imageUrl: string | undefined): Playlist => ({
   id: playlist.id,
   name: playlist.attributes?.name ?? '',
-  description: playlist.attributes?.description ?? '',
   trackCount: playlist.attributes?.numberOfItems ?? 0,
   imageUrl: imageUrl ?? TIDAL_PLACEHOLDER_IMAGE_URL
 });

@@ -1,4 +1,3 @@
-import { decode } from 'he';
 import type { Service } from "../../components/LoginButton";
 import type { Playlist } from '../../types';
 
@@ -29,7 +28,6 @@ export const PlaylistContainer = ({ playlists, provider, selectedPlaylists, onSe
               }
               <div>
                 <p>{playlist.name}</p>
-                <p className="text-xs opacity-70">{decode(playlist.description)}</p>
               </div>
               <p className="text-xs opacity-70">{playlist.trackCount ? `${playlist.trackCount}` : 'No'} tracks</p>
             </div>

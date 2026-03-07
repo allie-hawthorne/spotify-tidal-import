@@ -9,7 +9,6 @@ export const spotifyApi = SpotifyApi.withUserAuthorization(SPOTIFY_CLIENT_ID, SP
  const mapSpotifyPlaylistToPlaylist = (playlist: SimplifiedPlaylist): Playlist => ({
   id: playlist.id,
   name: playlist.name,
-  description: playlist.description,
   trackCount: playlist.tracks?.total ?? 0,
   imageUrl: playlist.images?.[0]?.url ?? TIDAL_PLACEHOLDER_IMAGE_URL
 });
