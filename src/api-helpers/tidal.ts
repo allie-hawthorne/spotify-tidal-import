@@ -4,7 +4,7 @@ import type { Playlist } from '../types';
 import { keyBy } from 'lodash';
 
 
-const TIDAL_API_KEY = 'TDiZl2ekSxNNwrYL';
+const TIDAL_API_KEY = 'OPapoZjLFp4nJoEM';
 const TIDAL_REDIRECT_URI = 'http://127.0.0.1:5500/tidal/';
 // Use this as placeholder image everywhere to ensure consistency
 export const TIDAL_PLACEHOLDER_IMAGE_URL = 'https://resources.tidal.com/images/e9448a9a/3ade/4f79/93d2/12e6d8d4b2eb/160x160.jpg'
