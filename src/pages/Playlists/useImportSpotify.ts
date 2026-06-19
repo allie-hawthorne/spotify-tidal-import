@@ -66,7 +66,7 @@ export const useImport = (sourcePlaylists: Playlist[], setShowImportStatus: Disp
       }));
     };
     setShowImportStatus(false);
-  }, [sourcePlaylists, setShowImportStatus]);
+  }, [addAllPlaylists, markPlaylistCompleted, setShowImportStatus, sourcePlaylists, updatePlaylistStatus, updateTrackStatus]);
   
   return { onImportClick, allPlaylists };
 };
