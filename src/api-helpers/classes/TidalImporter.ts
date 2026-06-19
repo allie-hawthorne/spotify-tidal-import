@@ -56,10 +56,17 @@ export class TidalImporter {
       console.warn('Rate limited by Tidal API when adding tracks to playlist:', playlistId);
       return 429;
     }
-    if (response.response.status !== 201) {
+    if (!response.response.ok) {
       console.error('Error adding tracks to playlist on Tidal:', playlistId, response);
       return false;
     }
     return true;
   };
 }
+
+// Allie: before i forget it might be cool to try to make use of others' code/software. 
+// https://github.com/spotify2tidal/spotify_to_tidal
+// https://www.tunemymusic.com - "ISRC/title/artist, de-duping, order preservation, edge-case handling"
+// https://freeyourmusic.com
+// https://musicapi.com
+// MusicBrainz
