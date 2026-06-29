@@ -1,20 +1,10 @@
-import { useEffect, useState } from "react";
-import { getSpotifySavedArtists } from "../../api-helpers/spotify";
-import type { Artist } from "@spotify/web-api-ts-sdk";
+import { useSpotify } from "../../api-helpers/SpotifyContext"
 
 export const AllArtists = () => {
-  const [spotifyArtists, setSpotifyArtists] = useState<Artist[]>();
-  const [loading, setLoading] = useState(true);
+  const {artists, artistsLoading} = useSpotify()
+    
+  if (artistsLoading) return <p>loading followed artists...</p>
+  if (!artists) return <p>We couldn't get your artists</p>
 
-  useEffect(() => {
-    getSpotifySavedArtists().then(p => {
-      setSpotifyArtists(p);
-      setLoading(false);
-    })
-  }, []);
-
-  if (loading) return <p>loading followed artists...</p>
-  if (!spotifyArtists) return <p>We couldn't get your artists</p>
-
-  return <p>Import {spotifyArtists.length} followed artists</p>
+  return <p>Import {artists.length} followed artists</p>
 }
