@@ -12,7 +12,7 @@ export const TIDAL_PLACEHOLDER_IMAGE_URL = 'https://resources.tidal.com/images/e
 const tidalParams = {
   clientId: TIDAL_API_KEY,
   credentialsStorageKey: 'authorisationCode',
-  scopes: ['user.read', 'playlists.read', 'playlists.write'], 
+  scopes: ['collection.read', 'collection.write', 'playlists.read', 'playlists.write', 'user.read'], 
 };
 
 export const tidalApi = createAPIClient(credentialsProvider);
@@ -35,7 +35,7 @@ export const authenticateTidal = async () => {
   window.open(loginUrl, '_self');
 }
 
-type TidalGETPlaylistsResponse = Awaited<ReturnType<typeof tidalApi.GET<'/playlists', {}>>>
+type TidalGETPlaylistsResponse = Awaited<ReturnType<typeof tidalApi.GET<'/playlists', object>>>
 type TidalPlaylistType = NonNullable<TidalGETPlaylistsResponse['data']>['data'][number];
 const mapTidalPlaylistToPlaylist = (playlist: TidalPlaylistType, imageUrl: string | undefined): Playlist => ({
   id: playlist.id,
