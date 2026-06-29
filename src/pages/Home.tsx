@@ -1,26 +1,29 @@
-import { useState } from "react";
-import { Playlists } from "./Playlists/Playlists";
+import { AllArtists } from "./EasyImport/AllArtists"
+import { AllPlaylists } from "./EasyImport/AllPlaylists"
 
 // Order Matters!
-const PageMap = [
-  {name: 'Albums', component: null},
-  {name: 'Playlists', component: <Playlists />},
-] as const
+// const PageMap = [
+//   {name: 'Playlists', component: <Playlists />},
+//   {name: 'Albums', component: null},
+// ] as const
 
 export const Home = () => {
-  const [pageIndex, setPageIndex] = useState(1);
-
   return <div className="flex flex-col gap-2">
     <div className="flex gap-2 justify-center">
-      {PageMap.map(({name}, i) => <>
+      {/* TODO: Add import from dropdown etc */}
+      <div>
+        <AllPlaylists />
+        <AllArtists />
+      </div>
+      {/* {PageMap.map(({name}, i) => <>
         <button className={`${i === pageIndex && 'text-violet-400'} cursor-pointer`}
           key={i}
           onClick={() => setPageIndex(i)}
         >
           {name}
         </button>
-      </>)}
+      </>)} */}
     </div>
-    {PageMap[pageIndex].component}
+    {/* {PageMap[pageIndex].component} */}
   </div>
 }
