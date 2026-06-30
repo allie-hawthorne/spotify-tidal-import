@@ -1,4 +1,4 @@
-import { SpotifyApi, type Artist, type SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
+import { SpotifyApi, type Artist, type SavedAlbum, type SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
 import type { Playlist } from '../types';
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from './tidal';
 
@@ -30,6 +30,23 @@ export const getSpotifySavedArtists = async () => {
     // @ts-expect-error - Cursor is in the object but not in the type for some reason
     after = artists.cursors.after;
   } while (after)
+
+  return allArtists;
+}
+
+export const getSpotifySavedAlbums = async () => {
+  // TODO: get user id from spotify api instead of hardcoding it
+  const allArtists: SavedAlbum[] = []
+  let offset = 0;
+  // TODO: is there a better variable to use?
+  let next = '';
+  do {
+    const albums = await spotifyApi.currentUser.albums.savedAlbums(undefined, offset);
+    allArtists.push(...albums.items);
+
+    offset += albums.limit;
+    next = albums.next ?? '';
+  } while (next);
 
   return allArtists;
 }

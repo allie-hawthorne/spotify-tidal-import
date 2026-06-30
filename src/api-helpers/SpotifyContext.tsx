@@ -1,15 +1,19 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import type { Playlist } from "../types";
-import type { Artist } from "@spotify/web-api-ts-sdk";
-import { getSpotifyPlaylists, getSpotifySavedArtists } from "./spotify";
+import type { Artist, SavedAlbum } from "@spotify/web-api-ts-sdk";
+import { getSpotifyPlaylists, getSpotifySavedAlbums, getSpotifySavedArtists } from "./spotify";
 
 interface SpotifyContext {
+  albums: SavedAlbum[]
+  albumsLoading: boolean
   artists: Artist[]
-  playlists: Playlist[]
   artistsLoading: boolean
+  playlists: Playlist[]
   playlistsLoading: boolean
 }
 const context = createContext<SpotifyContext>({
+  albums: [],
+  albumsLoading: false,
   artists: [],
   artistsLoading: false,
   playlists: [],
@@ -17,6 +21,8 @@ const context = createContext<SpotifyContext>({
 })
 
 export const SpotifyProvider = ({children}: PropsWithChildren) => {
+  const [albums, setAlbums] = useState<SavedAlbum[]>([]);
+  const [albumsLoading, setAlbumsLoading] = useState(true);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artistsLoading, setArtistsLoading] = useState(true);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -35,8 +41,22 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
       setArtistsLoading(false);
     })
   }, []);
+
+  useEffect(() => {
+    getSpotifySavedAlbums().then(a => {
+      setAlbums(a);
+      setAlbumsLoading(false);
+    })
+  }, []);
   
-  return <context.Provider value={{artists, artistsLoading, playlists, playlistsLoading}}>
+  return <context.Provider value={{
+    albums,
+    albumsLoading,
+    artists,
+    artistsLoading,
+    playlists,
+    playlistsLoading
+  }}>
     {children}
   </context.Provider>
 };
