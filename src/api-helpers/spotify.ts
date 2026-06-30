@@ -20,7 +20,6 @@ export const getSpotifyPlaylists = async () => {
 }
 
 export const getSpotifySavedArtists = async () => {
-  // TODO: get user id from spotify api instead of hardcoding it
   const allArtists: Artist[] = []
   let after: string | undefined = undefined;
   do {
@@ -35,10 +34,8 @@ export const getSpotifySavedArtists = async () => {
 }
 
 export const getSpotifySavedAlbums = async () => {
-  // TODO: get user id from spotify api instead of hardcoding it
   const allAlbums: SavedAlbum[] = []
   let offset = 0;
-  // TODO: is there a better variable to use?
   let next = '';
   do {
     const albums = await spotifyApi.currentUser.albums.savedAlbums(50, offset);
@@ -52,10 +49,8 @@ export const getSpotifySavedAlbums = async () => {
 }
 
 export const getSpotifySavedTracks = async () => {
-  // TODO: get user id from spotify api instead of hardcoding it
   const allTracks: SavedTrack[] = []
   let offset = 0;
-  // TODO: is there a better variable to use?
   let next = '';
   do {
     const tracks = await spotifyApi.currentUser.tracks.savedTracks(50, offset);
