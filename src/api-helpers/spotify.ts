@@ -1,4 +1,4 @@
-import { SpotifyApi, type Artist, type SavedAlbum, type SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
+import { SpotifyApi, type Artist, type SavedAlbum, type SavedTrack, type SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
 import type { Playlist } from '../types';
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from './tidal';
 
@@ -36,17 +36,34 @@ export const getSpotifySavedArtists = async () => {
 
 export const getSpotifySavedAlbums = async () => {
   // TODO: get user id from spotify api instead of hardcoding it
-  const allArtists: SavedAlbum[] = []
+  const allAlbums: SavedAlbum[] = []
   let offset = 0;
   // TODO: is there a better variable to use?
   let next = '';
   do {
-    const albums = await spotifyApi.currentUser.albums.savedAlbums(undefined, offset);
-    allArtists.push(...albums.items);
+    const albums = await spotifyApi.currentUser.albums.savedAlbums(50, offset);
+    allAlbums.push(...albums.items);
 
     offset += albums.limit;
     next = albums.next ?? '';
   } while (next);
 
-  return allArtists;
+  return allAlbums;
+}
+
+export const getSpotifySavedTracks = async () => {
+  // TODO: get user id from spotify api instead of hardcoding it
+  const allTracks: SavedTrack[] = []
+  let offset = 0;
+  // TODO: is there a better variable to use?
+  let next = '';
+  do {
+    const tracks = await spotifyApi.currentUser.tracks.savedTracks(50, offset);
+    allTracks.push(...tracks.items);
+
+    offset += tracks.limit;
+    next = tracks.next ?? '';
+  } while (next);
+
+  return allTracks;
 }
