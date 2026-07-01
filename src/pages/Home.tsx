@@ -4,7 +4,7 @@ import { ImportButton } from "../components/ImportButton";
 import { AllAlbums } from "./EasyImport/AllAlbums";
 import { AllTracks } from "./EasyImport/AllTracks";
 import { AllPlaylists } from "./EasyImport/AllPlaylists";
-import { useEasyImport } from "./EasyImport/useEasyImport";
+import { useEasyImport } from "./EasyImport/useImport";
 
 export const Home = () => {
   const [importAlbums, setImportAlbums] = useState(true);

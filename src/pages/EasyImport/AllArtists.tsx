@@ -1,5 +1,5 @@
 import { useSpotify } from "../../api-helpers/SpotifyContext"
-import type { MinArtist } from "./useEasyImport"
+import type { MinArtist } from "./useImport"
 
 export const AllArtists = ({succeededArtists}: {succeededArtists: MinArtist[]}) => {
   const {artists, artistsLoading} = useSpotify()
