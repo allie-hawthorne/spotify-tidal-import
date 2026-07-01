@@ -23,7 +23,7 @@ export const getSpotifySavedArtists = async () => {
   const allArtists: Artist[] = []
   let after: string | undefined = undefined;
   do {
-    const {artists} = await spotifyApi.currentUser.followedArtists(after);
+    const {artists} = await spotifyApi.currentUser.followedArtists(after, 50);
     allArtists.push(...artists.items);
 
     // @ts-expect-error - Cursor is in the object but not in the type for some reason
