@@ -64,7 +64,7 @@ export class TidalImporter {
   }
 
   addArtist = async (id: string) => {
-    const response = await tidalApi.POST(`/userCollectionArtists/{id}/relationships/items`, {params: {path: {id}}});
+    const response = await tidalApi.POST(`/userCollectionArtists/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data: [{id, type: 'artists'}]}});
     if (response.response.status === 429) {
       console.warn('Rate limited by Tidal API when adding artist:', id);
       return 429;
