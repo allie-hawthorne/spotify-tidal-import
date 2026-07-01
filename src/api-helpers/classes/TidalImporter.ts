@@ -63,6 +63,44 @@ export class TidalImporter {
     return searchResults.data.data?.map(d => searchResults.data.included?.find(a => a.id === d.id))
   }
 
+  searchForAlbum = async (albumStr: string, artistStr: string) => {
+    const encodedQuery = `${artistStr} ${albumStr}`.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
+
+    const {response, error, data: searchResults} = await tidalApi.GET('/searchResults/{id}', {
+      params: {path: {id: encodedQuery}, query: {include: ['albums', 'albums.artists']}}
+    });
+
+    if (response.status === 429) return 429;
+    
+    if (error) {
+      console.error('ERROR:', error)
+      return;
+    }
+
+    console.log(searchResults);
+    
+    // This is sorted by relevance
+    const orderedAlbums = searchResults.data.relationships?.albums.data;
+
+    const orderedAlbumsWithArtists = orderedAlbums?.map(minAlbum => {
+      const album = searchResults.included?.find(a => a.id === minAlbum.id);
+
+      if (!album?.attributes || !("albumType" in album.attributes)) return;
+
+      const relationships = album && "relationships" in album ? album.relationships : undefined;
+
+      const minArtists = relationships && "artists" in relationships ? relationships.artists.data : undefined;
+
+      const artists = minArtists?.flatMap(minArtist => searchResults.included?.filter(a => a.id === minArtist.id));
+      
+      return {...album, artists};
+    });
+
+    console.log("Ordered albums with artists:", orderedAlbumsWithArtists);
+    
+    return orderedAlbumsWithArtists;
+  }
+
   addArtist = async (id: string) => {
     const response = await tidalApi.POST(`/userCollectionArtists/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data: [{id, type: 'artists'}]}});
     if (response.response.status === 429) {

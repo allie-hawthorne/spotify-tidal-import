@@ -12,7 +12,7 @@ export const Home = () => {
   const [importPlaylists, setImportPlaylists] = useState(true);
   const [importTracks, setImportTracks] = useState(true);
 
-  const {onImportClick, succeededArtists, erroredArtists} = useEasyImport(importArtists);
+  const {onImportClick, succeededArtists, erroredArtists} = useEasyImport(importAlbums, importArtists);
   
   return <div className="flex gap-2 flex-col">
     {/* TODO: Add import from dropdown etc */}
@@ -26,7 +26,7 @@ export const Home = () => {
     </ItemWrapper>
     {!!erroredArtists.length && <div className="text-red-500 text-sm">
       <p>{erroredArtists.length} artist(s) not added:</p>
-      <ul>{erroredArtists.map(a => <li key={a.id}>{a.name}</li>)}</ul>
+      <ul>{erroredArtists.map(a => <li key={a.id}>{a.artistName}</li>)}</ul>
     </div>}
     <ItemWrapper onClick={() => setImportAlbums(!importAlbums)}>
       <input type="checkbox" checked={importAlbums} />
