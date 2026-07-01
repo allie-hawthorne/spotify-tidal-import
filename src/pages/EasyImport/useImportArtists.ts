@@ -8,8 +8,7 @@ export const useImportArtists = () => {
   const {artists} = useSpotify();
 
   const [succeededArtists, setSucceededArtists] = useState<MinArtist[]>([]);
-  const [erroredArtists, setErroredArtists] = useState<MinArtist[]>([{id: '', name: 'test'}]);
-
+  const [erroredArtists, setErroredArtists] = useState<MinArtist[]>([]);
 
   const importArtists = async (importer: TidalImporter) => {
     for (const {name: spotifyName} of artists) {
