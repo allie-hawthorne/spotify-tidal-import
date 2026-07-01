@@ -1,20 +1,42 @@
 import { useState, type HTMLAttributes, type PropsWithChildren } from "react";
 import { AllArtists } from "./EasyImport/AllArtists"
-import { AllPlaylists } from "./EasyImport/AllPlaylists"
-import { AllAlbums } from "./EasyImport/AllAlbums";
-import { AllTracks } from "./EasyImport/AllTracks";
+import { ImportButton } from "../components/ImportButton";
+import { useSpotify } from "../api-helpers/SpotifyContext";
+import { TidalImporter } from "../api-helpers/classes/TidalImporter";
+import { performRateLimitedRequest } from "./Playlists/useImportSpotify";
+
+const symbolRegex = /[`~!@#$£€%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi;
 
 export const Home = () => {
+  const {artists} = useSpotify();
+  
   const [importAlbums, setImportAlbums] = useState(true);
   const [importArtists, setImportArtists] = useState(true);
   const [importPlaylists, setImportPlaylists] = useState(true);
   const [importTracks, setImportTracks] = useState(true);
 
+  const onImportClick = async () => {    
+    for (const {name: spotifyName} of artists) {
+      const searchResults = await performRateLimitedRequest(() => new TidalImporter().searchForArtist(spotifyName));
+
+      // @ts-expect-error - name does exist
+      const tidalArtists = searchResults?.map(a => ({id: a?.id ?? '', name: a.attributes?.name as string})) ?? [];
+
+      if (!tidalArtists) {
+        console.log("No result on Tidal - Spotify:", spotifyName);
+        return;
+      }
+
+      const matchedArtist = matchArtistNames(spotifyName, tidalArtists);
+      console.log("Spotify:", spotifyName, "Tidal:", matchedArtist?.name ?? "No match");
+    }
+  }
+
   return <div className="flex gap-2 flex-col">
     {/* TODO: Add import from dropdown etc */}
     <ItemWrapper onClick={() => setImportPlaylists(!importPlaylists)}>
       <input type="checkbox" checked={importPlaylists} />
-      <AllPlaylists />
+      {/* <AllPlaylists /> */}
     </ItemWrapper>
     <ItemWrapper onClick={() => setImportArtists(!importArtists)}>
       <input type="checkbox" checked={importArtists} />
@@ -22,12 +44,13 @@ export const Home = () => {
     </ItemWrapper>
     <ItemWrapper onClick={() => setImportAlbums(!importAlbums)}>
       <input type="checkbox" checked={importAlbums} />
-      <AllAlbums />
+      {/* <AllAlbums /> */}
     </ItemWrapper>
     <ItemWrapper onClick={() => setImportTracks(!importTracks)}>
       <input type="checkbox" checked={importTracks} />
-      <AllTracks />
+      {/* <AllTracks /> */}
     </ItemWrapper>
+    <ImportButton onClick={onImportClick} />
   </div>
 }
 
@@ -35,4 +58,16 @@ const ItemWrapper = ({children, ...props}: PropsWithChildren<HTMLAttributes<HTML
   return <div className="flex gap-2 touch-none cursor-pointer" {...props}>
     {children}
   </div>
+}
+
+// TODO: This is good, but we want to prioritise exact matches over all results, not just the first one
+const matchArtistNames = (spotifyName: string, tidalArtists: {id: string, name: string}[]) => {
+  for (const tidalArtist of tidalArtists) {
+    let tidalName = tidalArtist.name;
+    if (spotifyName === tidalName) return tidalArtist;
+    tidalName = tidalName.toLocaleUpperCase();
+    if (spotifyName.toLocaleUpperCase() === tidalName.toLocaleUpperCase()) return tidalArtist;
+    tidalName = tidalName.replace(symbolRegex, '');
+    if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName.toLocaleUpperCase().replace(symbolRegex, '')) return tidalArtist;
+  }
 }

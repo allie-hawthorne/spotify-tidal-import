@@ -8,7 +8,7 @@ import { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 const PLAYLISTS_CHUNK_SIZE = 2;
 const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time
 
-const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): Promise<T> => {
+export const performRateLimitedRequest = async <T>(requestFn: () => Promise<T | 429>): Promise<T> => {
   let result: Awaited<ReturnType<typeof requestFn>>;
   do {
     result = await requestFn();

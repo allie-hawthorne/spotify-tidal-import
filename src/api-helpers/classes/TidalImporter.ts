@@ -45,6 +45,37 @@ export class TidalImporter {
     return track;
   };
 
+  searchForArtist = async (artistStr: string) => {
+    const encodedQuery = artistStr.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
+
+    // This is good, we can use the include above to get track name
+    const searchResults = await tidalApi.GET('/searchResults/{id}/relationships/artists', {
+      params: {path: {id: encodedQuery}, query: {include: ['artists']}}
+    });
+
+    if (searchResults.response.status === 429) return 429;
+    
+    if (searchResults.error) {
+      console.error('ERROR:', searchResults.error)
+      return;
+    }
+    
+    return searchResults.data.data?.map(d => searchResults.data.included?.find(a => a.id === d.id))
+  }
+
+  addArtist = async (id: string) => {
+    const response = await tidalApi.POST(`/userCollectionArtists/{id}/relationships/items`, {params: {path: {id}}});
+    if (response.response.status === 429) {
+      console.warn('Rate limited by Tidal API when adding artist:', id);
+      return 429;
+    }
+    if (!response.response.ok) {
+      console.error('Error adding artist on Tidal:', id, response);
+      return false;
+    }
+    return true;
+  }
+
   addToPlaylist = async (playlistId: string, trackIds: string[]) => {
     const response = await tidalApi.POST(`/playlists/{id}/relationships/items`, {
       params: {path: {id: playlistId}},
