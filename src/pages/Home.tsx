@@ -60,14 +60,20 @@ const ItemWrapper = ({children, ...props}: PropsWithChildren<HTMLAttributes<HTML
   </div>
 }
 
-// TODO: This is good, but we want to prioritise exact matches over all results, not just the first one
+// TODO: can probably improve but the array length is like 10 max, and it early returns
+// we're doing three loops because we want to prioritise matching names rather than array index
 const matchArtistNames = (spotifyName: string, tidalArtists: {id: string, name: string}[]) => {
   for (const tidalArtist of tidalArtists) {
-    let tidalName = tidalArtist.name;
+    const tidalName = tidalArtist.name;
     if (spotifyName === tidalName) return tidalArtist;
-    tidalName = tidalName.toLocaleUpperCase();
-    if (spotifyName.toLocaleUpperCase() === tidalName.toLocaleUpperCase()) return tidalArtist;
-    tidalName = tidalName.replace(symbolRegex, '');
-    if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName.toLocaleUpperCase().replace(symbolRegex, '')) return tidalArtist;
   }
+  for (const tidalArtist of tidalArtists) {
+    const tidalName = tidalArtist.name.toLocaleUpperCase();
+    if (spotifyName.toLocaleUpperCase() === tidalName) return tidalArtist;
+  }
+    for (const tidalArtist of tidalArtists) {
+    const tidalName = tidalArtist.name.toLocaleUpperCase().replace(symbolRegex, '');
+    if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName) return tidalArtist;
+  }
+
 }
