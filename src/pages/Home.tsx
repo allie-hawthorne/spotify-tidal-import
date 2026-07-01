@@ -4,8 +4,16 @@ import { ImportButton } from "../components/ImportButton";
 import { useSpotify } from "../api-helpers/SpotifyContext";
 import { TidalImporter } from "../api-helpers/classes/TidalImporter";
 import { performRateLimitedRequest } from "./Playlists/useImportSpotify";
+import { AllAlbums } from "./EasyImport/AllAlbums";
+import { AllTracks } from "./EasyImport/AllTracks";
+import { AllPlaylists } from "./EasyImport/AllPlaylists";
 
 const symbolRegex = /[`~!@#$£€%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi;
+
+interface MinArtist {
+  id: string,
+  name: string,
+}
 
 export const Home = () => {
   const {artists} = useSpotify();
@@ -15,12 +23,16 @@ export const Home = () => {
   const [importPlaylists, setImportPlaylists] = useState(true);
   const [importTracks, setImportTracks] = useState(true);
 
+  const [successfullyImportedCount, setSuccessfullyImportedCount] = useState(0);
+  const [erroredArtists, setErroredArtists] = useState<MinArtist[]>([{id: '', name: 'test'}]);
+
   const onImportClick = async () => {    
+    const tidal = new TidalImporter();
     for (const {name: spotifyName} of artists) {
-      const searchResults = await performRateLimitedRequest(() => new TidalImporter().searchForArtist(spotifyName));
+      const searchResults = await performRateLimitedRequest(() => tidal.searchForArtist(spotifyName));
 
       // @ts-expect-error - name does exist
-      const tidalArtists = searchResults?.map(a => ({id: a?.id ?? '', name: a.attributes?.name as string})) ?? [];
+      const tidalArtists = searchResults?.map((a): MinArtist => ({id: a?.id ?? '', name: a.attributes?.name as string})) ?? [];
 
       if (!tidalArtists) {
         console.log("No result on Tidal - Spotify:", spotifyName);
@@ -28,7 +40,22 @@ export const Home = () => {
       }
 
       const matchedArtist = matchArtistNames(spotifyName, tidalArtists);
-      console.log("Spotify:", spotifyName, "Tidal:", matchedArtist?.name ?? "No match");
+
+      if (!matchedArtist) {
+        console.log("No match on Tidal - Spotify:", spotifyName, "Tidal results:", tidalArtists);
+        setErroredArtists(prev => [...prev, {id: '', name: spotifyName}]);
+        continue;
+      }
+
+      const res = await performRateLimitedRequest(() => tidal.addArtist(matchedArtist.id));
+
+      if (!res) {
+        console.log("Error adding artist on Tidal - Spotify:", spotifyName, "Tidal:", matchedArtist.name);
+        setErroredArtists(prev => [...prev, {id: matchedArtist.id, name: spotifyName}]);
+        continue;
+      }
+      console.log(res);
+      setSuccessfullyImportedCount(prev => prev + 1);
     }
   }
 
@@ -36,19 +63,23 @@ export const Home = () => {
     {/* TODO: Add import from dropdown etc */}
     <ItemWrapper onClick={() => setImportPlaylists(!importPlaylists)}>
       <input type="checkbox" checked={importPlaylists} />
-      {/* <AllPlaylists /> */}
+      <AllPlaylists />
     </ItemWrapper>
     <ItemWrapper onClick={() => setImportArtists(!importArtists)}>
       <input type="checkbox" checked={importArtists} />
-      <AllArtists />
+      <AllArtists successfullyImportedCount={successfullyImportedCount} />
     </ItemWrapper>
+    {!!erroredArtists.length && <div className="text-red-500 text-sm">
+      <p>{erroredArtists.length} artist(s) not added:</p>
+      <ul>{erroredArtists.map(a => <li key={a.id}>{a.name}</li>)}</ul>
+    </div>}
     <ItemWrapper onClick={() => setImportAlbums(!importAlbums)}>
       <input type="checkbox" checked={importAlbums} />
-      {/* <AllAlbums /> */}
+      <AllAlbums />
     </ItemWrapper>
     <ItemWrapper onClick={() => setImportTracks(!importTracks)}>
       <input type="checkbox" checked={importTracks} />
-      {/* <AllTracks /> */}
+      <AllTracks />
     </ItemWrapper>
     <ImportButton onClick={onImportClick} />
   </div>
@@ -75,5 +106,4 @@ const matchArtistNames = (spotifyName: string, tidalArtists: {id: string, name: 
     const tidalName = tidalArtist.name.toLocaleUpperCase().replace(symbolRegex, '');
     if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName) return tidalArtist;
   }
-
 }
