@@ -38,10 +38,18 @@ export const useImportAlbums = () => {
 
       if (!matchedAlbum) {
         console.log("No match on Tidal - Spotify:", spotifyAlbumName, "Tidal results:", tidalAlbums);
-        setErroredAlbums(prev => [...prev, {id: '', artistName: spotifyAlbumName, albumName: spotifyAlbumName}]);
+        setErroredAlbums(prev => [...prev, {id: '', artistName: spotifyArtistName, albumName: spotifyAlbumName}]);
         continue;
       }
       
+      const res = await performRateLimitedRequest(() => importer.addAlbum(matchedAlbum.id));
+
+      if (!res) {
+        console.log("Error adding album on Tidal - Spotify:", spotifyAlbumName, "Tidal:", matchedAlbum.artistName);
+        setErroredAlbums(prev => [...prev, {id: matchedAlbum.id, artistName: matchedAlbum.artistName, albumName: matchedAlbum.albumName}]);
+        continue;
+      }
+      console.log(res);
       setSucceededAlbums(prev => [...prev, {id: matchedAlbum.id, artistName: matchedAlbum.artistName, albumName: matchedAlbum.albumName}]);
     }
   }

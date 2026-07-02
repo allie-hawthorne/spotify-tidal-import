@@ -114,6 +114,19 @@ export class TidalImporter {
     return true;
   }
 
+  addAlbum = async (id: string) => {
+    const response = await tidalApi.POST(`/userCollectionAlbums/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data: [{id, type: 'albums'}]}});
+    if (response.response.status === 429) {
+      console.warn('Rate limited by Tidal API when adding album:', id);
+      return 429;
+    }
+    if (!response.response.ok) {
+      console.error('Error adding artist on Tidal:', id, response);
+      return false;
+    }
+    return true;
+  }
+
   addToPlaylist = async (playlistId: string, trackIds: string[]) => {
     const response = await tidalApi.POST(`/playlists/{id}/relationships/items`, {
       params: {path: {id: playlistId}},
