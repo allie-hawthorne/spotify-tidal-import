@@ -27,7 +27,7 @@ export class TidalImporter {
     const encodedQuery = query.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
   
     const searchResults = await tidalApi.GET('/searchResults/{id}/relationships/tracks', {
-      params: {path: {id: encodedQuery}}
+      params: {path: {id: encodedQuery}, query: {include: ['tracks']}},
     });
     if (searchResults.response.status === 429) {
       console.warn('Rate limited by Tidal API when searching for track:', query);
@@ -37,12 +37,11 @@ export class TidalImporter {
       console.error('Error searching for track on Tidal:', query, searchResults);
       return;
     }
-    const track = searchResults.data?.data?.[0];
-    if (!track?.id) {
-      console.warn('No search results for track on Tidal:', query);
-      return;
-    }
-    return track;
+    const tracks = searchResults.data?.data;
+
+    const trackWithData = tracks?.map(track => searchResults.data?.included?.find(a => a.id === track.id));
+    
+    return trackWithData;
   };
 
   searchForArtist = async (artistStr: string) => {
@@ -121,7 +120,20 @@ export class TidalImporter {
       return 429;
     }
     if (!response.response.ok) {
-      console.error('Error adding artist on Tidal:', id, response);
+      console.error('Error adding album on Tidal:', id, response);
+      return false;
+    }
+    return true;
+  }
+
+  addTrack = async (id: string) => {
+    const response = await tidalApi.POST(`/userCollectionTracks/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data: [{id, type: 'tracks'}]}});
+    if (response.response.status === 429) {
+      console.warn('Rate limited by Tidal API when adding track:', id);
+      return 429;
+    }
+    if (!response.response.ok) {
+      console.error('Error adding track on Tidal:', id, response);
       return false;
     }
     return true;

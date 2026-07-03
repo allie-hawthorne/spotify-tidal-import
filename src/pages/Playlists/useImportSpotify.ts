@@ -46,7 +46,9 @@ export const useImport = (sourcePlaylists: Playlist[], setShowImportStatus: Disp
         for (const {id: sourceTrackId, title, artists} of items) {
           updateTrackStatus(sourcePlaylistId, sourceTrackId);
           
-          const destTrack = await performRateLimitedRequest(() => tidal.searchForTrack(title, artists));
+          const destTracks = await performRateLimitedRequest(() => tidal.searchForTrack(title, artists));
+
+          const destTrack = destTracks?.[0];
 
           if (!destTrack) continue;
           destTracksToAdd.push(destTrack.id);

@@ -1,6 +1,7 @@
 import { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { useImportAlbums } from "./useImportAlbums";
 import { useImportArtists } from "./useImportArtists";
+import { useImportTracks } from "./useImportTracks";
 
 export const symbolRegex = /[`~!@#$£€%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi;
 
@@ -10,21 +11,23 @@ export interface MinArtist {
   artistName: string,
 }
 
-// export const useEasyImport = (shouldImportTracks: boolean, shouldImportArtists: boolean, shouldImportAlbums: boolean, shouldImportPlaylists: boolean) => {
-export const useEasyImport = (shouldImportAlbums: boolean, shouldImportArtists: boolean) => {
+export const useEasyImport = (shouldImportTracks: boolean, shouldImportAlbums: boolean, shouldImportArtists: boolean) => {
   const {importArtists, ...restArtists} = useImportArtists();
   const {importAlbums, ...restAlbums} = useImportAlbums();
-    
+  const {importTracks, ...restTracks} = useImportTracks();
+
     const onImportClick = async () => {
       const tidal = new TidalImporter();
       if (shouldImportAlbums) importAlbums(tidal);
       if (shouldImportArtists) importArtists(tidal);
+      if (shouldImportTracks) importTracks(tidal);
     }
 
     return {
       onImportClick,
+      ...restTracks,
+      ...restAlbums,
       ...restArtists,
-      ...restAlbums
     };
 }
 
