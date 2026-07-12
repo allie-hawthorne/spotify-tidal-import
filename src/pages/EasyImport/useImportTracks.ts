@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { performRateLimitedRequest } from "../Playlists/useImportSpotify";
-import { symbolRegex, type MinArtist } from "./useImport";
+import { type MinArtist } from "./useImport";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
+import { matchTrackNames } from "./matching";
 
 export interface MinTrack extends MinArtist {
   trackName: string
@@ -51,22 +52,5 @@ export const useImportTracks = () => {
     importTracks,
     succeededTracks,
     erroredTracks
-  }
-}
-
-// TODO: can probably improve but the array length is like 10 max, and it early returns
-// we're doing three loops because we want to prioritise matching names rather than array index
-export const matchTrackNames = (spotifyName: string, tidalTracks: MinTrack[]) => {
-  for (const tidalTrack of tidalTracks) {
-    const tidalName = tidalTrack.trackName;
-    if (spotifyName === tidalName) return tidalTrack;
-  }
-  for (const tidalTrack of tidalTracks) {
-    const tidalName = tidalTrack.trackName.toLocaleUpperCase();
-    if (spotifyName.toLocaleUpperCase() === tidalName) return tidalTrack;
-  }
-  for (const tidalTrack of tidalTracks) {
-    const tidalName = tidalTrack.trackName.toLocaleUpperCase().replace(symbolRegex, '');
-    if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName) return tidalTrack;
   }
 }

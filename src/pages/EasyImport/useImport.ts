@@ -3,8 +3,6 @@ import { useImportAlbums } from "./useImportAlbums";
 import { useImportArtists } from "./useImportArtists";
 import { useImportTracks } from "./useImportTracks";
 
-export const symbolRegex = /[`~!@#$£€%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi;
-
 // TODO: Rename as also used for albums
 export interface MinArtist {
   id: string,
