@@ -4,49 +4,38 @@ import type { MinTrack } from "./useImportTracks";
 
 export const symbolRegex = /[`~!@#$£€%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi;
 
-// can probably improve but the array length is like 10 max, and it early returns
+const normalizeName = (name: string) => name.toLocaleUpperCase().replace(symbolRegex, '');
+
+// could improve but the array length is like 10 max, and it early returns
 // we're doing three loops because we want to prioritise matching names rather than array index
-export const matchTrackNames = (spotifyName: string, tidalTracks: MinTrack[]) => {
-  for (const tidalTrack of tidalTracks) {
-    const tidalName = tidalTrack.trackName;
-    if (spotifyName === tidalName) return tidalTrack;
+const matchByName = <T>(spotifyName: string, items: T[], getName: (item: T) => string): T | undefined => {
+  const normalizedSpotify = normalizeName(spotifyName);
+  const upperSpotify = spotifyName.toLocaleUpperCase();
+
+  for (const item of items) {
+    const name = getName(item);
+    if (spotifyName === name) return item;
   }
-  for (const tidalTrack of tidalTracks) {
-    const tidalName = tidalTrack.trackName.toLocaleUpperCase();
-    if (spotifyName.toLocaleUpperCase() === tidalName) return tidalTrack;
+
+  for (const item of items) {
+    const name = getName(item).toLocaleUpperCase();
+    if (upperSpotify === name) return item;
   }
-  for (const tidalTrack of tidalTracks) {
-    const tidalName = tidalTrack.trackName.toLocaleUpperCase().replace(symbolRegex, '');
-    if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName) return tidalTrack;
+
+  for (const item of items) {
+    const name = normalizeName(getName(item));
+    if (normalizedSpotify === name) return item;
   }
 }
+
+export const matchTrackNames = (spotifyName: string, tidalTracks: MinTrack[]) => {
+  return matchByName(spotifyName, tidalTracks, tidalTrack => tidalTrack.trackName)
+};
 
 export const matchAlbumNames = (spotifyName: string, tidalAlbums: MinAlbum[]) => {
-  for (const tidalAlbum of tidalAlbums) {
-    const tidalName = tidalAlbum.albumName;
-    if (spotifyName === tidalName) return tidalAlbum;
-  }
-  for (const tidalAlbum of tidalAlbums) {
-    const tidalName = tidalAlbum.albumName.toLocaleUpperCase();
-    if (spotifyName.toLocaleUpperCase() === tidalName) return tidalAlbum;
-  }
-  for (const tidalAlbum of tidalAlbums) {
-    const tidalName = tidalAlbum.albumName.toLocaleUpperCase().replace(symbolRegex, '');
-    if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName) return tidalAlbum;
-  }
-}
+  return matchByName(spotifyName, tidalAlbums, tidalAlbum => tidalAlbum.albumName)
+};
 
 export const matchArtistNames = (spotifyName: string, tidalArtists: MinArtist[]) => {
-  for (const tidalArtist of tidalArtists) {
-    const tidalName = tidalArtist.artistName;
-    if (spotifyName === tidalName) return tidalArtist;
-  }
-  for (const tidalArtist of tidalArtists) {
-    const tidalName = tidalArtist.artistName.toLocaleUpperCase();
-    if (spotifyName.toLocaleUpperCase() === tidalName) return tidalArtist;
-  }
-  for (const tidalArtist of tidalArtists) {
-    const tidalName = tidalArtist.artistName.toLocaleUpperCase().replace(symbolRegex, '');
-    if (spotifyName.toLocaleUpperCase().replace(symbolRegex, '') === tidalName) return tidalArtist;
-  }
-}
+  return matchByName(spotifyName, tidalArtists, tidalArtist => tidalArtist.artistName)
+};
