@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "cd dist && live-server --port=5500",
     "build": "tsc -b && vite build",
+    "autobuild": "watch 'pnpm build' ./src",
     "lint": "eslint .",
     "preview": "vite preview"
   },
