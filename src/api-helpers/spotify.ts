@@ -6,7 +6,7 @@ const SPOTIFY_CLIENT_ID = '2211a17ab92042db90b6e94f3dcb3988';
 const SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5500/spotify/';
 export const spotifyApi = SpotifyApi.withUserAuthorization(SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI, ["user-read-private", "user-read-email", "user-library-read", "user-follow-read"]);
 
- const mapSpotifyPlaylistToPlaylist = (playlist: SimplifiedPlaylist): Playlist => ({
+const mapSpotifyPlaylistToPlaylist = (playlist: SimplifiedPlaylist): Playlist => ({
   id: playlist.id,
   name: playlist.name,
   trackCount: playlist.tracks?.total ?? 0,
@@ -19,7 +19,8 @@ export const getSpotifyPlaylists = async () => {
   return playlists.items.map(mapSpotifyPlaylistToPlaylist);
 }
 
-export const getSpotifySavedArtists = async (setArtistTotal: (total: number) => void, setArtistProgress: (total: number) => void) => {
+type SetNumberFn = (num: number) => void
+export const getSpotifySavedArtists = async (setArtistTotal: SetNumberFn, setArtistProgress: SetNumberFn) => {
   const allArtists: Artist[] = []
   let after: string | undefined = undefined;
   do {
@@ -35,7 +36,7 @@ export const getSpotifySavedArtists = async (setArtistTotal: (total: number) => 
   return allArtists;
 }
 
-export const getSpotifySavedAlbums = async (setAlbumTotal: (total: number) => void, setAlbumProgress: (total: number) => void) => {
+export const getSpotifySavedAlbums = async (setAlbumTotal: SetNumberFn, setAlbumProgress: SetNumberFn) => {
   const allAlbums: SavedAlbum[] = []
   let offset = 0;
   let next = '';
@@ -52,7 +53,7 @@ export const getSpotifySavedAlbums = async (setAlbumTotal: (total: number) => vo
   return allAlbums;
 }
 
-export const getSpotifySavedTracks = async (setTrackTotal: (total: number) => void, setTrackProgress: (total: number) => void) => {
+export const getSpotifySavedTracks = async (setTrackTotal: SetNumberFn, setTrackProgress: SetNumberFn) => {
   const allTracks: SavedTrack[] = []
   let offset = 0;
   let next = '';
