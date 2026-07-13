@@ -3,7 +3,7 @@ import { performRateLimitedRequest } from "../Playlists/useImportSpotify";
 import { type MinArtist } from "./useImport";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
-import { matchArtistNames } from "./matching";
+import { matchArtist } from "./matching";
 
 export const useImportArtists = () => {
   const {artists} = useSpotify();
@@ -20,7 +20,7 @@ export const useImportArtists = () => {
         return;
       }
 
-      const matchedArtist = matchArtistNames(spotifyName, tidalArtists);
+      const matchedArtist = matchArtist(spotifyName, tidalArtists);
 
       if (!matchedArtist) {
         console.log("No match on Tidal - Spotify:", spotifyName, "Tidal results:", tidalArtists);

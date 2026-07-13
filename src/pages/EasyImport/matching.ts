@@ -28,14 +28,16 @@ const matchByName = <T>(spotifyName: string, items: T[], getName: (item: T) => s
   }
 }
 
-export const matchTrackNames = (spotifyName: string, tidalTracks: MinTrack[]) => {
-  return matchByName(spotifyName, tidalTracks, tidalTrack => tidalTrack.trackName)
+export const matchTrack = (spotifyTrack: MinTrack, tidalTracks: MinTrack[]) => {
+  const isrcTrack = tidalTracks.find(t => t.isrc === spotifyTrack.isrc);
+  if (isrcTrack) return isrcTrack;
+  return matchByName(spotifyTrack.trackName, tidalTracks, tidalTrack => tidalTrack.trackName)
 };
 
-export const matchAlbumNames = (spotifyName: string, tidalAlbums: MinAlbum[]) => {
+export const matchAlbum = (spotifyName: string, tidalAlbums: MinAlbum[]) => {
   return matchByName(spotifyName, tidalAlbums, tidalAlbum => tidalAlbum.albumName)
 };
 
-export const matchArtistNames = (spotifyName: string, tidalArtists: MinArtist[]) => {
+export const matchArtist = (spotifyName: string, tidalArtists: MinArtist[]) => {
   return matchByName(spotifyName, tidalArtists, tidalArtist => tidalArtist.artistName)
 };

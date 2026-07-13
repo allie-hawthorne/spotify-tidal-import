@@ -26,12 +26,13 @@ export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGet
 
   const tidalTracks = trackWithData.map((t): MinTrack | undefined => {
     // Shouldn't happen (hopefully) - just for type coercion
-    if (!t?.attributes || !('title' in t.attributes)) return;
-    
+    if (!t?.attributes || !('isrc' in t.attributes)) return;
+
     return {
-      id: t.id ?? '',
+      id: t.id,
       artistName: '',
-      trackName: t.attributes.title ?? ''
+      trackName: t.attributes.title,
+      isrc: t.attributes.isrc
     }
   }).filter(t => !!t);
 

@@ -3,10 +3,11 @@ import { performRateLimitedRequest } from "../Playlists/useImportSpotify";
 import { type MinArtist } from "./useImport";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
-import { matchTrackNames } from "./matching";
+import { matchTrack } from "./matching";
 
 export interface MinTrack extends MinArtist {
   trackName: string
+  isrc: string
 }
 
 export const useImportTracks = () => {
@@ -16,21 +17,25 @@ export const useImportTracks = () => {
   const [erroredTracks, setErroredTracks] = useState<MinTrack[]>([]);
 
   const importTracks = async (importer: TidalImporter) => {
-    for (const {track: {name: spotifyName, artists}} of tracks) {
+    for (const {track} of tracks) {
+      const {name: spotifyName, artists, external_ids: {isrc}, id} = track;
       const spotifyArtistName = artists.map(a => a.name).join(' ');
+
+      // TODO: Should map Spotify data in the context
+      const spotifyTrack: MinTrack = {id, isrc, artistName: spotifyArtistName, trackName: spotifyName};
       const tidalTracks = await performRateLimitedRequest(() => importer.searchForTrack(spotifyName, artists.map(a => a.name)));
 
       if (!tidalTracks) {
         console.log("No results on Tidal - Spotify:", spotifyName);
-        setErroredTracks(prev => [...prev, {id: '', artistName: spotifyArtistName, trackName: spotifyName}]);
+        setErroredTracks(prev => [...prev, spotifyTrack]);
         return;
       }
 
-      const matchedTrack = matchTrackNames(spotifyName, tidalTracks);
+      const matchedTrack = matchTrack(spotifyTrack, tidalTracks);
 
       if (!matchedTrack) {
         console.log("No match on Tidal - Spotify:", spotifyName, "Tidal results:", tidalTracks);
-        setErroredTracks(prev => [...prev, {id: '', artistName: spotifyArtistName, trackName: spotifyName}]);
+        setErroredTracks(prev => [...prev, spotifyTrack]);
         continue;
       }
 
@@ -38,11 +43,11 @@ export const useImportTracks = () => {
 
       if (!res) {
         console.log("Error adding track on Tidal - Spotify:", spotifyName, "Tidal:", matchedTrack);
-        setErroredTracks(prev => [...prev, {id: matchedTrack.id, artistName: spotifyArtistName, trackName: spotifyName}]);
+        setErroredTracks(prev => [...prev, matchedTrack]);
         continue;
       }
       console.log("MATCHED! Spotify:", spotifyName, "Tidal:", matchedTrack);
-      setSucceededTracks(prev => [...prev, {id: matchedTrack.id, artistName: matchedTrack.artistName, trackName: spotifyName}]);
+      setSucceededTracks(prev => [...prev, matchedTrack]);
     }
   }
 

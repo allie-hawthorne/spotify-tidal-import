@@ -3,7 +3,7 @@ import { performRateLimitedRequest } from "../Playlists/useImportSpotify";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import { type MinArtist } from "./useImport";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
-import { matchAlbumNames } from "./matching";
+import { matchAlbum } from "./matching";
 
 export interface MinAlbum extends MinArtist {
   albumName: string
@@ -25,7 +25,7 @@ export const useImportAlbums = () => {
         return;
       }
 
-      const matchedAlbum = matchAlbumNames(spotifyAlbumName, tidalAlbums);
+      const matchedAlbum = matchAlbum(spotifyAlbumName, tidalAlbums);
       
       console.log("Spotify:", spotifyAlbumName, "-", spotifyArtistName, "Tidal:", matchedAlbum?.albumName, "-", matchedAlbum?.artistName);
 
