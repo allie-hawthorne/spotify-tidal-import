@@ -1,4 +1,4 @@
-import { mapTidalTracksToUniversalTracks } from "../../pages/EasyImport/mappers";
+import { mapTidalAlbumsToUniversalAlbums, mapTidalTracksToUniversalTracks } from "../../pages/EasyImport/mappers";
 import { tidalApi } from "../tidal";
 
 export class TidalImporter {
@@ -27,75 +27,53 @@ export class TidalImporter {
     // TODO: Is this better than just removing the character?
     const encodedQuery = query.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
   
-    const searchResults = await tidalApi.GET('/searchResults/{id}/relationships/tracks', {
+    const res = await tidalApi.GET('/searchResults/{id}/relationships/tracks', {
       params: {path: {id: encodedQuery}, query: {include: ['tracks']}},
     });
-    if (searchResults.response.status === 429) {
+    if (res.response.status === 429) {
       console.warn('Rate limited by Tidal API when searching for track:', query);
       return 429;
     }
-    if (searchResults.response.status !== 200) {
-      console.error('Error searching for track on Tidal:', query, searchResults);
+    if (res.response.status !== 200) {
+      console.error('Error searching for track on Tidal:', query, res);
       return;
     }
 
-    return mapTidalTracksToUniversalTracks(searchResults);
+    return mapTidalTracksToUniversalTracks(res);
   };
 
   searchForArtist = async (artistStr: string) => {
     const encodedQuery = artistStr.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
 
-    // This is good, we can use the include above to get track name
-    const searchResults = await tidalApi.GET('/searchResults/{id}/relationships/artists', {
+    const res = await tidalApi.GET('/searchResults/{id}/relationships/artists', {
       params: {path: {id: encodedQuery}, query: {include: ['artists']}}
     });
 
-    if (searchResults.response.status === 429) return 429;
+    if (res.response.status === 429) return 429;
     
-    if (searchResults.error) {
-      console.error('ERROR:', searchResults.error)
+    if (res.error) {
+      console.error('ERROR:', res.error)
       return;
     }
     
-    return searchResults.data.data?.map(d => searchResults.data.included?.find(a => a.id === d.id))
+    return res.data.data?.map(d => res.data.included?.find(a => a.id === d.id))
   }
 
   searchForAlbum = async (albumStr: string, artistStr: string) => {
     const encodedQuery = `${artistStr} ${albumStr}`.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
 
-    const {response, error, data: searchResults} = await tidalApi.GET('/searchResults/{id}', {
+    const res = await tidalApi.GET('/searchResults/{id}', {
       params: {path: {id: encodedQuery}, query: {include: ['albums', 'albums.artists']}}
     });
 
-    if (response.status === 429) return 429;
+    if (res.response.status === 429) return 429;
     
-    if (error) {
-      console.error('ERROR:', error)
+    if (res.error) {
+      console.error('ERROR:', res.error)
       return;
     }
-
-    console.log(searchResults);
     
-    // This is sorted by relevance
-    const orderedAlbums = searchResults.data.relationships?.albums.data;
-
-    const orderedAlbumsWithArtists = orderedAlbums?.map(minAlbum => {
-      const album = searchResults.included?.find(a => a.id === minAlbum.id);
-
-      if (!album?.attributes || !("albumType" in album.attributes)) return;
-
-      const relationships = album && "relationships" in album ? album.relationships : undefined;
-
-      const minArtists = relationships && "artists" in relationships ? relationships.artists.data : undefined;
-
-      const artists = minArtists?.flatMap(minArtist => searchResults.included?.filter(a => a.id === minArtist.id));
-      
-      return {...album, artists};
-    });
-
-    console.log("Ordered albums with artists:", orderedAlbumsWithArtists);
-    
-    return orderedAlbumsWithArtists;
+    return mapTidalAlbumsToUniversalAlbums(res);
   }
 
   addArtist = async (id: string) => {

@@ -18,15 +18,7 @@ export const useImportAlbums = () => {
   const importAlbums = async (importer: TidalImporter) => {
     for (const {album: {name: spotifyAlbumName, artists}} of albums) {
       const spotifyArtistName = artists.map(a => a.name).join(' ');
-      const searchResults = await performRateLimitedRequest(() => importer.searchForAlbum(spotifyArtistName, spotifyAlbumName));
-
-      const tidalAlbums = searchResults?.map((a): MinAlbum => ({
-        id: a?.id ?? '',
-        // @ts-expect-error - name does exist
-        artistName: a?.artists?.map(artist => artist?.attributes?.name).join(' ') ?? '',
-        // @ts-expect-error - name does exist
-        albumName: a?.attributes?.title as string
-      })) ?? [];
+      const tidalAlbums = await performRateLimitedRequest(() => importer.searchForAlbum(spotifyArtistName, spotifyAlbumName));
 
       if (!tidalAlbums) {
         console.log("No result on Tidal - Spotify:", spotifyAlbumName);
