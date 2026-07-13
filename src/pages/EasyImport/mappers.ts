@@ -46,29 +46,27 @@ export const mapTidalAlbumsToUniversalAlbums = (res: Awaited<ReturnType<TidalGet
   // This is sorted by relevance
   const orderedAlbums = minAlbums?.relationships?.albums.data ?? [];
 
-  const orderedAlbumsWithArtists = orderedAlbums.map(minAlbum => {
+  const orderedAlbumsWithArtists = orderedAlbums.map((minAlbum): MinAlbum | undefined => {
     const album = extraData?.find(a => a.id === minAlbum.id);
 
     if (!album?.attributes || !("albumType" in album.attributes)) return;
 
-    const relationships = album && "relationships" in album ? album.relationships : undefined;
+    const relationships = "relationships" in album ? album.relationships : undefined;
 
     const minArtists = relationships && "artists" in relationships ? relationships.artists.data : undefined;
 
     const artists = minArtists?.flatMap(minArtist => extraData?.filter(a => a.id === minArtist.id));
-    
-    return {...album, artists};
-  });
-  
-  const tidalAlbums = orderedAlbumsWithArtists.map((a): MinAlbum => ({
-    id: a?.id ?? '',
-    // @ts-expect-error - name does exist
-    artistName: a?.artists?.map(artist => artist?.attributes?.name).join(' ') ?? '',
-    // @ts-expect-error - name does exist
-    albumName: a?.attributes?.title as string
-  }));
 
-  return tidalAlbums;
+    return {
+      id: album?.id ?? '',
+      // @ts-expect-error - name does exist
+      artistName: artists?.map(artist => artist?.attributes?.name).join(' ') ?? '',
+      albumName: album.attributes.title,
+      barcode: album.attributes.barcodeId
+    };
+  }).filter(a => !!a);
+  
+  return orderedAlbumsWithArtists;
 }
 
 export const mapTidalArtistsToUniversalArtists = (res: Awaited<ReturnType<TidalGetArtistsFn>>) => {

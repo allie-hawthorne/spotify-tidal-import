@@ -34,8 +34,10 @@ export const matchTrack = (spotifyTrack: MinTrack, tidalTracks: MinTrack[]) => {
   return matchByName(spotifyTrack.trackName, tidalTracks, tidalTrack => tidalTrack.trackName)
 };
 
-export const matchAlbum = (spotifyName: string, tidalAlbums: MinAlbum[]) => {
-  return matchByName(spotifyName, tidalAlbums, tidalAlbum => tidalAlbum.albumName)
+export const matchAlbum = (spotifyAlbum: MinAlbum, tidalAlbums: MinAlbum[]) => {
+  const barcodeAlbum = tidalAlbums.find(t => t.barcode === spotifyAlbum.barcode);
+  if (barcodeAlbum) return barcodeAlbum;
+  return matchByName(spotifyAlbum.albumName, tidalAlbums, tidalAlbum => tidalAlbum.albumName)
 };
 
 export const matchArtist = (spotifyName: string, tidalArtists: MinArtist[]) => {
