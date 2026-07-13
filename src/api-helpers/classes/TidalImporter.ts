@@ -1,4 +1,4 @@
-import { mapTidalAlbumsToUniversalAlbums, mapTidalTracksToUniversalTracks } from "../../pages/EasyImport/mappers";
+import { mapTidalAlbumsToUniversalAlbums, mapTidalArtistsToUniversalArtists, mapTidalTracksToUniversalTracks } from "../../pages/EasyImport/mappers";
 import { tidalApi } from "../tidal";
 
 export class TidalImporter {
@@ -56,7 +56,7 @@ export class TidalImporter {
       return;
     }
     
-    return res.data.data?.map(d => res.data.included?.find(a => a.id === d.id))
+    return mapTidalArtistsToUniversalArtists(res);
   }
 
   searchForAlbum = async (albumStr: string, artistStr: string) => {

@@ -1,4 +1,5 @@
 import type { tidalApi } from "../../api-helpers/tidal";
+import type { MinArtist } from "./useImport";
 import type { MinAlbum } from "./useImportAlbums";
 import type { MinTrack } from "./useImportTracks";
 
@@ -10,6 +11,11 @@ type TidalGetTracksFn = typeof tidalApi.GET<
 type TidalGetAlbumsFn = typeof tidalApi.GET<
   '/searchResults/{id}',
   {params: {path: {id: string}, query: {include: ['albums', 'albums.artists']}}}
+>;
+
+type TidalGetArtistsFn = typeof tidalApi.GET<
+  '/searchResults/{id}/relationships/artists',
+  {params: {path: {id: string}, query: {include: ['artists']}}}
 >;
 
 export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGetTracksFn>>) => {
@@ -63,3 +69,18 @@ export const mapTidalAlbumsToUniversalAlbums = (res: Awaited<ReturnType<TidalGet
 
   return tidalAlbums;
 }
+
+export const mapTidalArtistsToUniversalArtists = (res: Awaited<ReturnType<TidalGetArtistsFn>>) => {
+  const minArtists = res.data?.data ?? [];
+  const extraData = res.data?.included;
+  
+  const orderedArtists = minArtists.map(d => extraData?.find(a => a.id === d.id));
+
+  const tidalArtists = orderedArtists.map((a): MinArtist => ({
+    id: a?.id ?? '',
+    // @ts-expect-error - name does exist
+    artistName: a?.attributes?.name as string
+  }));
+  
+  return tidalArtists;
+};

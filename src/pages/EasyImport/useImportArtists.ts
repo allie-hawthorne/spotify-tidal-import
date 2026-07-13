@@ -13,10 +13,7 @@ export const useImportArtists = () => {
 
   const importArtists = async (importer: TidalImporter) => {
     for (const {name: spotifyName} of artists) {
-      const searchResults = await performRateLimitedRequest(() => importer.searchForArtist(spotifyName));
-
-      // @ts-expect-error - name does exist
-      const tidalArtists = searchResults?.map((a): MinArtist => ({id: a?.id ?? '', artistName: a?.attributes?.name as string})) ?? [];
+      const tidalArtists = await performRateLimitedRequest(() => importer.searchForArtist(spotifyName));
 
       if (!tidalArtists) {
         console.log("No result on Tidal - Spotify:", spotifyName);
