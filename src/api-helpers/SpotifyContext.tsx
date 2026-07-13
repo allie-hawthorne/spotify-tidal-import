@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
-import type { Playlist } from "../types";
+import type { PlaylistWithItems } from "../types";
 import type { Artist, SavedAlbum, SavedTrack } from "@spotify/web-api-ts-sdk";
-import { getSpotifyPlaylists, getSpotifySavedAlbums, getSpotifySavedArtists, getSpotifySavedTracks } from "./spotify";
+import { getSpotifyPlaylists, getSpotifySavedAlbums, getSpotifySavedArtists } from "./spotify";
 
 interface SpotifyContext {
   albums: SavedAlbum[]
@@ -14,14 +14,13 @@ interface SpotifyContext {
   artistTotal: number
   artistProgress: number
 
-  playlists: Playlist[]
+  playlists: PlaylistWithItems[]
   playlistsLoading: boolean
   playlistTotal: number
   playlistProgress: number
 
   tracks: SavedTrack[]
   tracksLoading: boolean
-
   trackTotal: number
   trackProgress: number
 }
@@ -58,15 +57,15 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   const [artistTotal, setArtistTotal] = useState(0);
   const [artistProgress, setArtistProgress] = useState(0);
 
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [playlists, setPlaylists] = useState<PlaylistWithItems[]>([]);
   const [playlistsLoading, setPlaylistsLoading] = useState(true);
   const [playlistTotal, setPlaylistTotal] = useState(0);
   const [playlistProgress, setPlaylistProgress] = useState(0);
   
-  const [tracks, setTracks] = useState<SavedTrack[]>([]);
-  const [trackTotal, setTrackTotal] = useState(0);
-  const [trackProgress, setTrackProgress] = useState(0);
-  const [tracksLoading, setTracksLoading] = useState(true);
+  const [tracks] = useState<SavedTrack[]>([]);
+  const [trackTotal] = useState(0);
+  const [trackProgress] = useState(0);
+  const [tracksLoading] = useState(true);
 
   useEffect(() => {
     getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress).then(p => {
@@ -90,10 +89,10 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   }, []);
   
   useEffect(() => {
-    getSpotifySavedTracks(setTrackTotal, setTrackProgress).then(t => {
-      setTracks(t);
-      setTracksLoading(false);
-    })
+    // getSpotifySavedTracks(setTrackTotal, setTrackProgress).then(t => {
+    //   setTracks(t);
+    //   setTracksLoading(false);
+    // })
   }, []);
   
   return <context.Provider value={{

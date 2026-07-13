@@ -1,6 +1,7 @@
 import { SpotifyApi, type Artist, type SavedAlbum, type SavedTrack, type SimplifiedPlaylist, type Playlist as SpotifyPlaylist } from '@spotify/web-api-ts-sdk';
 import type { Playlist } from '../types';
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from './tidal';
+import { SpotifyImporter } from './classes/SpotifyImporter';
 
 const SPOTIFY_CLIENT_ID = '2211a17ab92042db90b6e94f3dcb3988';
 const SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5500/spotify/';
@@ -14,6 +15,8 @@ const mapSpotifyPlaylistToPlaylist = (playlist: SimplifiedPlaylist): Playlist =>
 });
 
 export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn) => {
+  const spotify = new SpotifyImporter();
+  
   const allPlaylists: SpotifyPlaylist[] = [];
   let offset = 0;
   let next = '';
@@ -26,8 +29,18 @@ export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlay
     next = playlists.next ?? '';
     setPlaylistTotal(playlists.total);
     setPlaylistProgress(offset);
-  } while (next)
-  return allPlaylists.map(mapSpotifyPlaylistToPlaylist);
+  } while (next);
+
+  const mappedPlaylists = allPlaylists.map(mapSpotifyPlaylistToPlaylist);
+  
+  console.log('Spotify playlists:', allPlaylists);
+  console.log('Total Tracks:', allPlaylists.reduce((sum, p) => sum + (p.tracks?.total || 0), 0));
+
+  const playlistsWithTracks = await spotify.getTracksFromPlaylists(mappedPlaylists);
+
+  console.log('All playlists with tracks:', playlistsWithTracks);
+  
+  return playlistsWithTracks;
 }
 
 type SetNumberFn = (num: number) => void

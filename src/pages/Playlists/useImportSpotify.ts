@@ -27,7 +27,7 @@ export const useImport = (sourcePlaylists: Playlist[], setShowImportStatus: Disp
 
     setShowImportStatus(true);
     
-    const playlistTracks = await spotify.getTracksFromPlaylists(sourcePlaylists);
+    const playlistTracks = await spotify._getTracksFromPlaylists(sourcePlaylists);
     addAllPlaylists(playlistTracks);
 
     const playlistChunks = chunk(playlistTracks, PLAYLISTS_CHUNK_SIZE);
