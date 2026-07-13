@@ -19,21 +19,23 @@ export const getSpotifyPlaylists = async () => {
   return playlists.items.map(mapSpotifyPlaylistToPlaylist);
 }
 
-export const getSpotifySavedArtists = async () => {
+export const getSpotifySavedArtists = async (setArtistTotal: (total: number) => void, setArtistProgress: (total: number) => void) => {
   const allArtists: Artist[] = []
   let after: string | undefined = undefined;
   do {
     const {artists} = await spotifyApi.currentUser.followedArtists(after, 50);
     allArtists.push(...artists.items);
 
+    setArtistTotal(artists.total);
+    setArtistProgress(allArtists.length);
     // @ts-expect-error - Cursor is in the object but not in the type for some reason
     after = artists.cursors.after;
-  } while (after)
+  } while (after);
 
   return allArtists;
 }
 
-export const getSpotifySavedAlbums = async () => {
+export const getSpotifySavedAlbums = async (setAlbumTotal: (total: number) => void, setAlbumProgress: (total: number) => void) => {
   const allAlbums: SavedAlbum[] = []
   let offset = 0;
   let next = '';
@@ -41,6 +43,8 @@ export const getSpotifySavedAlbums = async () => {
     const albums = await spotifyApi.currentUser.albums.savedAlbums(50, offset);
     allAlbums.push(...albums.items);
 
+    setAlbumTotal(albums.total);
+    setAlbumProgress(albums.offset);
     offset += albums.limit;
     next = albums.next ?? '';
   } while (next);
@@ -48,7 +52,7 @@ export const getSpotifySavedAlbums = async () => {
   return allAlbums;
 }
 
-export const getSpotifySavedTracks = async () => {
+export const getSpotifySavedTracks = async (setTrackTotal: (total: number) => void, setTrackProgress: (total: number) => void) => {
   const allTracks: SavedTrack[] = []
   let offset = 0;
   let next = '';
@@ -56,6 +60,8 @@ export const getSpotifySavedTracks = async () => {
     const tracks = await spotifyApi.currentUser.tracks.savedTracks(50, offset);
     allTracks.push(...tracks.items);
 
+    setTrackProgress(tracks.offset);
+    setTrackTotal(tracks.total)
     offset += tracks.limit;
     next = tracks.next ?? '';
   } while (next);
