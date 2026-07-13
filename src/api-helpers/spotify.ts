@@ -1,4 +1,4 @@
-import { SpotifyApi, type Artist, type SavedAlbum, type SavedTrack, type SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
+import { SpotifyApi, type Artist, type SavedAlbum, type SavedTrack, type SimplifiedPlaylist, type Playlist as SpotifyPlaylist } from '@spotify/web-api-ts-sdk';
 import type { Playlist } from '../types';
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from './tidal';
 
@@ -14,14 +14,23 @@ const mapSpotifyPlaylistToPlaylist = (playlist: SimplifiedPlaylist): Playlist =>
 });
 
 export const getSpotifyPlaylists = async () => {
-  // TODO: get user id from spotify api instead of hardcoding it
-  const playlists = await spotifyApi.playlists.getUsersPlaylists('1121194900');
-  return playlists.items.map(mapSpotifyPlaylistToPlaylist);
+  const allPlaylists: SpotifyPlaylist[] = [];
+  let offset = 0;
+  let next = '';
+  do {
+    // TODO: get user id from spotify api instead of hardcoding it
+    const playlists = await spotifyApi.playlists.getUsersPlaylists('1121194900', undefined, offset);
+    allPlaylists.push(...playlists.items);
+    
+    offset += playlists.limit;
+    next = playlists.next ?? '';
+  } while (next)
+  return allPlaylists.map(mapSpotifyPlaylistToPlaylist);
 }
 
 type SetNumberFn = (num: number) => void
 export const getSpotifySavedArtists = async (setArtistTotal: SetNumberFn, setArtistProgress: SetNumberFn) => {
-  const allArtists: Artist[] = []
+  const allArtists: Artist[] = [];
   let after: string | undefined = undefined;
   do {
     const {artists} = await spotifyApi.currentUser.followedArtists(after, 50);
