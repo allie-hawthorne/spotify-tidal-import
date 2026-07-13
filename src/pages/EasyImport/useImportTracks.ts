@@ -18,13 +18,11 @@ export const useImportTracks = () => {
   const importTracks = async (importer: TidalImporter) => {
     for (const {track: {name: spotifyName, artists}} of tracks) {
       const spotifyArtistName = artists.map(a => a.name).join(' ');
-      const searchResults = await performRateLimitedRequest(() => importer.searchForTrack(spotifyName, artists.map(a => a.name)));
-
-      // @ts-expect-error - title does exist
-      const tidalTracks = searchResults?.map((t): MinTrack => ({id: t?.id ?? '', artistName: "", trackName: t?.attributes?.title})) ?? [];
+      const tidalTracks = await performRateLimitedRequest(() => importer.searchForTrack(spotifyName, artists.map(a => a.name)));
 
       if (!tidalTracks) {
-        console.log("No result on Tidal - Spotify:", spotifyName);
+        console.log("No results on Tidal - Spotify:", spotifyName);
+        setErroredTracks(prev => [...prev, {id: '', artistName: spotifyArtistName, trackName: spotifyName}]);
         return;
       }
 

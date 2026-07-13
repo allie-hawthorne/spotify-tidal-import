@@ -1,3 +1,4 @@
+import { mapTidalTracksToUniversalTracks } from "../../pages/EasyImport/mappers";
 import { tidalApi } from "../tidal";
 
 export class TidalImporter {
@@ -37,11 +38,8 @@ export class TidalImporter {
       console.error('Error searching for track on Tidal:', query, searchResults);
       return;
     }
-    const tracks = searchResults.data?.data;
 
-    const trackWithData = tracks?.map(track => searchResults.data?.included?.find(a => a.id === track.id));
-    
-    return trackWithData;
+    return mapTidalTracksToUniversalTracks(searchResults);
   };
 
   searchForArtist = async (artistStr: string) => {
