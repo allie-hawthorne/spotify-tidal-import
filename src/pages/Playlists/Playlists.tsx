@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getSpotifyPlaylists } from "../../api-helpers/spotify";
 import { getTidalPlaylists } from "../../api-helpers/tidal";
 import { PlaylistContainer } from "./PlaylistContainer";
 import { Service } from "../../components/LoginButton";
@@ -9,7 +8,7 @@ import { PlaylistImportStatus } from "./PlaylistImportStatus";
 import type { Playlist } from "../../types";
 
 export const Playlists = () => {
-  const [spotifyPlaylists, setSpotifyPlaylists] = useState<Playlist[]>([]);
+  const [spotifyPlaylists] = useState<Playlist[]>([]);
   const [tidalPlaylists, setTidalPlaylists] = useState<Playlist[]>([]);
   const [selectedPlaylists, setSelectedPlaylists] = useState<Playlist[]>([]);
   const [importSource, setImportSource] = useState<Service>();
@@ -18,7 +17,7 @@ export const Playlists = () => {
   const { onImportClick, allPlaylists } = useImport(selectedPlaylists, setShowImportStatus);
 
   useEffect(() => {
-    getSpotifyPlaylists().then(setSpotifyPlaylists)
+    // getSpotifyPlaylists().then(setSpotifyPlaylists)
     getTidalPlaylists().then(setTidalPlaylists)
   }, []);
 

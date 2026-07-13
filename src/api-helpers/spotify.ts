@@ -13,7 +13,7 @@ const mapSpotifyPlaylistToPlaylist = (playlist: SimplifiedPlaylist): Playlist =>
   imageUrl: playlist.images?.[0]?.url ?? TIDAL_PLACEHOLDER_IMAGE_URL
 });
 
-export const getSpotifyPlaylists = async () => {
+export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn) => {
   const allPlaylists: SpotifyPlaylist[] = [];
   let offset = 0;
   let next = '';
@@ -24,6 +24,8 @@ export const getSpotifyPlaylists = async () => {
     
     offset += playlists.limit;
     next = playlists.next ?? '';
+    setPlaylistTotal(playlists.total);
+    setPlaylistProgress(offset);
   } while (next)
   return allPlaylists.map(mapSpotifyPlaylistToPlaylist);
 }
@@ -36,10 +38,10 @@ export const getSpotifySavedArtists = async (setArtistTotal: SetNumberFn, setArt
     const {artists} = await spotifyApi.currentUser.followedArtists(after, 50);
     allArtists.push(...artists.items);
 
-    setArtistTotal(artists.total);
-    setArtistProgress(allArtists.length);
     // @ts-expect-error - Cursor is in the object but not in the type for some reason
     after = artists.cursors.after;
+    setArtistTotal(artists.total);
+    setArtistProgress(allArtists.length);
   } while (after);
 
   return allArtists;
@@ -53,10 +55,10 @@ export const getSpotifySavedAlbums = async (setAlbumTotal: SetNumberFn, setAlbum
     const albums = await spotifyApi.currentUser.albums.savedAlbums(50, offset);
     allAlbums.push(...albums.items);
 
-    setAlbumTotal(albums.total);
-    setAlbumProgress(albums.offset);
     offset += albums.limit;
     next = albums.next ?? '';
+    setAlbumTotal(albums.total);
+    setAlbumProgress(offset);
   } while (next);
 
   return allAlbums;
@@ -70,10 +72,10 @@ export const getSpotifySavedTracks = async (setTrackTotal: SetNumberFn, setTrack
     const tracks = await spotifyApi.currentUser.tracks.savedTracks(50, offset);
     allTracks.push(...tracks.items);
 
-    setTrackProgress(tracks.offset);
-    setTrackTotal(tracks.total)
     offset += tracks.limit;
     next = tracks.next ?? '';
+    setTrackTotal(tracks.total)
+    setTrackProgress(offset);
   } while (next);
 
   return allTracks;
