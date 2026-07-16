@@ -1,4 +1,4 @@
-import { mapTidalAlbumsToUniversalAlbums, mapTidalArtistsToUniversalArtists, mapTidalTracksToUniversalTracks } from "../../pages/EasyImport/mappers";
+import { mapTidalAlbumsToUniversalAlbums, mapTidalArtistsToUniversalArtists, mapTidalTracksToUniversalTracks } from "../../mappers/tidalMappers";
 import { tidalApi } from "../tidal";
 
 export class TidalImporter {
