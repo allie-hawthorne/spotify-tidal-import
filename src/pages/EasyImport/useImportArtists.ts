@@ -12,7 +12,7 @@ export const useImportArtists = () => {
   const [erroredArtists, setErroredArtists] = useState<MinArtist[]>([]);
 
   const importArtists = async (importer: TidalImporter) => {
-    for (const {name: spotifyName} of artists) {
+    for (const {artistName: spotifyName} of artists) {
       const tidalArtists = await performRateLimitedRequest(() => importer.searchForArtist(spotifyName));
 
       if (!tidalArtists) {

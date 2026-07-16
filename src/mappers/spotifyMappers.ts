@@ -1,6 +1,7 @@
-import type { SavedAlbum, SavedTrack } from "@spotify/web-api-ts-sdk";
+import type { Artist, SavedAlbum, SavedTrack } from "@spotify/web-api-ts-sdk";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
+import type { MinArtist } from "../pages/EasyImport/useImport";
 
 export const mapSpotifyTracksToUniversalTracks = (tracks: SavedTrack[]) => {
   const spotifyTracks = tracks.map(({track}): MinTrack | undefined => {
@@ -26,4 +27,15 @@ export const mapSpotifyAlbumsToUniversalAlbums = (albums: SavedAlbum[]) => {
   }).filter(a => !!a);
   
   return spotifyAlbums;
+};
+
+export const mapSpotifyArtistsToUniversalArtists = (artists: Artist[]) => {  
+  const tidalArtists = artists.map((a): MinArtist => {
+    return {
+      id: a?.id ?? '',
+      artistName: a.name
+    }
+  });
+
+  return tidalArtists;
 };
