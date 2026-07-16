@@ -20,7 +20,7 @@ export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlay
     offset += playlists.limit;
     next = playlists.next ?? '';
     setPlaylistTotal(playlists.total);
-    setPlaylistProgress(offset);
+    setPlaylistProgress(Math.min(playlists.total, offset));
   } while (next);
 
   const mappedPlaylists = allPlaylists.map(mapSpotifyPlaylistToUniversalPlaylist);
