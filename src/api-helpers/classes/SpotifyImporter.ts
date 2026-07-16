@@ -3,12 +3,13 @@ import { performRateLimitedRequest } from "../../pages/Playlists/useImportSpotif
 import type { Playlist, PlaylistForImport, PlaylistWithItems } from "../../types";
 import { ImportStatus } from "../../types";
 import { spotifyApi } from "../spotify";
+import { mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
 
 const getPlaylistTracks = async (playlistId: string) => {
   try {
     const playlistTracksRes = await spotifyApi.playlists.getPlaylistItems(playlistId);
     console.log(`Tracks for playlist ${playlistId}:`, playlistTracksRes.items);
-    return playlistTracksRes.items;
+    return mapSpotifyTracksToUniversalTracks(playlistTracksRes.items);
   } catch (error) {
     if (error instanceof Error) {
       // TODO: this is bad but spotify doesn't expose error codes without custom logic. should do at some point
@@ -22,17 +23,17 @@ export class SpotifyImporter {
   constructor() {}
 
   _getTracksFromPlaylists = async (playlists: Playlist[]): Promise<PlaylistForImport[]> => {
-    const playlistTracksRes = await Promise.all(playlists.map(p => performRateLimitedRequest(() => getPlaylistTracks(p.id))));
+    const allPlaylistTracks = await Promise.all(playlists.map(p => performRateLimitedRequest(() => getPlaylistTracks(p.id))));
 
     const updatedPlaylists: PlaylistForImport[] = playlists.map((_, i) => {
-      const items = playlistTracksRes[i];
+      const playlistTracks = allPlaylistTracks[i];
       return {
         ...playlists[i],
         status: ImportStatus.NotStarted,
-        items: items.map(({track}) => ({
+        items: playlistTracks.map((track) => ({
           id: track.id,
-          title: track.name,
-          artists: track.artists.map(a => a.name),
+          title: track.trackName,
+          artists: [track.artistName],
           status: ImportStatus.NotStarted
         }))
       };
@@ -47,11 +48,7 @@ export class SpotifyImporter {
 
     return {
       ...playlist,
-      items: playlistTracks.map(({track}) => ({
-        id: track.id,
-        title: track.name,
-        artists: track.artists.map(a => a.name),
-      }))
+      tracks: playlistTracks
     };
   };
 

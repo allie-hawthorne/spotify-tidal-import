@@ -1,3 +1,5 @@
+import type { MinTrack } from "./pages/EasyImport/useImportTracks";
+
 export enum ImportStatus {
   NotStarted = "Not Started",
   InProgress = "In Progress",
@@ -18,7 +20,7 @@ export interface Playlist {
   imageUrl: string;
 }
 export interface PlaylistWithItems extends Playlist {
-  items: Track[];
+  tracks: MinTrack[];
 }
 export interface PlaylistForImport extends Playlist {
   items: TrackForImport[];

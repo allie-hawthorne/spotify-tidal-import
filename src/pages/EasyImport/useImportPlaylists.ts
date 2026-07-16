@@ -25,14 +25,14 @@ export const useImportPlaylists = () => {
       // TODO: because we're awaiting each playlist chunk sequentially, if one playlist takes a long time to import, it will hold up the second slot.
       // We could sort playlists by track count so that longer ones are grouped together
       // or we could have a different approach to chunking overall maybe
-      await Promise.all(playlistChunk.map(async ({name: playlistName, items}) => {
+      await Promise.all(playlistChunk.map(async ({name: playlistName, tracks}) => {
         const destPlaylistId = await performRateLimitedRequest(() => importer.createPlaylist(playlistName));
 
         if (!destPlaylistId) return;
 
         const destTracksToAdd: string[] = [];
-        for (const {title, artists} of items) {
-          const destTracks = await performRateLimitedRequest(() => importer.searchForTrack(title, artists));
+        for (const playlistTrack of tracks) {
+          const destTracks = await performRateLimitedRequest(() => importer.searchForTrack(playlistTrack.trackName, [playlistTrack.artistName]));
 
           // TODO: Should be matching the same way as saved tracks
           
