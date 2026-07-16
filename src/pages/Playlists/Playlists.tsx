@@ -3,18 +3,19 @@ import { getTidalPlaylists } from "../../api-helpers/tidal";
 import { PlaylistContainer } from "./PlaylistContainer";
 import { Service } from "../../components/LoginButton";
 import { ImportButton } from "../../components/ImportButton";
-import { useImport } from "./useImportSpotify";
 import { PlaylistImportStatus } from "./PlaylistImportStatus";
-import type { Playlist } from "../../types";
+import type { Playlist, PlaylistForImport } from "../../types";
 
 export const Playlists = () => {
   const [spotifyPlaylists] = useState<Playlist[]>([]);
   const [tidalPlaylists, setTidalPlaylists] = useState<Playlist[]>([]);
   const [selectedPlaylists, setSelectedPlaylists] = useState<Playlist[]>([]);
   const [importSource, setImportSource] = useState<Service>();
-  const [showImportStatus, setShowImportStatus] = useState(false);
+  const [showImportStatus] = useState(false);
 
-  const { onImportClick, allPlaylists } = useImport(selectedPlaylists, setShowImportStatus);
+  const onImportClick = () => {};
+  const allPlaylists: PlaylistForImport[] = [];
+  // const { onImportClick, allPlaylists } = useImport(selectedPlaylists, setShowImportStatus);
 
   useEffect(() => {
     // getSpotifyPlaylists().then(setSpotifyPlaylists)

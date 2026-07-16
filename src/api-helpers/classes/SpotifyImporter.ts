@@ -1,5 +1,5 @@
 import { chunk } from "lodash";
-import { performRateLimitedRequest } from "../../pages/Playlists/useImportSpotify";
+import { performRateLimitedRequest } from "../../utils";
 import type { Playlist, PlaylistForImport, PlaylistWithItems } from "../../types";
 import { ImportStatus } from "../../types";
 import { spotifyApi } from "../spotify";

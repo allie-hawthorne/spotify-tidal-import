@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { performRateLimitedRequest } from "../Playlists/useImportSpotify";
+import { performRateLimitedRequest } from "../../utils";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import { type MinArtist } from "./useImport";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
