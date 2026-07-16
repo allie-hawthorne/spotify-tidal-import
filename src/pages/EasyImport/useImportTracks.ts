@@ -17,16 +17,12 @@ export const useImportTracks = () => {
   const [erroredTracks, setErroredTracks] = useState<MinTrack[]>([]);
 
   const importTracks = async (importer: TidalImporter) => {
-    for (const {track} of tracks) {
-      const {name: spotifyName, artists, external_ids: {isrc}, id} = track;
-      const spotifyArtistName = artists.map(a => a.name).join(' ');
+    for (const spotifyTrack of tracks) {
 
-      // TODO: Should map Spotify data in the context
-      const spotifyTrack: MinTrack = {id, isrc, artistName: spotifyArtistName, trackName: spotifyName};
-      const tidalTracks = await performRateLimitedRequest(() => importer.searchForTrack(spotifyName, artists.map(a => a.name)));
+      const tidalTracks = await performRateLimitedRequest(() => importer.searchForTrack(spotifyTrack.trackName, [spotifyTrack.artistName]));
 
       if (!tidalTracks) {
-        console.log("No results on Tidal - Spotify:", spotifyName);
+        console.log("No results on Tidal - Spotify:", spotifyTrack);
         setErroredTracks(prev => [...prev, spotifyTrack]);
         return;
       }
@@ -34,7 +30,7 @@ export const useImportTracks = () => {
       const matchedTrack = matchTrack(spotifyTrack, tidalTracks);
 
       if (!matchedTrack) {
-        console.log("No match on Tidal - Spotify:", spotifyName, "Tidal results:", tidalTracks);
+        console.log("No match on Tidal - Spotify:", spotifyTrack, "Tidal results:", tidalTracks);
         setErroredTracks(prev => [...prev, spotifyTrack]);
         continue;
       }
@@ -42,11 +38,11 @@ export const useImportTracks = () => {
       const res = await performRateLimitedRequest(() => importer.addTrack(matchedTrack.id));
 
       if (!res) {
-        console.log("Error adding track on Tidal - Spotify:", spotifyName, "Tidal:", matchedTrack);
+        console.log("Error adding track on Tidal - Spotify:", spotifyTrack, "Tidal:", matchedTrack);
         setErroredTracks(prev => [...prev, matchedTrack]);
         continue;
       }
-      console.log("MATCHED! Spotify:", spotifyName, "Tidal:", matchedTrack);
+      console.log("MATCHED! Spotify:", spotifyTrack, "Tidal:", matchedTrack);
       setSucceededTracks(prev => [...prev, matchedTrack]);
     }
   }
