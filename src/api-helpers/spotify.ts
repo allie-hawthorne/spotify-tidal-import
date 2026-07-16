@@ -2,7 +2,7 @@ import { SpotifyApi, type Artist, type SavedAlbum, type SavedTrack, type Simplif
 import type { Playlist } from '../types';
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from './tidal';
 import { SpotifyImporter } from './classes/SpotifyImporter';
-import { mapSpotifyTracksToUniversalTracks } from '../mappers/spotifyMappers';
+import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyTracksToUniversalTracks } from '../mappers/spotifyMappers';
 
 const SPOTIFY_CLIENT_ID = '2211a17ab92042db90b6e94f3dcb3988';
 const SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5500/spotify/';
@@ -75,7 +75,7 @@ export const getSpotifySavedAlbums = async (setAlbumTotal: SetNumberFn, setAlbum
     setAlbumProgress(offset);
   } while (next);
 
-  return allAlbums;
+  return mapSpotifyAlbumsToUniversalAlbums(allAlbums);
 }
 
 export const getSpotifySavedTracks = async (setTrackTotal: SetNumberFn, setTrackProgress: SetNumberFn) => {

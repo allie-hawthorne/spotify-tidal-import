@@ -17,24 +17,18 @@ export const useImportAlbums = () => {
   const [erroredAlbums, setErroredAlbums] = useState<MinAlbum[]>([]);
 
   const importAlbums = async (importer: TidalImporter) => {
-    for (const {album} of albums) {
-      const {name: spotifyAlbumName, artists} = album;
-      const spotifyArtistName = artists.map(a => a.name).join(' ');
-      // TODO: Map this anywhere but here
-      const spotifyAlbum: MinAlbum = {id: album.id, albumName: spotifyAlbumName, artistName: spotifyArtistName, barcode: album.external_ids.upc};
-      const tidalAlbums = await performRateLimitedRequest(() => importer.searchForAlbum(spotifyArtistName, spotifyAlbumName));
+    for (const spotifyAlbum of albums) {
+      const tidalAlbums = await performRateLimitedRequest(() => importer.searchForAlbum(spotifyAlbum.artistName, spotifyAlbum.albumName));
 
       if (!tidalAlbums) {
-        console.log("No result on Tidal - Spotify:", spotifyAlbumName);
+        console.log("No result on Tidal - Spotify:", spotifyAlbum);
         return;
       }
 
       const matchedAlbum = matchAlbum(spotifyAlbum, tidalAlbums);
-      
-      console.log("Spotify:", spotifyAlbumName, "-", spotifyArtistName, "Tidal:", matchedAlbum?.albumName, "-", matchedAlbum?.artistName);
 
       if (!matchedAlbum) {
-        console.log("No match on Tidal - Spotify:", spotifyAlbumName, "Tidal results:", tidalAlbums);
+        console.log("No match on Tidal - Spotify:", spotifyAlbum, "Tidal results:", tidalAlbums);
         setErroredAlbums(prev => [...prev, spotifyAlbum]);
         continue;
       }
@@ -42,11 +36,11 @@ export const useImportAlbums = () => {
       const res = await performRateLimitedRequest(() => importer.addAlbum(matchedAlbum.id));
 
       if (!res) {
-        console.log("Error adding album on Tidal - Spotify:", spotifyAlbumName, "Tidal:", matchedAlbum.artistName);
+        console.log("Error adding album on Tidal - Spotify:", spotifyAlbum, "Tidal:", matchedAlbum.artistName);
         setErroredAlbums(prev => [...prev, spotifyAlbum]);
         continue;
       }
-      console.log(res);
+      console.log("ALBUM MATCHED! Spotify:", spotifyAlbum, "Tidal:", matchedAlbum);
       setSucceededAlbums(prev => [...prev, matchedAlbum]);
     }
   }

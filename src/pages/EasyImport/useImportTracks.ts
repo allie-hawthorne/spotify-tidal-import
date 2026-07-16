@@ -42,7 +42,7 @@ export const useImportTracks = () => {
         setErroredTracks(prev => [...prev, matchedTrack]);
         continue;
       }
-      console.log("MATCHED! Spotify:", spotifyTrack, "Tidal:", matchedTrack);
+      console.log("TRACK MATCHED! Spotify:", spotifyTrack, "Tidal:", matchedTrack);
       setSucceededTracks(prev => [...prev, matchedTrack]);
     }
   }
