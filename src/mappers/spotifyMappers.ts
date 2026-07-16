@@ -1,7 +1,9 @@
-import type { Artist, SavedAlbum, SavedTrack } from "@spotify/web-api-ts-sdk";
+import type { Artist, SavedAlbum, SavedTrack, SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
 import type { MinArtist } from "../pages/EasyImport/useImport";
+import type { Playlist } from "../types";
+import { TIDAL_PLACEHOLDER_IMAGE_URL } from "../api-helpers/tidal";
 
 export const mapSpotifyTracksToUniversalTracks = (tracks: SavedTrack[]) => {
   const spotifyTracks = tracks.map(({track}): MinTrack | undefined => {
@@ -38,4 +40,13 @@ export const mapSpotifyArtistsToUniversalArtists = (artists: Artist[]) => {
   });
 
   return tidalArtists;
+};
+
+export const mapSpotifyPlaylistToUniversalPlaylist = (playlist: SimplifiedPlaylist): Playlist => {
+  return {
+    id: playlist.id,
+    name: playlist.name,
+    trackCount: playlist.tracks?.total ?? 0,
+    imageUrl: playlist.images?.[0]?.url ?? TIDAL_PLACEHOLDER_IMAGE_URL
+  }
 };
