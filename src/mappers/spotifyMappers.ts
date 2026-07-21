@@ -45,7 +45,7 @@ export const mapSpotifyArtistsToUniversalArtists = (artists: Artist[]) => {
 export const mapSpotifyPlaylistToUniversalPlaylist = (playlist: SimplifiedPlaylist): Playlist => {
   return {
     id: playlist.id,
-    name: playlist.name,
+    playlistName: playlist.name,
     trackCount: playlist.tracks?.total ?? 0,
     imageUrl: playlist.images?.[0]?.url ?? TIDAL_PLACEHOLDER_IMAGE_URL
   }

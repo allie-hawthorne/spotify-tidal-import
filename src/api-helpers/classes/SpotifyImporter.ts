@@ -57,7 +57,7 @@ export class SpotifyImporter {
 
     const allPlaylists: PlaylistWithItems[] = [];
     for (const playlistChunk of chunkedPlaylists) {
-      console.log("Getting tracks for playlist chunk:", playlistChunk.map(p => p.name));
+      console.log("Getting tracks for playlist chunk:", playlistChunk.map(p => p.playlistName));
       const playlistChunkWithTracks = await Promise.all(playlistChunk.map(this.getTracksFromPlaylist));
 
       allPlaylists.push(...playlistChunkWithTracks);

@@ -24,10 +24,10 @@ export const PlaylistContainer = ({ playlists, provider, selectedPlaylists, onSe
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-1">
                 {playlist.imageUrl
-                  ? <img className="w-12 h-12 object-cover rounded-md mr-2" src={playlist.imageUrl} alt={`${playlist.name} cover art`} />
+                  ? <img className="w-12 h-12 object-cover rounded-md mr-2" src={playlist.imageUrl} alt={`${playlist.playlistName} cover art`} />
                   : <div className="w-12 h-12 bg-gray-300 rounded-md mr-2" />
                 }
-                <p>{playlist.name}</p>
+                <p>{playlist.playlistName}</p>
               </div>
               <p className="text-xs opacity-70">{playlist.trackCount ? `${playlist.trackCount}` : 'No'} tracks</p>
             </div>

@@ -9,7 +9,7 @@ export const PlaylistImportStatus = ({ selectedPlaylists, allPlaylists }: Playli
   const currentlyImportingPlaylists = useMemo(() => {
     return allPlaylists
       .filter(p => p.status === ImportStatus.InProgress)
-      .map(p => `${p.name}: ${p.items.filter(i => i.status !== ImportStatus.NotStarted).length}/${p.items.length} tracks`);
+      .map(p => `${p.playlistName}: ${p.items.filter(i => i.status !== ImportStatus.NotStarted).length}/${p.items.length} tracks`);
   }, [allPlaylists]);
 
   const completedTracksCount = useMemo(() => {

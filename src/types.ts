@@ -15,7 +15,7 @@ export interface TrackForImport extends Track {
 }
 export interface Playlist {
   id: string;
-  name: string;
+  playlistName: string;
   trackCount: number;
   imageUrl: string;
 }
@@ -23,6 +23,7 @@ export interface PlaylistWithItems extends Playlist {
   tracks: MinTrack[];
 }
 export interface PlaylistForImport extends Playlist {
+  playlistName: string;
   items: TrackForImport[];
   status: ImportStatus;
 }

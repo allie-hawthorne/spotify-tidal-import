@@ -24,7 +24,7 @@ export const Home = () => {
     </ItemWrapper>
     {!!erroredPlaylists.length && <div className="text-red-500 text-sm">
       <p>{erroredPlaylists.length} playlists(s) not added:</p>
-      <ul>{erroredPlaylists.map(([pId, tracks]) =>
+      <ul>{erroredPlaylists.map(([pId, {tracks}]) =>
         <>
           <li key={pId}>{pId}</li>
           {tracks.map(t => <li className="ml-2">{t.trackName} by {t.artistName}</li>)}

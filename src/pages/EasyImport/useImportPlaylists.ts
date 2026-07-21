@@ -14,9 +14,9 @@ export interface MinPlaylist {
 const PLAYLISTS_CHUNK_SIZE = 2;
 const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time
 
-export type PlaylistTracksMap = Record<MinPlaylist['id'], MinTrack[]>
+export type PlaylistTracksMap = Record<MinPlaylist['id'], {playlist: MinPlaylist, tracks: MinTrack[]}>
 // TODO: Double check this works correctly
-const addToObject = (prev: PlaylistTracksMap, playlistId: string, ...tracks: MinTrack[]) => ({...prev, [playlistId]: [...(prev[playlistId] ?? []), ...tracks]})
+const addToObject = (prev: PlaylistTracksMap, playlist: MinPlaylist, ...tracks: MinTrack[]) => ({...prev, [playlist.id]: {playlist, tracks: [...(prev[playlist.id].tracks ?? []), ...tracks]}})
 
 export const useImportPlaylists = () => {
   const {playlists} = useSpotify();
@@ -32,7 +32,8 @@ export const useImportPlaylists = () => {
       // TODO: because we're awaiting each playlist chunk sequentially, if one playlist takes a long time to import, it will hold up the second slot.
       // We could sort playlists by track count so that longer ones are grouped together
       // or we could have a different approach to chunking overall maybe
-      await Promise.all(playlistChunk.map(async ({id: spotifyPlaylistId, name: spotifyPlaylistName, tracks}) => {
+      await Promise.all(playlistChunk.map(async (spotifyPlaylist) => {
+        const {playlistName: spotifyPlaylistName, tracks} = spotifyPlaylist;
         const destPlaylistId = await performRateLimitedRequest(() => importer.createPlaylist(spotifyPlaylistName));
 
         if (!destPlaylistId) return;
@@ -42,7 +43,7 @@ export const useImportPlaylists = () => {
           const tidalTracks = await performRateLimitedRequest(() => importer.searchForTrack(spotifyTrack.trackName, [spotifyTrack.artistName]));
 
           if (!tidalTracks) {
-            setErroredTracks(prev => addToObject(prev, spotifyPlaylistId, spotifyTrack));
+            setErroredTracks(prev => addToObject(prev, spotifyPlaylist, spotifyTrack));
             console.log("No results on Tidal - Spotify:", spotifyTrack);
             continue;
           }
@@ -51,7 +52,7 @@ export const useImportPlaylists = () => {
 
           if (!matchedTrack) {
             console.log("No match on Tidal - Spotify:", spotifyTrack, "Tidal results:", tidalTracks);
-            setErroredTracks(prev => addToObject(prev, spotifyPlaylistId, spotifyTrack));
+            setErroredTracks(prev => addToObject(prev, spotifyPlaylist, spotifyTrack));
             continue;
           }
 
@@ -63,10 +64,10 @@ export const useImportPlaylists = () => {
         for (const [batchIndex, batch] of batches.entries()) {
           const success = await performRateLimitedRequest(() => importer.addToPlaylist(destPlaylistId, batch));
           if (success) {
-            setSucceededTracks(prev => addToObject(prev, spotifyPlaylistId, ...batch));
+            setSucceededTracks(prev => addToObject(prev, spotifyPlaylist, ...batch));
             console.log(`Added batch ${batchIndex + 1}/${batches.length} of tracks to destination playlist:`, spotifyPlaylistName, batch);
           } else {
-            setErroredTracks(prev => addToObject(prev, spotifyPlaylistId, ...batch));
+            setErroredTracks(prev => addToObject(prev, spotifyPlaylist, ...batch));
             // setErroredPlaylists(prev => [...prev, {id: destPlaylistId, playlistName: spotifyPlaylistName}]);
             console.error(`Failed to add batch ${batchIndex + 1}/${batches.length} of tracks to destination playlist:`, spotifyPlaylistName, batch);
           }
