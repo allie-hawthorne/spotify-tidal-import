@@ -1,6 +1,7 @@
 import { SpotifyApi, type Artist, type SavedAlbum, type SavedTrack, type Playlist as SpotifyPlaylist } from '@spotify/web-api-ts-sdk';
 import { SpotifyImporter } from './classes/SpotifyImporter';
 import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyArtistsToUniversalArtists, mapSpotifyPlaylistToUniversalPlaylist, mapSpotifyTracksToUniversalTracks } from '../mappers/spotifyMappers';
+import pRetry from '@n8n/p-retry';
 
 const SPOTIFY_CLIENT_ID = '2211a17ab92042db90b6e94f3dcb3988';
 const SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5500/spotify/';
@@ -14,7 +15,8 @@ export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlay
   let next = '';
   do {
     // TODO: get user id from spotify api instead of hardcoding it
-    const playlists = await spotifyApi.playlists.getUsersPlaylists('1121194900', undefined, offset);
+    const fn = () => spotifyApi.playlists.getUsersPlaylists('1121194900', undefined, offset);
+    const playlists = await pRetry(fn);
     allPlaylists.push(...playlists.items);
     
     offset += playlists.limit;
@@ -40,7 +42,8 @@ export const getSpotifySavedArtists = async (setArtistTotal: SetNumberFn, setArt
   const allArtists: Artist[] = [];
   let after: string | undefined = undefined;
   do {
-    const {artists} = await spotifyApi.currentUser.followedArtists(after, 50);
+    const fn = () => spotifyApi.currentUser.followedArtists(after, 50);
+    const {artists} = await pRetry(fn);
     allArtists.push(...artists.items);
 
     // @ts-expect-error - Cursor is in the object but not in the type for some reason
@@ -57,7 +60,8 @@ export const getSpotifySavedAlbums = async (setAlbumTotal: SetNumberFn, setAlbum
   let offset = 0;
   let next = '';
   do {
-    const albums = await spotifyApi.currentUser.albums.savedAlbums(50, offset);
+    const fn = () => spotifyApi.currentUser.albums.savedAlbums(50, offset);
+    const albums = await pRetry(fn);
     allAlbums.push(...albums.items);
 
     offset += albums.limit;
@@ -74,7 +78,8 @@ export const getSpotifySavedTracks = async (setTrackTotal: SetNumberFn, setTrack
   let offset = 0;
   let next = '';
   do {
-    const tracks = await spotifyApi.currentUser.tracks.savedTracks(50, offset);
+    const fn = () => spotifyApi.currentUser.tracks.savedTracks(50, offset);
+    const tracks = await pRetry(fn);
     allTracks.push(...tracks.items);
 
     offset += tracks.limit;

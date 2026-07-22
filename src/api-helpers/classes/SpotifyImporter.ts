@@ -4,10 +4,12 @@ import type { Playlist, PlaylistForImport, PlaylistWithItems } from "../../types
 import { ImportStatus } from "../../types";
 import { spotifyApi } from "../spotify";
 import { mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
+import pRetry from "@n8n/p-retry";
 
 const getPlaylistTracks = async (playlistId: string) => {
   try {
-    const playlistTracksRes = await spotifyApi.playlists.getPlaylistItems(playlistId);
+    const fn = () => spotifyApi.playlists.getPlaylistItems(playlistId);
+    const playlistTracksRes = await pRetry(fn);
     console.log(`Tracks for playlist ${playlistId}:`, playlistTracksRes.items);
     return mapSpotifyTracksToUniversalTracks(playlistTracksRes.items);
   } catch (error) {
