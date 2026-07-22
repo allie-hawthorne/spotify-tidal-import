@@ -1,9 +1,11 @@
-import { useState, type HTMLAttributes, type PropsWithChildren } from "react";
-import { AllArtists } from "./EasyImport/AllArtists"
+import { useState } from "react";
 import { ImportButton } from "../components/ImportButton";
-import { AllAlbums } from "./EasyImport/AllAlbums";
-import { AllTracks } from "./EasyImport/AllTracks";
-import { AllPlaylists } from "./EasyImport/AllPlaylists";
+import {
+  AlbumsImportSection,
+  ArtistsImportSection,
+  PlaylistsImportSection,
+  TracksImportSection,
+} from "./EasyImport/ImportSection";
 import { useEasyImport } from "./EasyImport/useImport";
 
 export const Home = () => {
@@ -12,55 +14,44 @@ export const Home = () => {
   const [importPlaylists, setImportPlaylists] = useState(true);
   const [importTracks, setImportTracks] = useState(true);
 
-  const {onImportClick, succeededArtists, erroredArtists, succeededAlbums, erroredAlbums, succeededTracks, erroredTracks, succeededPlaylistTracks, erroredPlaylistTracks} = useEasyImport(importTracks, importAlbums, importArtists, importPlaylists);
-
-  const erroredPlaylists = Object.entries(erroredPlaylistTracks);
+  const {
+    onImportClick,
+    succeededArtists,
+    erroredArtists,
+    succeededAlbums,
+    erroredAlbums,
+    succeededTracks,
+    erroredTracks,
+    succeededPlaylistTracks,
+    erroredPlaylistTracks,
+  } = useEasyImport(importTracks, importAlbums, importArtists, importPlaylists);
 
   return <div className="flex gap-2 flex-col">
     {/* TODO: Add import from dropdown etc */}
-    <ItemWrapper onClick={() => setImportPlaylists(!importPlaylists)}>
-      <input type="checkbox" checked={importPlaylists} />
-      <AllPlaylists succeededPlaylistTracks={succeededPlaylistTracks} />
-    </ItemWrapper>
-    {!!erroredPlaylists.length && <div className="text-red-500 text-sm">
-      <p>{erroredPlaylists.length} playlists(s) not added:</p>
-      <ul>{erroredPlaylists.map(([pId, {tracks}]) =>
-        <>
-          <li key={pId}>{pId}</li>
-          {tracks.map(t => <li className="ml-2">{t.trackName} by {t.artistName}</li>)}
-        </>
-      )}</ul>
-    </div>}
-    <ItemWrapper onClick={() => setImportArtists(!importArtists)}>
-      <input type="checkbox" checked={importArtists} />
-      <AllArtists succeededArtists={succeededArtists} />
-    </ItemWrapper>
-    {!!erroredArtists.length && <div className="text-red-500 text-sm">
-      <p>{erroredArtists.length} artist(s) not added:</p>
-      <ul>{erroredArtists.map(a => <li key={a.id}>{a.artistName}</li>)}</ul>
-    </div>}
-    <ItemWrapper onClick={() => setImportAlbums(!importAlbums)}>
-      <input type="checkbox" checked={importAlbums} />
-      <AllAlbums succeededAlbums={succeededAlbums}/>
-    </ItemWrapper>
-    {!!erroredAlbums.length && <div className="text-red-500 text-sm">
-      <p>{erroredAlbums.length} album(s) not added:</p>
-      <ul>{erroredAlbums.map(a => <li key={a.id}>{a.albumName} by {a.artistName}</li>)}</ul>
-    </div>}
-    <ItemWrapper onClick={() => setImportTracks(!importTracks)}>
-      <input type="checkbox" checked={importTracks} />
-      <AllTracks succeededTracks={succeededTracks} />
-    </ItemWrapper>
-    {!!erroredTracks.length && <div className="text-red-500 text-sm">
-      <p>{erroredTracks.length} track(s) not added:</p>
-      <ul>{erroredTracks.map(a => <li key={a.id}>{a.trackName} by {a.artistName}</li>)}</ul>
-    </div>}
+    <PlaylistsImportSection
+      checked={importPlaylists}
+      onToggle={() => setImportPlaylists(!importPlaylists)}
+      succeededPlaylistTracks={succeededPlaylistTracks}
+      erroredPlaylistTracks={erroredPlaylistTracks}
+    />
+    <ArtistsImportSection
+      checked={importArtists}
+      onToggle={() => setImportArtists(!importArtists)}
+      succeededArtists={succeededArtists}
+      erroredArtists={erroredArtists}
+    />
+    <AlbumsImportSection
+      checked={importAlbums}
+      onToggle={() => setImportAlbums(!importAlbums)}
+      succeededAlbums={succeededAlbums}
+      erroredAlbums={erroredAlbums}
+    />
+    <TracksImportSection
+      checked={importTracks}
+      onToggle={() => setImportTracks(!importTracks)}
+      succeededTracks={succeededTracks}
+      erroredTracks={erroredTracks}
+    />
     <ImportButton onClick={onImportClick} />
-  </div>
-}
-
-const ItemWrapper = ({children, ...props}: PropsWithChildren<HTMLAttributes<HTMLDivElement>>) => {
-  return <div className="flex gap-2 touch-none cursor-pointer" {...props}>
-    {children}
   </div>
 }

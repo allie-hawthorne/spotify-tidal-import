@@ -1,11 +1,16 @@
-import { useSpotify } from "../../api-helpers/SpotifyContext"
-import type { MinAlbum } from "./useImportAlbums"
+import { useSpotify } from "../../api-helpers/SpotifyContext";
+import { CollectionSummary } from "./CollectionSummary";
+import type { MinAlbum } from "./useImportAlbums";
 
 export const AllAlbums = ({succeededAlbums}: {succeededAlbums: MinAlbum[]}) => {
-  const {albums, albumsLoading, albumProgress, albumTotal} = useSpotify()
-    
-  if (albumsLoading) return <p>loading saved albums ({albumProgress}/{albumTotal})</p>
-  if (!albums) return <p>We couldn't get your albums</p>
+  const {albums, albumsLoading, albumProgress, albumTotal} = useSpotify();
 
-  return <p>Import {albums.length} saved albums {!!succeededAlbums.length && `(${succeededAlbums.length}/${albums.length})`}</p>
+  return <CollectionSummary
+    label="saved albums"
+    loading={albumsLoading}
+    loadingTotal={albumTotal}
+    loadingProgress={albumProgress}
+    succeededCount={succeededAlbums.length}
+    itemCount={albums.length}
+  />;
 }

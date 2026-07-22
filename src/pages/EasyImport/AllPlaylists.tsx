@@ -1,14 +1,19 @@
 import { PlaylistState, useSpotify } from "../../api-helpers/SpotifyContext";
+import { CollectionSummary } from "./CollectionSummary";
 import type { PlaylistTracksMap } from "./useImportPlaylists";
 
-// TODO: Try to reuse this where possible
 export const AllPlaylists = ({succeededPlaylistTracks}: {succeededPlaylistTracks: PlaylistTracksMap}) => {
-  const {playlists, playlistsLoading, playlistTotal, playlistProgress, playlistState} = useSpotify()
-  
-  if (playlistsLoading) return <p>loading {playlistState === PlaylistState.Tracks && 'tracks from'} playlists ({playlistProgress}/{playlistTotal})</p>
-  if (!playlists) return <p>We couldn't get your playlists</p>
-  
-  const playlistCount = Object.entries(succeededPlaylistTracks).length
+  const {playlists, playlistsLoading, playlistTotal, playlistProgress, playlistState} = useSpotify();
+  const playlistCount = Object.entries(succeededPlaylistTracks).length;
 
-  return <p>Import {playlists.length} playlists {!!playlistCount && `(${playlistCount}/${playlists.length})`}</p>
+  const label = `${playlistState === PlaylistState.Tracks ? "tracks from" : ""} playlists`
+  
+  return <CollectionSummary
+    label={label}
+    loading={playlistsLoading}
+    loadingTotal={playlistTotal}
+    loadingProgress={playlistProgress}
+    succeededCount={playlistCount}
+    itemCount={playlists.length}
+  />;
 }

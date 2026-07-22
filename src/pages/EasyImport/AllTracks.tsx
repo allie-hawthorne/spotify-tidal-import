@@ -1,11 +1,16 @@
-import { useSpotify } from "../../api-helpers/SpotifyContext"
-import type { MinTrack } from "./useImportTracks"
+import { useSpotify } from "../../api-helpers/SpotifyContext";
+import { CollectionSummary } from "./CollectionSummary";
+import type { MinTrack } from "./useImportTracks";
 
 export const AllTracks = ({succeededTracks}: {succeededTracks: MinTrack[]}) => {
-  const {tracks, tracksLoading, trackProgress, trackTotal} = useSpotify()
-    
-  if (tracksLoading) return <p>loading followed tracks ({trackProgress}/{trackTotal})</p>
-  if (!tracks) return <p>We couldn't get your tracks</p>
+  const {tracks, tracksLoading, trackProgress, trackTotal} = useSpotify();
 
-  return <p>Import {tracks.length} followed tracks {!!succeededTracks.length && `(${succeededTracks.length}/${tracks.length})`}</p>
+  return <CollectionSummary
+    label="followed tracks"
+    loading={tracksLoading}
+    loadingTotal={trackTotal}
+    loadingProgress={trackProgress}
+    succeededCount={succeededTracks.length}
+    itemCount={tracks.length}
+  />;
 }
