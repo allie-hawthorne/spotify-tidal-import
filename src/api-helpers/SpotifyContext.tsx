@@ -5,6 +5,13 @@ import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
 import type { MinArtist } from "../pages/EasyImport/useImport";
 
+type ValueOf<T extends object> = T[keyof T]
+export type PlaylistStateValue = ValueOf<typeof PlaylistState>
+export const PlaylistState = {
+  Playlist: 'playlist',
+  Tracks: 'tracks'
+} as const;
+
 interface SpotifyContext {
   albums: MinAlbum[]
   albumsLoading: boolean
@@ -18,6 +25,7 @@ interface SpotifyContext {
 
   playlists: PlaylistWithItems[]
   playlistsLoading: boolean
+  playlistState: PlaylistStateValue
   playlistTotal: number
   playlistProgress: number
 
@@ -39,6 +47,7 @@ const context = createContext<SpotifyContext>({
 
   playlists: [],
   playlistsLoading: false,
+  playlistState: PlaylistState.Playlist,
   playlistTotal: 0,
   playlistProgress: 0,
   
@@ -61,6 +70,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
 
   const [playlists, setPlaylists] = useState<PlaylistWithItems[]>([]);
   const [playlistsLoading, setPlaylistsLoading] = useState(true);
+  const [playlistState, setPlaylistState] = useState<PlaylistStateValue>(PlaylistState.Playlist);
   const [playlistTotal, setPlaylistTotal] = useState(0);
   const [playlistProgress, setPlaylistProgress] = useState(0);
   
@@ -70,7 +80,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   const [trackProgress] = useState(0);
 
   useEffect(() => {
-    getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress).then(p => {
+    getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress, setPlaylistState).then(p => {
       setPlaylists(p);
       setPlaylistsLoading(false);
     })
@@ -110,6 +120,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
 
     playlists,
     playlistsLoading,
+    playlistState,
     playlistTotal,
     playlistProgress,
 

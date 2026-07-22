@@ -2,12 +2,14 @@ import { SpotifyApi, type Artist, type SavedAlbum, type SavedTrack, type Playlis
 import { SpotifyImporter } from './classes/SpotifyImporter';
 import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyArtistsToUniversalArtists, mapSpotifyPlaylistToUniversalPlaylist, mapSpotifyTracksToUniversalTracks } from '../mappers/spotifyMappers';
 import pRetry from '@n8n/p-retry';
+import { PlaylistState, type PlaylistStateValue } from './SpotifyContext';
+import type { Dispatch, SetStateAction } from 'react';
 
 const SPOTIFY_CLIENT_ID = '2211a17ab92042db90b6e94f3dcb3988';
 const SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5500/spotify/';
 export const spotifyApi = SpotifyApi.withUserAuthorization(SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI, ["user-read-private", "user-read-email", "user-library-read", "user-follow-read"]);
 
-export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn) => {
+export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setPlaylistState: (v: PlaylistStateValue) => void) => {
   const spotify = new SpotifyImporter();
   
   const allPlaylists: SpotifyPlaylist[] = [];
@@ -24,20 +26,23 @@ export const getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlay
     setPlaylistTotal(playlists.total);
     setPlaylistProgress(Math.min(playlists.total, offset));
   } while (next);
+  
+  setPlaylistProgress(0);
+  setPlaylistState(PlaylistState.Tracks);
 
   const mappedPlaylists = allPlaylists.map(mapSpotifyPlaylistToUniversalPlaylist);
   
   console.log('Spotify playlists:', allPlaylists);
   console.log('Total Tracks:', allPlaylists.reduce((sum, p) => sum + (p.tracks?.total || 0), 0));
 
-  const playlistsWithTracks = await spotify.getTracksFromPlaylists(mappedPlaylists);
+  const playlistsWithTracks = await spotify.getTracksFromPlaylists(mappedPlaylists, setPlaylistProgress);
 
   console.log('All playlists with tracks:', playlistsWithTracks);
   
   return playlistsWithTracks;
 }
 
-type SetNumberFn = (num: number) => void
+export type SetNumberFn = Dispatch<SetStateAction<number>>
 export const getSpotifySavedArtists = async (setArtistTotal: SetNumberFn, setArtistProgress: SetNumberFn) => {
   const allArtists: Artist[] = [];
   let after: string | undefined = undefined;

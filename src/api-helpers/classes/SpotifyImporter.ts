@@ -1,9 +1,11 @@
 import { chunk } from "lodash";
 import type { Playlist, PlaylistForImport, PlaylistWithItems } from "../../types";
 import { ImportStatus } from "../../types";
-import { spotifyApi } from "../spotify";
+import { spotifyApi, type SetNumberFn } from "../spotify";
 import { mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
 import pRetry from "@n8n/p-retry";
+
+const CHUNK_SIZE = 3;
 
 const getPlaylistTracks = async (playlistId: string) => {
   const fn = () => spotifyApi.playlists.getPlaylistItems(playlistId);
@@ -45,13 +47,14 @@ export class SpotifyImporter {
     };
   };
 
-  getTracksFromPlaylists = async (playlists: Playlist[]): Promise<PlaylistWithItems[]> => {
-    const chunkedPlaylists = chunk(playlists, 3); // Rate limits can get rough here, but parallelizing in chunks of 3 seems to work ok
+  getTracksFromPlaylists = async (playlists: Playlist[], setPlaylistProgress: SetNumberFn): Promise<PlaylistWithItems[]> => {
+    const chunkedPlaylists = chunk(playlists, CHUNK_SIZE); // Rate limits can get rough here, but parallelizing in chunks of 3 seems to work ok
 
     const allPlaylists: PlaylistWithItems[] = [];
     for (const playlistChunk of chunkedPlaylists) {
       console.log("Getting tracks for playlist chunk:", playlistChunk.map(p => p.playlistName));
       const playlistChunkWithTracks = await Promise.all(playlistChunk.map(this.getTracksFromPlaylist));
+      setPlaylistProgress(v => v += CHUNK_SIZE)
 
       allPlaylists.push(...playlistChunkWithTracks);
     }
