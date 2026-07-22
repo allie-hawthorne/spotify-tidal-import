@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { performRateLimitedRequest } from "../../utils";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { chunk } from "lodash";
@@ -34,13 +33,13 @@ export const useImportPlaylists = () => {
       // or we could have a different approach to chunking overall maybe
       await Promise.all(playlistChunk.map(async (spotifyPlaylist) => {
         const {playlistName: spotifyPlaylistName, tracks} = spotifyPlaylist;
-        const destPlaylistId = await performRateLimitedRequest(() => importer.createPlaylist(spotifyPlaylistName));
+        const destPlaylistId = await importer.createPlaylist(spotifyPlaylistName);
 
         if (!destPlaylistId) return;
 
         const tidalTracksToAdd: MinTrack[] = [];
         for (const spotifyTrack of tracks) {
-          const tidalTracks = await performRateLimitedRequest(() => importer.searchForTrack(spotifyTrack.trackName, [spotifyTrack.artistName]));
+          const tidalTracks = await importer.searchForTrack(spotifyTrack.trackName, [spotifyTrack.artistName]);
 
           if (!tidalTracks) {
             setErroredTracks(prev => addToObject(prev, spotifyPlaylist, spotifyTrack));
@@ -62,7 +61,7 @@ export const useImportPlaylists = () => {
 
         const batches = chunk(tidalTracksToAdd, MAX_TRACKS_PER_BATCH);
         for (const [batchIndex, batch] of batches.entries()) {
-          const success = await performRateLimitedRequest(() => importer.addToPlaylist(destPlaylistId, batch));
+          const success = await importer.addToPlaylist(destPlaylistId, batch);
           if (success) {
             setSucceededTracks(prev => addToObject(prev, spotifyPlaylist, ...batch));
             console.log(`Added batch ${batchIndex + 1}/${batches.length} of tracks to destination playlist:`, spotifyPlaylistName, batch);

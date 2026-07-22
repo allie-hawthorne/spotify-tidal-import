@@ -1,5 +1,4 @@
 import { chunk } from "lodash";
-import { performRateLimitedRequest } from "../../utils";
 import type { Playlist, PlaylistForImport, PlaylistWithItems } from "../../types";
 import { ImportStatus } from "../../types";
 import { spotifyApi } from "../spotify";
@@ -7,25 +6,17 @@ import { mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers"
 import pRetry from "@n8n/p-retry";
 
 const getPlaylistTracks = async (playlistId: string) => {
-  try {
-    const fn = () => spotifyApi.playlists.getPlaylistItems(playlistId);
-    const playlistTracksRes = await pRetry(fn);
-    console.log(`Tracks for playlist ${playlistId}:`, playlistTracksRes.items);
-    return mapSpotifyTracksToUniversalTracks(playlistTracksRes.items);
-  } catch (error) {
-    if (error instanceof Error) {
-      // TODO: this is bad but spotify doesn't expose error codes without custom logic. should do at some point
-      if (error.message.includes("rate limit")) return 429;
-    }
-  }
-  return [];
+  const fn = () => spotifyApi.playlists.getPlaylistItems(playlistId);
+  const playlistTracksRes = await pRetry(fn);
+  console.log(`Tracks for playlist ${playlistId}:`, playlistTracksRes.items);
+  return mapSpotifyTracksToUniversalTracks(playlistTracksRes.items);
 }
 
 export class SpotifyImporter {
   constructor() {}
 
   _getTracksFromPlaylists = async (playlists: Playlist[]): Promise<PlaylistForImport[]> => {
-    const allPlaylistTracks = await Promise.all(playlists.map(p => performRateLimitedRequest(() => getPlaylistTracks(p.id))));
+    const allPlaylistTracks = await Promise.all(playlists.map(p => getPlaylistTracks(p.id)));
 
     const updatedPlaylists: PlaylistForImport[] = playlists.map((_, i) => {
       const playlistTracks = allPlaylistTracks[i];
@@ -45,7 +36,7 @@ export class SpotifyImporter {
   };
 
   getTracksFromPlaylist = async (playlist: Playlist): Promise<PlaylistWithItems> => {
-    const playlistTracks = await performRateLimitedRequest(() => getPlaylistTracks(playlist.id));
+    const playlistTracks = await getPlaylistTracks(playlist.id);
     console.log("Getting tracks for playlist:", playlist);
 
     return {

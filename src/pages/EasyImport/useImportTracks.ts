@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { performRateLimitedRequest } from "../../utils";
 import { type MinArtist } from "./useImport";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
@@ -19,7 +18,7 @@ export const useImportTracks = () => {
   const importTracks = async (importer: TidalImporter) => {
     for (const spotifyTrack of tracks) {
 
-      const tidalTracks = await performRateLimitedRequest(() => importer.searchForTrack(spotifyTrack.trackName, [spotifyTrack.artistName]));
+      const tidalTracks = await importer.searchForTrack(spotifyTrack.trackName, [spotifyTrack.artistName]);
 
       if (!tidalTracks) {
         console.log("No results on Tidal - Spotify:", spotifyTrack);
@@ -35,7 +34,7 @@ export const useImportTracks = () => {
         continue;
       }
 
-      const res = await performRateLimitedRequest(() => importer.addTrack(matchedTrack.id));
+      const res = await importer.addTrack(matchedTrack.id);
 
       if (!res) {
         console.log("Error adding track on Tidal - Spotify:", spotifyTrack, "Tidal:", matchedTrack);
