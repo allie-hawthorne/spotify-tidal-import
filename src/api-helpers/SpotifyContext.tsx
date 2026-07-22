@@ -65,9 +65,9 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   const [playlistProgress, setPlaylistProgress] = useState(0);
   
   const [tracks] = useState<MinTrack[]>([]);
+  const [tracksLoading] = useState(true);
   const [trackTotal] = useState(0);
   const [trackProgress] = useState(0);
-  const [tracksLoading] = useState(true);
 
   useEffect(() => {
     getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress).then(p => {
