@@ -4,17 +4,19 @@ import { AllArtists } from "./AllArtists";
 import { AllPlaylists } from "./AllPlaylists";
 import { AllTracks } from "./AllTracks";
 import { useImporterContext, type UseState } from "./ImportContext";
+import { useSpotify } from "../../api-helpers/SpotifyContext";
 
 type ImportSectionProps = PropsWithChildren<{
+  loading: boolean;
   checked: boolean;
   setShouldImport: UseState<boolean>;
   summary: ReactNode;
 }>;
 
-export const ImportSection = ({ checked, setShouldImport, summary, children }: ImportSectionProps) => {
+export const ImportSection = ({ loading, checked, setShouldImport, summary, children }: ImportSectionProps) => {
   return <div className="flex flex-col gap-2">
-    <div className="flex gap-2 touch-none cursor-pointer" onClick={() => setShouldImport(s => !s)}>
-      <input type="checkbox" checked={checked} readOnly className="pointer-events-none" />
+    <div className="flex gap-2 touch-none cursor-pointer" onClick={() => loading ? undefined : setShouldImport(s => !s)}>
+      <input type="checkbox" checked={loading ? false : checked} disabled={loading} readOnly className="pointer-events-none" />
       {summary}
     </div>
     {children}
@@ -44,10 +46,12 @@ export const PlaylistsImportSection = () => {
     shouldImportPlaylists,
     setShouldImportPlaylists
   } = useImporterContext();
+  const {playlistsLoading} = useSpotify();
 
   const erroredPlaylists = Object.entries(erroredPlaylistTracks);
 
   return <ImportSection
+    loading={playlistsLoading}
     checked={shouldImportPlaylists}
     setShouldImport={setShouldImportPlaylists}
     summary={<AllPlaylists succeededPlaylistTracks={succeededPlaylistTracks} />}
@@ -70,8 +74,10 @@ export const ArtistsImportSection = () => {
     shouldImportArtists,
     setShouldImportArtists
   } = useImporterContext();
+  const {artistsLoading} = useSpotify();
 
   return <ImportSection
+    loading={artistsLoading}
     checked={shouldImportArtists}
     setShouldImport={setShouldImportArtists}
     summary={<AllArtists succeededArtists={succeededArtists} />}
@@ -89,8 +95,10 @@ export const AlbumsImportSection = () => {
     shouldImportAlbums,
     setShouldImportAlbums
   } = useImporterContext();
+  const {albumsLoading} = useSpotify();
 
   return <ImportSection
+    loading={albumsLoading}
     checked={shouldImportAlbums}
     setShouldImport={setShouldImportAlbums}
     summary={<AllAlbums succeededAlbums={succeededAlbums} />}
@@ -108,8 +116,10 @@ export const TracksImportSection = () => {
     shouldImportTracks,
     setShouldImportTracks
   } = useImporterContext();
+  const {tracksLoading} = useSpotify();
 
   return <ImportSection
+    loading={tracksLoading}
     checked={shouldImportTracks}
     setShouldImport={setShouldImportTracks}
     summary={<AllTracks succeededTracks={succeededTracks} />}
