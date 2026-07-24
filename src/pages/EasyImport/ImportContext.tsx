@@ -7,7 +7,7 @@ import { useImportTracks } from "./useImportTracks";
 import type { MinAlbum } from "./useImportAlbums";
 import type { MinTrack } from "./useImportTracks";
 
-type UseState<T> = Dispatch<SetStateAction<T>>
+export type UseState<T> = Dispatch<SetStateAction<T>>
 
 // TODO: Rename as also used for albums
 export interface MinArtist {

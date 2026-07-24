@@ -3,17 +3,17 @@ import { AllAlbums } from "./AllAlbums";
 import { AllArtists } from "./AllArtists";
 import { AllPlaylists } from "./AllPlaylists";
 import { AllTracks } from "./AllTracks";
-import { useImporterContext } from "./ImportContext";
+import { useImporterContext, type UseState } from "./ImportContext";
 
 type ImportSectionProps = PropsWithChildren<{
   checked: boolean;
-  onToggle: () => void;
+  setShouldImport: UseState<boolean>;
   summary: ReactNode;
 }>;
 
-export const ImportSection = ({ checked, onToggle, summary, children }: ImportSectionProps) => {
+export const ImportSection = ({ checked, setShouldImport, summary, children }: ImportSectionProps) => {
   return <div className="flex flex-col gap-2">
-    <div className="flex gap-2 touch-none cursor-pointer" onClick={onToggle}>
+    <div className="flex gap-2 touch-none cursor-pointer" onClick={() => setShouldImport(s => !s)}>
       <input type="checkbox" checked={checked} readOnly className="pointer-events-none" />
       {summary}
     </div>
@@ -49,7 +49,7 @@ export const PlaylistsImportSection = () => {
 
   return <ImportSection
     checked={shouldImportPlaylists}
-    onToggle={() => setShouldImportPlaylists(!shouldImportPlaylists)}
+    setShouldImport={setShouldImportPlaylists}
     summary={<AllPlaylists succeededPlaylistTracks={succeededPlaylistTracks} />}
   >
     <ImportErrorList count={erroredPlaylists.length} title="playlist(s) not added:">
@@ -73,7 +73,7 @@ export const ArtistsImportSection = () => {
 
   return <ImportSection
     checked={shouldImportArtists}
-    onToggle={() => setShouldImportArtists(!shouldImportArtists)}
+    setShouldImport={setShouldImportArtists}
     summary={<AllArtists succeededArtists={succeededArtists} />}
   >
     <ImportErrorList count={erroredArtists.length} title="artist(s) not added:">
@@ -92,7 +92,7 @@ export const AlbumsImportSection = () => {
 
   return <ImportSection
     checked={shouldImportAlbums}
-    onToggle={() => setShouldImportAlbums(!shouldImportAlbums)}
+    setShouldImport={setShouldImportAlbums}
     summary={<AllAlbums succeededAlbums={succeededAlbums} />}
   >
     <ImportErrorList count={erroredAlbums.length} title="album(s) not added:">
@@ -111,7 +111,7 @@ export const TracksImportSection = () => {
 
   return <ImportSection
     checked={shouldImportTracks}
-    onToggle={() => setShouldImportTracks(!shouldImportTracks)}
+    setShouldImport={setShouldImportTracks}
     summary={<AllTracks succeededTracks={succeededTracks} />}
   >
     <ImportErrorList count={erroredTracks.length} title="track(s) not added:">
