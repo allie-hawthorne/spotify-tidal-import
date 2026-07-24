@@ -1,5 +1,5 @@
 import type { tidalApi } from "../api-helpers/tidal";
-import type { MinArtist } from "../pages/EasyImport/useImport";
+import type { MinArtist } from "../pages/EasyImport/ImportContext";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 

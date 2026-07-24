@@ -1,4 +1,4 @@
-import type { MinArtist } from "./useImport";
+import type { MinArtist } from "./ImportContext";
 import type { MinAlbum } from "./useImportAlbums";
 import type { MinTrack } from "./useImportTracks";
 

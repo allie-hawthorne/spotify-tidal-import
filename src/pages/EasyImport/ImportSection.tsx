@@ -3,10 +3,7 @@ import { AllAlbums } from "./AllAlbums";
 import { AllArtists } from "./AllArtists";
 import { AllPlaylists } from "./AllPlaylists";
 import { AllTracks } from "./AllTracks";
-import type { MinArtist } from "./useImport";
-import type { MinAlbum } from "./useImportAlbums";
-import type { PlaylistTracksMap } from "./useImportPlaylists";
-import type { MinTrack } from "./useImportTracks";
+import { useImporterContext } from "./ImportContext";
 
 type ImportSectionProps = PropsWithChildren<{
   checked: boolean;
@@ -40,19 +37,19 @@ export const ImportErrorList = ({ count, title, children }: ImportErrorListProps
   </div>;
 };
 
-type PlaylistImportSectionProps = {
-  checked: boolean;
-  onToggle: () => void;
-  succeededPlaylistTracks: PlaylistTracksMap;
-  erroredPlaylistTracks: PlaylistTracksMap;
-};
+export const PlaylistsImportSection = () => {
+  const {
+    succeededPlaylistTracks,
+    erroredPlaylistTracks,
+    shouldImportPlaylists,
+    setShouldImportPlaylists
+  } = useImporterContext();
 
-export const PlaylistsImportSection = ({ checked, onToggle, succeededPlaylistTracks, erroredPlaylistTracks }: PlaylistImportSectionProps) => {
   const erroredPlaylists = Object.entries(erroredPlaylistTracks);
 
   return <ImportSection
-    checked={checked}
-    onToggle={onToggle}
+    checked={shouldImportPlaylists}
+    onToggle={() => setShouldImportPlaylists(!shouldImportPlaylists)}
     summary={<AllPlaylists succeededPlaylistTracks={succeededPlaylistTracks} />}
   >
     <ImportErrorList count={erroredPlaylists.length} title="playlist(s) not added:">
@@ -66,17 +63,17 @@ export const PlaylistsImportSection = ({ checked, onToggle, succeededPlaylistTra
   </ImportSection>;
 };
 
-type ArtistImportSectionProps = {
-  checked: boolean;
-  onToggle: () => void;
-  succeededArtists: MinArtist[];
-  erroredArtists: MinArtist[];
-};
+export const ArtistsImportSection = () => {
+  const {
+    succeededArtists,
+    erroredArtists,
+    shouldImportArtists,
+    setShouldImportArtists
+  } = useImporterContext();
 
-export const ArtistsImportSection = ({ checked, onToggle, succeededArtists, erroredArtists }: ArtistImportSectionProps) => {
   return <ImportSection
-    checked={checked}
-    onToggle={onToggle}
+    checked={shouldImportArtists}
+    onToggle={() => setShouldImportArtists(!shouldImportArtists)}
     summary={<AllArtists succeededArtists={succeededArtists} />}
   >
     <ImportErrorList count={erroredArtists.length} title="artist(s) not added:">
@@ -85,17 +82,17 @@ export const ArtistsImportSection = ({ checked, onToggle, succeededArtists, erro
   </ImportSection>;
 };
 
-type AlbumImportSectionProps = {
-  checked: boolean;
-  onToggle: () => void;
-  succeededAlbums: MinAlbum[];
-  erroredAlbums: MinAlbum[];
-};
+export const AlbumsImportSection = () => {
+  const {
+    succeededAlbums,
+    erroredAlbums,
+    shouldImportAlbums,
+    setShouldImportAlbums
+  } = useImporterContext();
 
-export const AlbumsImportSection = ({ checked, onToggle, succeededAlbums, erroredAlbums }: AlbumImportSectionProps) => {
   return <ImportSection
-    checked={checked}
-    onToggle={onToggle}
+    checked={shouldImportAlbums}
+    onToggle={() => setShouldImportAlbums(!shouldImportAlbums)}
     summary={<AllAlbums succeededAlbums={succeededAlbums} />}
   >
     <ImportErrorList count={erroredAlbums.length} title="album(s) not added:">
@@ -104,17 +101,17 @@ export const AlbumsImportSection = ({ checked, onToggle, succeededAlbums, errore
   </ImportSection>;
 };
 
-type TrackImportSectionProps = {
-  checked: boolean;
-  onToggle: () => void;
-  succeededTracks: MinTrack[];
-  erroredTracks: MinTrack[];
-};
+export const TracksImportSection = () => {
+  const {
+    succeededTracks,
+    erroredTracks,
+    shouldImportTracks,
+    setShouldImportTracks
+  } = useImporterContext();
 
-export const TracksImportSection = ({ checked, onToggle, succeededTracks, erroredTracks }: TrackImportSectionProps) => {
   return <ImportSection
-    checked={checked}
-    onToggle={onToggle}
+    checked={shouldImportTracks}
+    onToggle={() => setShouldImportTracks(!shouldImportTracks)}
     summary={<AllTracks succeededTracks={succeededTracks} />}
   >
     <ImportErrorList count={erroredTracks.length} title="track(s) not added:">

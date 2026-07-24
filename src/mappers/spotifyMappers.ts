@@ -1,7 +1,7 @@
 import type { Artist, PlaylistedTrack, SavedAlbum, SavedTrack, SimplifiedPlaylist, Track } from "@spotify/web-api-ts-sdk";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { MinArtist } from "../pages/EasyImport/useImport";
+import type { MinArtist } from "../pages/EasyImport/ImportContext";
 import type { Playlist } from "../types";
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from "../api-helpers/tidal";
 

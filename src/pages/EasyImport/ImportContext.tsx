@@ -1,0 +1,99 @@
+import { createContext, useContext, useState, type Dispatch, type PropsWithChildren, type SetStateAction } from "react";
+import { TidalImporter } from "../../api-helpers/classes/TidalImporter";
+import { useImportAlbums } from "./useImportAlbums";
+import { useImportArtists } from "./useImportArtists";
+import { useImportPlaylists, type PlaylistTracksMap } from "./useImportPlaylists";
+import { useImportTracks } from "./useImportTracks";
+import type { MinAlbum } from "./useImportAlbums";
+import type { MinTrack } from "./useImportTracks";
+
+type UseState<T> = Dispatch<SetStateAction<T>>
+
+// TODO: Rename as also used for albums
+export interface MinArtist {
+  id: string,
+  artistName: string,
+}
+
+export interface EasyImportContextValue {
+  onImportClick: () => Promise<void>,
+
+  succeededArtists: MinArtist[],
+  erroredArtists: MinArtist[],
+  shouldImportArtists: boolean
+  setShouldImportArtists: UseState<boolean>
+
+  succeededAlbums: MinAlbum[],
+  erroredAlbums: MinAlbum[],
+  shouldImportAlbums: boolean
+  setShouldImportAlbums: UseState<boolean>
+
+  succeededTracks: MinTrack[],
+  erroredTracks: MinTrack[],
+  shouldImportTracks: boolean
+  setShouldImportTracks: UseState<boolean>
+
+  succeededPlaylistTracks: PlaylistTracksMap,
+  erroredPlaylistTracks: PlaylistTracksMap,
+  shouldImportPlaylists: boolean
+  setShouldImportPlaylists: UseState<boolean>
+}
+
+const context = createContext<EasyImportContextValue>({
+  onImportClick: async () => {},
+  succeededArtists: [],
+  erroredArtists: [],
+  succeededAlbums: [],
+  erroredAlbums: [],
+  succeededTracks: [],
+  erroredTracks: [],
+  succeededPlaylistTracks: {},
+  erroredPlaylistTracks: {},
+  setShouldImportAlbums: () => {},
+  setShouldImportArtists: () => {},
+  setShouldImportPlaylists: () => {},
+  setShouldImportTracks: () => {},
+  shouldImportAlbums: false,
+  shouldImportArtists: false,
+  shouldImportPlaylists: false,
+  shouldImportTracks: false,
+});
+
+export const ImporterProvider = ({children}: PropsWithChildren) => {
+  const [shouldImportAlbums, setShouldImportAlbums] = useState(true);
+  const [shouldImportArtists, setShouldImportArtists] = useState(true);
+  const [shouldImportPlaylists, setShouldImportPlaylists] = useState(true);
+  const [shouldImportTracks, setShouldImportTracks] = useState(true);
+
+  const {importAlbums, ...restAlbums} = useImportAlbums();
+  const {importArtists, ...restArtists} = useImportArtists();
+  const {importTracks, ...restTracks} = useImportTracks();
+  const {importPlaylists, ...restPlaylists} = useImportPlaylists();
+
+  const onImportClick = async () => {
+    const tidal = new TidalImporter();
+    if (shouldImportAlbums) importAlbums(tidal);
+    if (shouldImportArtists) importArtists(tidal);
+    if (shouldImportTracks) importTracks(tidal);
+    if (shouldImportPlaylists) importPlaylists(tidal)
+  }
+
+  return <context.Provider value={{
+    onImportClick,
+    ...restTracks,
+    ...restAlbums,
+    ...restArtists,
+    ...restPlaylists,
+    shouldImportAlbums,
+    setShouldImportAlbums,
+    shouldImportArtists,
+    setShouldImportArtists,
+    shouldImportPlaylists,
+    setShouldImportPlaylists,
+    shouldImportTracks,
+    setShouldImportTracks,
+  }}>{children}</context.Provider>
+}
+
+export const useImporterContext = () => useContext(context);
+

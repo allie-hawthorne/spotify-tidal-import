@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type MinArtist } from "./useImport";
+import { type MinArtist } from "./ImportContext";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchArtist } from "./matching";

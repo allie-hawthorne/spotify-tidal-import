@@ -3,7 +3,7 @@ import type { PlaylistWithItems } from "../types";
 import { getSpotifyPlaylists, getSpotifySavedAlbums, getSpotifySavedArtists } from "./spotify";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { MinArtist } from "../pages/EasyImport/useImport";
+import type { MinArtist } from "../pages/EasyImport/ImportContext";
 
 type ValueOf<T extends object> = T[keyof T]
 export type PlaylistStateValue = ValueOf<typeof PlaylistState>
