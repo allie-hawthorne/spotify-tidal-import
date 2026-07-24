@@ -22,12 +22,17 @@ export const AuthBarrier = () => {
 
   if (spotifyAuthed && tidalAuthed) return <SpotifyProvider>
     <ImporterProvider>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, eum!</p>
       <Home />
     </ImporterProvider>
   </SpotifyProvider>;
 
-  return <div className='flex flex-col gap-2'>
+  return <>
+    <div>
+      <h3 className='text-5xl font-serif'>Free your music. For free.</h3>
+      <p>Connect your Spotify and Tidal accounts to import your music collection.</p>
+    </div>
     {spotifyAuthed || <SpotifyLoginButton />}
     {tidalAuthed || <TidalLoginButton />}
-  </div>
+  </>
 };

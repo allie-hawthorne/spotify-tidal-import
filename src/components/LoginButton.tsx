@@ -10,7 +10,8 @@ interface LoginButtonProps {
   onClick: () => void
 }
 export const LoginButton = ({ service, onClick }: LoginButtonProps) => {
-  return <Button onClick={onClick}>
-    Log in with {service}
-  </Button>
+  return <div className="flex items-center justify-between bg-gray-800 h-15 p-3 rounded-2xl">
+    <p>Connect {service}</p>
+    <Button onClick={onClick}>Connect</Button>
+  </div>
 }
