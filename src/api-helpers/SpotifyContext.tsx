@@ -33,6 +33,11 @@ interface SpotifyContext {
   tracksLoading: boolean
   trackTotal: number
   trackProgress: number
+
+  isLoading: boolean
+  haveTotalsReturned: boolean
+  overallTotal: number
+  overallProgress: number
 }
 const context = createContext<SpotifyContext>({
   albums: [],
@@ -55,6 +60,11 @@ const context = createContext<SpotifyContext>({
   tracksLoading: false,
   trackTotal: 0,
   trackProgress: 0,
+
+  isLoading: false,
+  haveTotalsReturned: false,
+  overallTotal: 0,
+  overallProgress: 0,
 })
 
 export const SpotifyProvider = ({children}: PropsWithChildren) => {
@@ -106,6 +116,17 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
       setTracksLoading(false);
     })
   }, []);
+
+  const isLoading = tracksLoading || albumsLoading || artistsLoading || playlistsLoading;
+  // TODO: playlistTotal changes when we start getting the tracks - change to two states
+  const overallTotal = trackTotal + albumTotal + artistTotal + playlistTotal;
+  const overallProgress = trackProgress + albumProgress + artistProgress + playlistProgress;
+  const haveTotalsReturned = Boolean(
+    (trackTotal || !tracksLoading) &&
+    (albumTotal || !albumsLoading) &&
+    (artistTotal || !artistsLoading) &&
+    (playlistTotal || !playlistsLoading)
+  );
   
   return <context.Provider value={{
     albums,
@@ -127,7 +148,12 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
     tracks,
     tracksLoading,
     trackTotal,
-    trackProgress
+    trackProgress,
+
+    isLoading,
+    haveTotalsReturned,
+    overallTotal,
+    overallProgress
   }}>
     {children}
   </context.Provider>
