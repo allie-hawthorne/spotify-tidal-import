@@ -5,7 +5,9 @@ import { spotifyApi, type SetNumberFn } from "../spotify";
 import { mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
 import pRetry from "@n8n/p-retry";
 
-const CHUNK_SIZE = 3;
+// TODO: It'd be nice to dynamically maximise this for people with slow connections and minimise for those with fast, to avoid 429s
+// I'm pretty sure 3 is fine, but during repeated testing it did 429 me
+const CHUNK_SIZE = 2;
 
 const getPlaylistTracks = async (playlistId: string) => {
   const fn = () => spotifyApi.playlists.getPlaylistItems(playlistId);
