@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import type { PlaylistWithItems } from "../types";
-import { getSpotifyPlaylists, getSpotifySavedAlbums, getSpotifySavedArtists, getSpotifySavedTracks } from "./spotify";
+import { SpotifyExporter } from "./classes/SpotifyImporter";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
 import type { MinArtist } from "../pages/EasyImport/ImportContext";
@@ -89,33 +89,35 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   const [trackTotal, setTrackTotal] = useState(0);
   const [trackProgress, setTrackProgress] = useState(0);
 
+  const exporter = useMemo(() => new SpotifyExporter(), []);
+  
   useEffect(() => {
-    getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress, setPlaylistState).then(p => {
+    exporter.getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress, setPlaylistState).then(p => {
       setPlaylists(p);
       setPlaylistsLoading(false);
     })
-  }, []);
+  }, [exporter]);
 
   useEffect(() => {
-    getSpotifySavedArtists(setArtistTotal, setArtistProgress).then(a => {
+    exporter.getSpotifySavedArtists(setArtistTotal, setArtistProgress).then(a => {
       setArtists(a);
       setArtistsLoading(false);
     })
-  }, []);
+  }, [exporter]);
 
   useEffect(() => {
-    getSpotifySavedAlbums(setAlbumTotal, setAlbumProgress).then(a => {
+    exporter.getSpotifySavedAlbums(setAlbumTotal, setAlbumProgress).then(a => {
       setAlbums(a);
       setAlbumsLoading(false);
     })
-  }, []);
+  }, [exporter]);
   
   useEffect(() => {
-    getSpotifySavedTracks(setTrackTotal, setTrackProgress).then(t => {
+    exporter.getSpotifySavedTracks(setTrackTotal, setTrackProgress).then(t => {
       setTracks(t);
       setTracksLoading(false);
     })
-  }, []);
+  }, [exporter]);
 
   const isLoading = tracksLoading || albumsLoading || artistsLoading || playlistsLoading;
   // TODO: playlistTotal changes when we start getting the tracks - change to two states

@@ -1,4 +1,7 @@
+import type { Dispatch, SetStateAction } from "react";
 import type { MinTrack } from "./pages/EasyImport/useImportTracks";
+
+export type SetNumberFn = Dispatch<SetStateAction<number>>;
 
 export enum ImportStatus {
   NotStarted = "Not Started",
