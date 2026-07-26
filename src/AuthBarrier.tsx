@@ -28,7 +28,7 @@ export const AuthBarrier = () => {
   </SpotifyProvider>;
 
   return <>
-    <div>
+    <div className='mb-3'>
       <h3 className='text-5xl font-serif'>Free your music. For free.</h3>
       <p>Connect your Spotify and Tidal accounts to import your music collection.</p>
     </div>
