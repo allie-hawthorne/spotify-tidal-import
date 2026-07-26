@@ -19,7 +19,7 @@ const getPlaylistTracks = async (playlistId: string) => {
 }
 
 export class SpotifyExporter {
-  getTracksFromPlaylist = async (playlist: Playlist): Promise<PlaylistWithItems> => {
+  private getTracksFromPlaylist = async (playlist: Playlist): Promise<PlaylistWithItems> => {
     const playlistTracks = await getPlaylistTracks(playlist.id);
     console.log("Getting tracks for playlist:", playlist);
 
@@ -41,9 +41,7 @@ export class SpotifyExporter {
     return allPlaylists;
   };
 
-  getSpotifyPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setPlaylistState: (v: PlaylistStateValue) => void) => {
-    const spotify = new SpotifyExporter();
-    
+  getPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setPlaylistState: (v: PlaylistStateValue) => void) => {    
     const allPlaylists: SpotifyPlaylist[] = [];
     let offset = 0;
     let next = '';
@@ -67,14 +65,14 @@ export class SpotifyExporter {
     console.log('Spotify playlists:', allPlaylists);
     console.log('Total Tracks:', allPlaylists.reduce((sum, p) => sum + (p.tracks?.total || 0), 0));
 
-    const playlistsWithTracks = await spotify.getTracksFromPlaylists(mappedPlaylists, setPlaylistProgress);
+    const playlistsWithTracks = await this.getTracksFromPlaylists(mappedPlaylists, setPlaylistProgress);
 
     console.log('All playlists with tracks:', playlistsWithTracks);
     
     return playlistsWithTracks;
   }
   
-  getSpotifySavedAlbums = async (setAlbumTotal: SetNumberFn, setAlbumProgress: SetNumberFn) => {
+  getSavedAlbums = async (setAlbumTotal: SetNumberFn, setAlbumProgress: SetNumberFn) => {
     const allAlbums: SavedAlbum[] = []
     let offset = 0;
     let next = '';
@@ -92,7 +90,7 @@ export class SpotifyExporter {
     return mapSpotifyAlbumsToUniversalAlbums(allAlbums);
   };
 
-  getSpotifySavedTracks = async (setTrackTotal: SetNumberFn, setTrackProgress: SetNumberFn) => {
+  getSavedTracks = async (setTrackTotal: SetNumberFn, setTrackProgress: SetNumberFn) => {
     const allTracks: SavedTrack[] = []
     let offset = 0;
     let next = '';
@@ -110,7 +108,7 @@ export class SpotifyExporter {
     return mapSpotifyTracksToUniversalTracks(allTracks);
   };
 
-  getSpotifySavedArtists = async (setArtistTotal: SetNumberFn, setArtistProgress: SetNumberFn) => {
+  getSavedArtists = async (setArtistTotal: SetNumberFn, setArtistProgress: SetNumberFn) => {
     const allArtists: Artist[] = [];
     let after: string | undefined = undefined;
     do {

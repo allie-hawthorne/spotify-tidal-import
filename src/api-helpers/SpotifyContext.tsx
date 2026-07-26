@@ -92,33 +92,32 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   const exporter = useRef(new SpotifyExporter());
   
   useEffect(() => {
-    exporter.current.getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress, setPlaylistState).then(p => {
+    exporter.current.getPlaylists(setPlaylistTotal, setPlaylistProgress, setPlaylistState).then(p => {
       setPlaylists(p);
       setPlaylistsLoading(false);
     })
   }, [exporter]);
 
   useEffect(() => {
-    exporter.current.getSpotifySavedArtists(setArtistTotal, setArtistProgress).then(a => {
+    exporter.current.getSavedArtists(setArtistTotal, setArtistProgress).then(a => {
       setArtists(a);
       setArtistsLoading(false);
     })
   }, [exporter]);
 
   useEffect(() => {
-    exporter.current.getSpotifySavedAlbums(setAlbumTotal, setAlbumProgress).then(a => {
+    exporter.current.getSavedAlbums(setAlbumTotal, setAlbumProgress).then(a => {
       setAlbums(a);
       setAlbumsLoading(false);
     })
   }, [exporter]);
   
   useEffect(() => {
-    exporter.current.getSpotifySavedTracks(setTrackTotal, setTrackProgress).then(t => {
+    exporter.current.getSavedTracks(setTrackTotal, setTrackProgress).then(t => {
       setTracks(t);
       setTracksLoading(false);
     })
   }, [exporter]);
-
   const isLoading = tracksLoading || albumsLoading || artistsLoading || playlistsLoading;
   // TODO: playlistTotal changes when we start getting the tracks - change to two states
   const overallTotal = trackTotal + albumTotal + artistTotal + playlistTotal;
