@@ -28,11 +28,16 @@ export const AuthBarrier = () => {
   </SpotifyProvider>;
 
   return <>
-    <div className='mb-3'>
-      <h3 className='text-5xl font-serif'>Free your music. For free.</h3>
+    <div className='flex flex-col gap-2 mb-3'>
+      <div className='text-5xl font-serif'>
+        <h3>Free your music.</h3>
+        <h3>For free.</h3>
+      </div>
       <p>Connect your Spotify and Tidal accounts to import your music collection.</p>
     </div>
-    {spotifyAuthed || <SpotifyLoginButton />}
-    {tidalAuthed || <TidalLoginButton />}
+    <div className='flex flex-col gap-4'>
+      {spotifyAuthed || <SpotifyLoginButton />}
+      {tidalAuthed || <TidalLoginButton />}
+    </div>
   </>
 };
