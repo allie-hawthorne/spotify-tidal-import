@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import type { PlaylistWithItems } from "../types";
-import { getSpotifyPlaylists, getSpotifySavedAlbums, getSpotifySavedArtists } from "./spotify";
+import { getSpotifyPlaylists, getSpotifySavedAlbums, getSpotifySavedArtists, getSpotifySavedTracks } from "./spotify";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
 import type { MinArtist } from "../pages/EasyImport/ImportContext";
@@ -74,10 +74,10 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   const [playlistTotal, setPlaylistTotal] = useState(0);
   const [playlistProgress, setPlaylistProgress] = useState(0);
   
-  const [tracks] = useState<MinTrack[]>([]);
-  const [tracksLoading] = useState(true);
-  const [trackTotal] = useState(0);
-  const [trackProgress] = useState(0);
+  const [tracks, setTracks] = useState<MinTrack[]>([]);
+  const [tracksLoading, setTracksLoading] = useState(true);
+  const [trackTotal, setTrackTotal] = useState(0);
+  const [trackProgress, setTrackProgress] = useState(0);
 
   useEffect(() => {
     getSpotifyPlaylists(setPlaylistTotal, setPlaylistProgress, setPlaylistState).then(p => {
@@ -101,10 +101,10 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   }, []);
   
   useEffect(() => {
-    // getSpotifySavedTracks(setTrackTotal, setTrackProgress).then(t => {
-    //   setTracks(t);
-    //   setTracksLoading(false);
-    // })
+    getSpotifySavedTracks(setTrackTotal, setTrackProgress).then(t => {
+      setTracks(t);
+      setTracksLoading(false);
+    })
   }, []);
   
   return <context.Provider value={{
