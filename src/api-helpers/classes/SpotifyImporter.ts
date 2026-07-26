@@ -1,6 +1,5 @@
 import { chunk } from "lodash";
-import type { Playlist, PlaylistForImport, PlaylistWithItems } from "../../types";
-import { ImportStatus } from "../../types";
+import type { Playlist, PlaylistWithItems } from "../../types";
 import { spotifyApi, type SetNumberFn } from "../spotify";
 import { mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
 import pRetry from "@n8n/p-retry";
@@ -18,26 +17,6 @@ const getPlaylistTracks = async (playlistId: string) => {
 
 export class SpotifyImporter {
   constructor() {}
-
-  _getTracksFromPlaylists = async (playlists: Playlist[]): Promise<PlaylistForImport[]> => {
-    const allPlaylistTracks = await Promise.all(playlists.map(p => getPlaylistTracks(p.id)));
-
-    const updatedPlaylists: PlaylistForImport[] = playlists.map((_, i) => {
-      const playlistTracks = allPlaylistTracks[i];
-      return {
-        ...playlists[i],
-        status: ImportStatus.NotStarted,
-        items: playlistTracks.map((track) => ({
-          id: track.id,
-          title: track.trackName,
-          artists: [track.artistName],
-          status: ImportStatus.NotStarted
-        }))
-      };
-    });
-
-    return updatedPlaylists;
-  };
 
   getTracksFromPlaylist = async (playlist: Playlist): Promise<PlaylistWithItems> => {
     const playlistTracks = await getPlaylistTracks(playlist.id);
