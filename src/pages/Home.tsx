@@ -4,7 +4,7 @@ import { useImporterContext } from "./EasyImport/ImportContext";
 import { useSpotify } from "../api-helpers/SpotifyContext";
 import { useState } from "react";
 import { PieChart } from "react-minimal-pie-chart";
-import { Button } from "../components/Button";
+import { ExportButton } from "../components/ExportButton";
 
 export const Home = () => {
   const {onImportClick} = useImporterContext();
@@ -16,7 +16,7 @@ export const Home = () => {
   return <div className="flex gap-2 flex-col">
     {/* TODO: Add import from dropdown etc */}
     <div className="flex justify-end">
-      <Button disabled={isLoading} onClick={() => console.log('clicked')}>Export</Button>
+      <ExportButton isLoading={isLoading} />
     </div>
     <PlaylistsImportSection />
     <ArtistsImportSection />
