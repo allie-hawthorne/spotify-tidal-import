@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useRef, useState, type PropsWithChildren } from "react";
-import type { PlaylistWithItems } from "../types";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type PropsWithChildren } from "react";
+import type { PlaylistWithItems, SetNumberFn } from "../types";
 import { SpotifyExporter } from "./classes/SpotifyImporter";
 import type { MinTrack } from "../pages/EasyImport/useImportTracks";
 import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
@@ -12,7 +12,16 @@ export const PlaylistState = {
   Tracks: 'tracks'
 } as const;
 
+function makeDummyResource<T>(): Resource<T> {
+  return {items: [], loading: false, progress: 0, total: 0}
+}
+
 interface SpotifyContext {
+  albumData: Resource<MinAlbum>
+  artistData: Resource<MinArtist>
+  trackData: Resource<MinTrack>
+  playlistData: Resource<PlaylistWithItems>
+
   albums: MinAlbum[]
   albumsLoading: boolean
   albumTotal: number
@@ -65,71 +74,84 @@ const context = createContext<SpotifyContext>({
   haveTotalsReturned: false,
   overallTotal: 0,
   overallProgress: 0,
+  
+  albumData: makeDummyResource(),
+  artistData: makeDummyResource(),
+  playlistData: makeDummyResource(),
+  trackData: makeDummyResource(),
 })
 
 export const SpotifyProvider = ({children}: PropsWithChildren) => {
-  const [albums, setAlbums] = useState<MinAlbum[]>([]);
-  const [albumsLoading, setAlbumsLoading] = useState(true);
-  const [albumTotal, setAlbumTotal] = useState(0);
-  const [albumProgress, setAlbumProgress] = useState(0);
-
-  const [artists, setArtists] = useState<MinArtist[]>([]);
-  const [artistsLoading, setArtistsLoading] = useState(true);
-  const [artistTotal, setArtistTotal] = useState(0);
-  const [artistProgress, setArtistProgress] = useState(0);
-
-  const [playlists, setPlaylists] = useState<PlaylistWithItems[]>([]);
-  const [playlistsLoading, setPlaylistsLoading] = useState(true);
   const [playlistState, setPlaylistState] = useState<PlaylistStateValue>(PlaylistState.Playlist);
-  const [playlistTotal, setPlaylistTotal] = useState(0);
-  const [playlistProgress, setPlaylistProgress] = useState(0);
-  
-  const [tracks, setTracks] = useState<MinTrack[]>([]);
-  const [tracksLoading, setTracksLoading] = useState(true);
-  const [trackTotal, setTrackTotal] = useState(0);
-  const [trackProgress, setTrackProgress] = useState(0);
-
   const exporter = useRef(new SpotifyExporter());
-  
-  useEffect(() => {
-    exporter.current.getPlaylists(setPlaylistTotal, setPlaylistProgress, setPlaylistState).then(p => {
-      setPlaylists(p);
-      setPlaylistsLoading(false);
-    })
-  }, [exporter]);
 
-  useEffect(() => {
-    exporter.current.getSavedArtists(setArtistTotal, setArtistProgress).then(a => {
-      setArtists(a);
-      setArtistsLoading(false);
-    })
-  }, [exporter]);
-
-  useEffect(() => {
-    exporter.current.getSavedAlbums(setAlbumTotal, setAlbumProgress).then(a => {
-      setAlbums(a);
-      setAlbumsLoading(false);
-    })
-  }, [exporter]);
-  
-  useEffect(() => {
-    exporter.current.getSavedTracks(setTrackTotal, setTrackProgress).then(t => {
-      setTracks(t);
-      setTracksLoading(false);
-    })
-  }, [exporter]);
-  const isLoading = tracksLoading || albumsLoading || artistsLoading || playlistsLoading;
-  // TODO: playlistTotal changes when we start getting the tracks - change to two states
-  const overallTotal = trackTotal + albumTotal + artistTotal + playlistTotal;
-  const overallProgress = trackProgress + albumProgress + artistProgress + playlistProgress;
-  const haveTotalsReturned = Boolean(
-    (trackTotal || !tracksLoading) &&
-    (albumTotal || !albumsLoading) &&
-    (artistTotal || !artistsLoading) &&
-    (playlistTotal || !playlistsLoading)
+  const playlistFetcher = useCallback(
+    (setTotal: SetNumberFn, setProgress: SetNumberFn) =>
+      exporter.current.getPlaylists(setTotal, setProgress, setPlaylistState),
+    [exporter, setPlaylistState]
   );
-  
+
+  const artistFetcher = useCallback(
+    (setTotal: SetNumberFn, setProgress: SetNumberFn) =>
+      exporter.current.getSavedArtists(setTotal, setProgress),
+    [exporter]
+  );
+
+  const albumFetcher = useCallback(
+    (setTotal: SetNumberFn, setProgress: SetNumberFn) =>
+      exporter.current.getSavedAlbums(setTotal, setProgress),
+    [exporter]
+  );
+
+  const trackFetcher = useCallback(
+    (setTotal: SetNumberFn, setProgress: SetNumberFn) =>
+      exporter.current.getSavedTracks(setTotal, setProgress),
+    [exporter]
+  );
+
+  const playlistData = useGetItem<PlaylistWithItems>(playlistFetcher);
+  const artistData = useGetItem<MinArtist>(artistFetcher);
+  const albumData = useGetItem<MinAlbum>(albumFetcher);
+  const trackData = useGetItem<MinTrack>(trackFetcher);
+
+  // TODO: Remove this shit as soon as possible (i am in a car rn)
+  const albums = albumData.items;
+  const albumsLoading = albumData.loading;
+  const albumTotal = albumData.total;
+  const albumProgress = albumData.progress;
+
+  const artists = artistData.items;
+  const artistsLoading = artistData.loading;
+  const artistTotal = artistData.total;
+  const artistProgress = artistData.progress;
+
+  const playlists = playlistData.items;
+  const playlistsLoading = playlistData.loading;
+  const playlistTotal = playlistData.total;
+  const playlistProgress = playlistData.progress;
+
+  const tracks = trackData.items;
+  const tracksLoading = trackData.loading;
+  const trackTotal = trackData.total;
+  const trackProgress = trackData.progress;
+
+  const isLoading = trackData.loading || albumData.loading || artistData.loading || playlistData.loading;
+  // TODO: playlistTotal changes when we start getting the tracks - change to two states
+  const overallTotal = trackData.total + albumData.total + artistData.total + playlistData.total;
+  const overallProgress = trackData.progress + albumData.progress + artistData.progress + playlistData.progress;
+  const haveTotalsReturned = Boolean(
+    (trackData.total || !trackData.loading) &&
+    (albumData.total || !albumData.loading) &&
+    (artistData.total || !artistData.loading) &&
+    (playlistData.total || !playlistData.loading)
+  );
+
   return <context.Provider value={{
+    albumData,
+    artistData,
+    playlistData,
+    trackData,
+
     albums,
     albumsLoading,
     albumTotal,
@@ -161,3 +183,49 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
 };
 
 export const useSpotify = () => useContext(context);
+
+type Resource<T> = {
+  items: T[]
+  loading: boolean
+  total: number
+  progress: number
+}
+
+function useGetItem<T>(fetcher: (setTotal: SetNumberFn, setProgress: SetNumberFn) => Promise<T[]>) {
+  const [state, setState] = useState<Resource<T>>({
+    items: [],
+    loading: true,
+    total: 0,
+    progress: 0,
+  });
+
+  useEffect(() => {
+    let mounted = true;
+
+    // I'm happy with this level of copy-paste vs legibility
+    const setTotal: SetNumberFn = value => {
+      if (!mounted) return;
+      setState(s => ({
+        ...s,
+        total: typeof value === "function" ? value(s.total) : value,
+      }));
+    };
+
+    const setProgress: SetNumberFn = value => {
+      if (!mounted) return;
+      
+      setState(s => ({
+        ...s,
+        progress: typeof value === "function" ? value(s.progress) : value,
+      }));
+    };
+
+    fetcher(setTotal, setProgress).then(items => {
+      if (!mounted) return;
+      setState(s => ({ ...s, items, loading: false }));
+    }).catch(console.log);
+    return () => { mounted = false; };
+  }, [fetcher]);
+
+  return state;
+}
