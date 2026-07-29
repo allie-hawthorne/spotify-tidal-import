@@ -9,9 +9,15 @@ import type { MinTrack } from "./useImportTracks";
 
 export type UseState<T> = Dispatch<SetStateAction<T>>
 
-// TODO: Rename as also used for albums
-export interface MinArtist {
-  id: string,
+export interface Id {
+  id: string
+}
+
+export interface ArtistArray {
+  artists: string[]
+}
+
+export interface MinArtist extends Id {
   artistName: string,
 }
 

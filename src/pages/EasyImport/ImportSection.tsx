@@ -60,7 +60,7 @@ export const PlaylistsImportSection = () => {
       {erroredPlaylists.map(([pId, {tracks}]) => (
         <li key={pId}>
           <span>{pId}</span>
-          {tracks.map(t => <div className="ml-2" key={`${pId}-${t.trackName}-${t.artistName}`}>{t.trackName} by {t.artistName}</div>)}
+          {tracks.map(t => <div className="ml-2" key={`${pId}-${t.trackName}-${t.artists}`}>{t.trackName} by {t.artists}</div>)}
         </li>
       ))}
     </ImportErrorList>
@@ -104,7 +104,7 @@ export const AlbumsImportSection = () => {
     summary={<AllAlbums succeededAlbums={succeededAlbums} />}
   >
     <ImportErrorList count={erroredAlbums.length} title="album(s) not added:">
-      {erroredAlbums.map(a => <li key={a.id}>{a.albumName} by {a.artistName}</li>)}
+      {erroredAlbums.map(a => <li key={a.id}>{a.albumName} by {a.artists}</li>)}
     </ImportErrorList>
   </ImportSection>;
 };
@@ -125,7 +125,7 @@ export const TracksImportSection = () => {
     summary={<AllTracks succeededTracks={succeededTracks} />}
   >
     <ImportErrorList count={erroredTracks.length} title="track(s) not added:">
-      {erroredTracks.map(a => <li key={a.id}>{a.trackName} by {a.artistName}</li>)}
+      {erroredTracks.map(a => <li key={a.id}>{a.trackName} by {a.artists}</li>)}
     </ImportErrorList>
   </ImportSection>;
 };

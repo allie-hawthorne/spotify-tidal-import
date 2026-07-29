@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { type MinArtist } from "./ImportContext";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchTrack } from "./matching";
+import type { ArtistArray, Id } from "./ImportContext";
 
-export interface MinTrack extends MinArtist {
+export interface MinTrack extends Id, ArtistArray {
   trackName: string
   isrc: string
 }
@@ -18,7 +18,7 @@ export const useImportTracks = () => {
   const importTracks = async (importer: TidalImporter) => {
     for (const spotifyTrack of tracks) {
 
-      const tidalTracks = await importer.searchForTrack(spotifyTrack.trackName, [spotifyTrack.artistName]);
+      const tidalTracks = await importer.searchForTrack(spotifyTrack.trackName, spotifyTrack.artists);
 
       if (!tidalTracks) {
         console.log("No results on Tidal - Spotify:", spotifyTrack);

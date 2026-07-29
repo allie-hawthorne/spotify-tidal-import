@@ -41,8 +41,8 @@ export class TidalImporter {
     return mapTidalArtistsToUniversalArtists(res);
   }
 
-  searchForAlbum = async (albumStr: string, artistStr: string) => {
-    const encodedQuery = `${artistStr} ${albumStr}`.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
+  searchForAlbum = async (album: string, artists: string[]) => {
+    const encodedQuery = `${artists.join(' ')} ${album}`.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
 
     const fn = () => tidalApi.GET('/searchResults/{id}', {
       params: {path: {id: encodedQuery}, query: {include: ['albums', 'albums.artists']}}

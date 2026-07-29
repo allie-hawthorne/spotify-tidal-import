@@ -30,7 +30,7 @@ export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGet
 
     return {
       id: t.id,
-      artistName: '',
+      artists: [],
       trackName: t.attributes.title,
       isrc: t.attributes.isrc
     }
@@ -60,7 +60,7 @@ export const mapTidalAlbumsToUniversalAlbums = (res: Awaited<ReturnType<TidalGet
     return {
       id: album?.id ?? '',
       // @ts-expect-error - name does exist
-      artistName: artists?.map(artist => artist?.attributes?.name).join(' ') ?? '',
+      artists: artists?.map(artist => artist?.attributes?.name).join(' ') ?? '',
       albumName: album.attributes.title,
       barcode: album.attributes.barcodeId
     };

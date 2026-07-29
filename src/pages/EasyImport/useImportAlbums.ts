@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
-import { type MinArtist } from "./ImportContext";
+import { type ArtistArray, type Id } from "./ImportContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchAlbum } from "./matching";
 
-export interface MinAlbum extends MinArtist {
+export interface MinAlbum extends Id, ArtistArray {
   albumName: string
   barcode: string
 }
@@ -17,7 +17,7 @@ export const useImportAlbums = () => {
 
   const importAlbums = async (importer: TidalImporter) => {
     for (const spotifyAlbum of albums) {
-      const tidalAlbums = await importer.searchForAlbum(spotifyAlbum.artistName, spotifyAlbum.albumName);
+      const tidalAlbums = await importer.searchForAlbum(spotifyAlbum.albumName, spotifyAlbum.artists);
 
       if (!tidalAlbums) {
         console.log("No result on Tidal - Spotify:", spotifyAlbum);
@@ -35,7 +35,7 @@ export const useImportAlbums = () => {
       const res = await importer.addAlbum(matchedAlbum.id);
 
       if (!res) {
-        console.log("Error adding album on Tidal - Spotify:", spotifyAlbum, "Tidal:", matchedAlbum.artistName);
+        console.log("Error adding album on Tidal - Spotify:", spotifyAlbum, "Tidal:", matchedAlbum.artists);
         setErroredAlbums(prev => [...prev, spotifyAlbum]);
         continue;
       }

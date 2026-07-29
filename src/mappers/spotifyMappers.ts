@@ -9,7 +9,7 @@ export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | Playlist
   const spotifyTracks = tracks.map(({track}): MinTrack | undefined => {
     return {
       id: track.id,
-      artistName: track.artists.map(a => a.name).join(' '),
+      artists: track.artists.map(a => a.name),
       trackName: track.name,
       isrc: track.external_ids.isrc
     }
@@ -22,7 +22,7 @@ export const mapSpotifyAlbumsToUniversalAlbums = (albums: SavedAlbum[]) => {
   const spotifyAlbums = albums.map(({album}): MinAlbum | undefined => {
     return {
       id: album.id,
-      artistName: album.artists.map(artist => artist.name).join(' ') ?? '',
+      artists: album.artists.map(artist => artist.name),
       albumName: album.name,
       barcode: album.external_ids.upc
     };
