@@ -1,8 +1,12 @@
-import { Button } from "./Button"
+import { Button } from "./Button";
+import { useSpotify } from "../api-helpers/SpotifyContext";
 
-interface ExportButtonProps {
-  isLoading: boolean
-}
-export const ExportButton = ({isLoading}: ExportButtonProps) => {
-  return <Button disabled={isLoading} onClick={() => console.log('clicked')}>Export</Button>
-}
+export const ExportButton = () => {
+  const {isLoading} = useSpotify();
+
+  const onExportClick = () => {
+    console.log('clicked');
+  };
+  
+  return <Button disabled={isLoading} onClick={onExportClick}>Export</Button>;
+};
