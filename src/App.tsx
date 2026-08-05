@@ -1,7 +1,7 @@
 import { AuthBarrier } from './AuthBarrier';
 
 function App() {
-  return <div className='flex flex-col min-h-screen bg-gray-950 text-white p-5 font-roboto'>
+  return <div className='flex flex-col min-h-screen text-white p-5 font-roboto' style={{ background: 'radial-gradient(120% 100% at 50% 0%, rgb(19, 20, 35) 0%, rgb(5, 7, 13) 55%, rgb(2, 3, 6) 100%)' }}>
     <div className="flex flex-1 flex-col h-full items-center justify-center">
       <div className='flex flex-col max-w-md gap-2'>
         <h1 className='text-2xl'>Spotifree</h1>
