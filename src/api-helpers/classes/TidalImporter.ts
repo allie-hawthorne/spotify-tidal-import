@@ -1,6 +1,6 @@
 import pRetry from "@n8n/p-retry";
 import { mapTidalAlbumsToUniversalAlbums, mapTidalArtistsToUniversalArtists, mapTidalTracksToUniversalTracks } from "../../mappers/tidalMappers";
-import type { ITrack } from "../../pages/EasyImport/useImportTracks";
+import type { ITrack } from "../../types";
 import { tidalApi } from "../tidal";
 
 export class TidalImporter {

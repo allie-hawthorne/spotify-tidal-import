@@ -1,8 +1,5 @@
 import type { Artist, PlaylistedTrack, SavedAlbum, SavedTrack, SimplifiedPlaylist, Track } from "@spotify/web-api-ts-sdk";
-import type { ITrack } from "../pages/EasyImport/useImportTracks";
-import type { IAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { IArtist } from "../pages/EasyImport/ImportContext";
-import type { IBasePlaylist } from "../types";
+import type { IAlbum, IArtist, IBasePlaylist, ITrack } from "../types";
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from "../api-helpers/tidal";
 
 export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | PlaylistedTrack<Track>)[]) => {

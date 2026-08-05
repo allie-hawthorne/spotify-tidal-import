@@ -1,9 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type PropsWithChildren } from "react";
-import type { IPlaylist, SetNumberFn } from "../types";
+import type { IAlbum, IArtist, IPlaylist, ITrack, SetNumberFn } from "../types";
 import { SpotifyExporter } from "./classes/SpotifyImporter";
-import type { ITrack } from "../pages/EasyImport/useImportTracks";
-import type { IAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { IArtist } from "../pages/EasyImport/ImportContext";
 
 type ValueOf<T extends object> = T[keyof T]
 export type PlaylistStateValue = ValueOf<typeof PlaylistState>

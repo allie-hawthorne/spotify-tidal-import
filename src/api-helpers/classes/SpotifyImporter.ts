@@ -1,10 +1,9 @@
 import { chunk } from "lodash";
-import {type Playlist as SpotifyPlaylist} from '@spotify/web-api-ts-sdk'
+import type { Artist, Playlist as SpotifyPlaylist, SavedAlbum, SavedTrack } from "@spotify/web-api-ts-sdk";
 import type { IBasePlaylist, IPlaylist, SetNumberFn } from "../../types";
 import { spotifyApi } from "../spotify";
 import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyArtistsToUniversalArtists, mapSpotifyPlaylistToUniversalPlaylist, mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
 import pRetry from "@n8n/p-retry";
-import type { Artist, SavedAlbum, SavedTrack } from "@spotify/web-api-ts-sdk";
 import { PlaylistState, type PlaylistStateValue } from "../SpotifyContext";
 
 // TODO: It'd be nice to dynamically maximise this for people with slow connections and minimise for those with fast, to avoid 429s

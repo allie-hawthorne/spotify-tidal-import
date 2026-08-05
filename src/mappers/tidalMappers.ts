@@ -1,7 +1,5 @@
 import type { tidalApi } from "../api-helpers/tidal";
-import type { IArtist } from "../pages/EasyImport/ImportContext";
-import type { IAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { ITrack } from "../pages/EasyImport/useImportTracks";
+import type { IAlbum, IArtist, ITrack } from "../types";
 
 type TidalGetTracksFn = typeof tidalApi.GET<
   '/searchResults/{id}/relationships/tracks',

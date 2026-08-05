@@ -1,6 +1,4 @@
-import type { IArtist } from "./ImportContext";
-import type { IAlbum } from "./useImportAlbums";
-import type { ITrack } from "./useImportTracks";
+import type { IAlbum, IArtist, ITrack } from "../../types";
 
 export const symbolRegex = /[`~!@#$£€%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi;
 

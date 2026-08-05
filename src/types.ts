@@ -1,13 +1,14 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { ITrack } from "./pages/EasyImport/useImportTracks";
 
-export type SetNumberFn = Dispatch<SetStateAction<number>>;
-
-export enum ImportStatus {
-  NotStarted = "Not Started",
-  InProgress = "In Progress",
-  Completed = "Completed",
+interface Id {
+  id: string;
 }
+
+interface ArtistArray {
+  artists: string[];
+}
+
+export type IBasePlaylist = Omit<IPlaylist, 'tracks'>;
 export interface IPlaylist {
   id: string;
   playlistName: string;
@@ -15,4 +16,19 @@ export interface IPlaylist {
   imageUrl: string;
   tracks: ITrack[];
 }
-export type IBasePlaylist = Omit<IPlaylist, 'tracks'>;
+
+export interface IArtist extends Id {
+  artistName: string;
+}
+
+export interface IAlbum extends Id, ArtistArray {
+  albumName: string;
+  barcode: string;
+}
+
+export interface ITrack extends Id, ArtistArray {
+  trackName: string;
+  isrc: string;
+}
+
+export type SetNumberFn = Dispatch<SetStateAction<number>>;

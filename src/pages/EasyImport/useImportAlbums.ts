@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
-import { type ArtistArray, type Id } from "./ImportContext";
+import type { IAlbum } from "../../types";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchAlbum } from "./matching";
-
-export interface IAlbum extends Id, ArtistArray {
-  albumName: string
-  barcode: string
-}
 
 export const useImportAlbums = () => {
   const {albumData: {items: albums}} = useSpotify();

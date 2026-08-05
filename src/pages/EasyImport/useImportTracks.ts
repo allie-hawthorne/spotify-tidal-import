@@ -2,12 +2,7 @@ import { useState } from "react";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchTrack } from "./matching";
-import type { ArtistArray, Id } from "./ImportContext";
-
-export interface ITrack extends Id, ArtistArray {
-  trackName: string
-  isrc: string
-}
+import type { ITrack } from "../../types";
 
 export const useImportTracks = () => {
   const {trackData: {items: tracks}} = useSpotify();
