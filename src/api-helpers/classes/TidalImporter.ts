@@ -1,6 +1,6 @@
 import pRetry from "@n8n/p-retry";
 import { mapTidalAlbumsToUniversalAlbums, mapTidalArtistsToUniversalArtists, mapTidalTracksToUniversalTracks } from "../../mappers/tidalMappers";
-import type { MinTrack } from "../../pages/EasyImport/useImportTracks";
+import type { ITrack } from "../../pages/EasyImport/useImportTracks";
 import { tidalApi } from "../tidal";
 
 export class TidalImporter {
@@ -73,7 +73,7 @@ export class TidalImporter {
     return response.ok;
   }
 
-  addToPlaylist = async (playlistId: string, tracks: MinTrack[]) => {
+  addToPlaylist = async (playlistId: string, tracks: ITrack[]) => {
     const fn = () => tidalApi.POST(`/playlists/{id}/relationships/items`, {
       params: {path: {id: playlistId}},
       body: {

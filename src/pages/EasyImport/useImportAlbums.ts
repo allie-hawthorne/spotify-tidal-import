@@ -4,7 +4,7 @@ import { type ArtistArray, type Id } from "./ImportContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchAlbum } from "./matching";
 
-export interface MinAlbum extends Id, ArtistArray {
+export interface IAlbum extends Id, ArtistArray {
   albumName: string
   barcode: string
 }
@@ -12,8 +12,8 @@ export interface MinAlbum extends Id, ArtistArray {
 export const useImportAlbums = () => {
   const {albumData: {items: albums}} = useSpotify();
 
-  const [succeededAlbums, setSucceededAlbums] = useState<MinAlbum[]>([]);
-  const [erroredAlbums, setErroredAlbums] = useState<MinAlbum[]>([]);
+  const [succeededAlbums, setSucceededAlbums] = useState<IAlbum[]>([]);
+  const [erroredAlbums, setErroredAlbums] = useState<IAlbum[]>([]);
 
   const importAlbums = async (importer: TidalImporter) => {
     for (const spotifyAlbum of albums) {

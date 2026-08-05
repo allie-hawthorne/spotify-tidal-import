@@ -1,6 +1,6 @@
-import type { MinArtist } from "./ImportContext";
-import type { MinAlbum } from "./useImportAlbums";
-import type { MinTrack } from "./useImportTracks";
+import type { IArtist } from "./ImportContext";
+import type { IAlbum } from "./useImportAlbums";
+import type { ITrack } from "./useImportTracks";
 
 export const symbolRegex = /[`~!@#$£€%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi;
 
@@ -28,18 +28,18 @@ const matchByName = <T>(spotifyName: string, items: T[], getName: (item: T) => s
   }
 }
 
-export const matchTrack = (spotifyTrack: MinTrack, tidalTracks: MinTrack[]) => {
+export const matchTrack = (spotifyTrack: ITrack, tidalTracks: ITrack[]) => {
   const isrcTrack = tidalTracks.find(t => t.isrc === spotifyTrack.isrc);
   if (isrcTrack) return isrcTrack;
   return matchByName(spotifyTrack.trackName, tidalTracks, tidalTrack => tidalTrack.trackName)
 };
 
-export const matchAlbum = (spotifyAlbum: MinAlbum, tidalAlbums: MinAlbum[]) => {
+export const matchAlbum = (spotifyAlbum: IAlbum, tidalAlbums: IAlbum[]) => {
   const barcodeAlbum = tidalAlbums.find(t => t.barcode === spotifyAlbum.barcode);
   if (barcodeAlbum) return barcodeAlbum;
   return matchByName(spotifyAlbum.albumName, tidalAlbums, tidalAlbum => tidalAlbum.albumName)
 };
 
-export const matchArtist = (spotifyName: string, tidalArtists: MinArtist[]) => {
+export const matchArtist = (spotifyName: string, tidalArtists: IArtist[]) => {
   return matchByName(spotifyName, tidalArtists, tidalArtist => tidalArtist.artistName)
 };

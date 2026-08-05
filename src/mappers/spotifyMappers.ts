@@ -1,12 +1,12 @@
 import type { Artist, PlaylistedTrack, SavedAlbum, SavedTrack, SimplifiedPlaylist, Track } from "@spotify/web-api-ts-sdk";
-import type { MinTrack } from "../pages/EasyImport/useImportTracks";
-import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { MinArtist } from "../pages/EasyImport/ImportContext";
-import type { Playlist } from "../types";
+import type { ITrack } from "../pages/EasyImport/useImportTracks";
+import type { IAlbum } from "../pages/EasyImport/useImportAlbums";
+import type { IArtist } from "../pages/EasyImport/ImportContext";
+import type { IBasePlaylist } from "../types";
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from "../api-helpers/tidal";
 
 export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | PlaylistedTrack<Track>)[]) => {
-  const spotifyTracks = tracks.map(({track}): MinTrack | undefined => {
+  const spotifyTracks = tracks.map(({track}): ITrack | undefined => {
     return {
       id: track.id,
       artists: track.artists.map(a => a.name),
@@ -19,7 +19,7 @@ export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | Playlist
 };
 
 export const mapSpotifyAlbumsToUniversalAlbums = (albums: SavedAlbum[]) => {
-  const spotifyAlbums = albums.map(({album}): MinAlbum | undefined => {
+  const spotifyAlbums = albums.map(({album}): IAlbum | undefined => {
     return {
       id: album.id,
       artists: album.artists.map(artist => artist.name),
@@ -32,7 +32,7 @@ export const mapSpotifyAlbumsToUniversalAlbums = (albums: SavedAlbum[]) => {
 };
 
 export const mapSpotifyArtistsToUniversalArtists = (artists: Artist[]) => {  
-  const tidalArtists = artists.map((a): MinArtist => {
+  const tidalArtists = artists.map((a): IArtist => {
     return {
       id: a.id,
       artistName: a.name
@@ -42,7 +42,7 @@ export const mapSpotifyArtistsToUniversalArtists = (artists: Artist[]) => {
   return tidalArtists;
 };
 
-export const mapSpotifyPlaylistToUniversalPlaylist = (playlist: SimplifiedPlaylist): Playlist => {
+export const mapSpotifyPlaylistToUniversalPlaylist = (playlist: SimplifiedPlaylist): IBasePlaylist => {
   return {
     id: playlist.id,
     playlistName: playlist.name,

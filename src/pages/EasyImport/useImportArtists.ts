@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type MinArtist } from "./ImportContext";
+import { type IArtist } from "./ImportContext";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchArtist } from "./matching";
@@ -7,8 +7,8 @@ import { matchArtist } from "./matching";
 export const useImportArtists = () => {
   const {artistData: {items: artists}} = useSpotify();
 
-  const [succeededArtists, setSucceededArtists] = useState<MinArtist[]>([]);
-  const [erroredArtists, setErroredArtists] = useState<MinArtist[]>([]);
+  const [succeededArtists, setSucceededArtists] = useState<IArtist[]>([]);
+  const [erroredArtists, setErroredArtists] = useState<IArtist[]>([]);
 
   const importArtists = async (importer: TidalImporter) => {
     for (const {artistName: spotifyName} of artists) {

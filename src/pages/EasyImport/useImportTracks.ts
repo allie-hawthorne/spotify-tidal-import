@@ -4,7 +4,7 @@ import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchTrack } from "./matching";
 import type { ArtistArray, Id } from "./ImportContext";
 
-export interface MinTrack extends Id, ArtistArray {
+export interface ITrack extends Id, ArtistArray {
   trackName: string
   isrc: string
 }
@@ -12,8 +12,8 @@ export interface MinTrack extends Id, ArtistArray {
 export const useImportTracks = () => {
   const {trackData: {items: tracks}} = useSpotify();
 
-  const [succeededTracks, setSucceededTracks] = useState<MinTrack[]>([]);
-  const [erroredTracks, setErroredTracks] = useState<MinTrack[]>([]);
+  const [succeededTracks, setSucceededTracks] = useState<ITrack[]>([]);
+  const [erroredTracks, setErroredTracks] = useState<ITrack[]>([]);
 
   const importTracks = async (importer: TidalImporter) => {
     for (const spotifyTrack of tracks) {

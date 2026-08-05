@@ -1,9 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type PropsWithChildren } from "react";
-import type { PlaylistWithItems, SetNumberFn } from "../types";
+import type { IPlaylist, SetNumberFn } from "../types";
 import { SpotifyExporter } from "./classes/SpotifyImporter";
-import type { MinTrack } from "../pages/EasyImport/useImportTracks";
-import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { MinArtist } from "../pages/EasyImport/ImportContext";
+import type { ITrack } from "../pages/EasyImport/useImportTracks";
+import type { IAlbum } from "../pages/EasyImport/useImportAlbums";
+import type { IArtist } from "../pages/EasyImport/ImportContext";
 
 type ValueOf<T extends object> = T[keyof T]
 export type PlaylistStateValue = ValueOf<typeof PlaylistState>
@@ -17,10 +17,10 @@ function makeDummyResource<T>(): Resource<T> {
 }
 
 interface SpotifyContext {
-  albumData: Resource<MinAlbum>
-  artistData: Resource<MinArtist>
-  trackData: Resource<MinTrack>
-  playlistData: Resource<PlaylistWithItems>
+  albumData: Resource<IAlbum>
+  artistData: Resource<IArtist>
+  trackData: Resource<ITrack>
+  playlistData: Resource<IPlaylist>
 
   playlistState: PlaylistStateValue
 
@@ -71,10 +71,10 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
     [exporter]
   );
 
-  const playlistData = useGetItem<PlaylistWithItems>(playlistFetcher);
-  const artistData = useGetItem<MinArtist>(artistFetcher);
-  const albumData = useGetItem<MinAlbum>(albumFetcher);
-  const trackData = useGetItem<MinTrack>(trackFetcher);
+  const playlistData = useGetItem<IPlaylist>(playlistFetcher);
+  const artistData = useGetItem<IArtist>(artistFetcher);
+  const albumData = useGetItem<IAlbum>(albumFetcher);
+  const trackData = useGetItem<ITrack>(trackFetcher);
 
   const isLoading = trackData.loading || albumData.loading || artistData.loading || playlistData.loading;
   const overallTotal = trackData.total + albumData.total + artistData.total + playlistData.total;

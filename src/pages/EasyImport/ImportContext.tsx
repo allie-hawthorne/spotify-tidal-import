@@ -4,8 +4,8 @@ import { useImportAlbums } from "./useImportAlbums";
 import { useImportArtists } from "./useImportArtists";
 import { useImportPlaylists, type PlaylistTracksMap } from "./useImportPlaylists";
 import { useImportTracks } from "./useImportTracks";
-import type { MinAlbum } from "./useImportAlbums";
-import type { MinTrack } from "./useImportTracks";
+import type { IAlbum } from "./useImportAlbums";
+import type { ITrack } from "./useImportTracks";
 
 export type UseState<T> = Dispatch<SetStateAction<T>>
 
@@ -17,25 +17,25 @@ export interface ArtistArray {
   artists: string[]
 }
 
-export interface MinArtist extends Id {
+export interface IArtist extends Id {
   artistName: string,
 }
 
 export interface EasyImportContextValue {
   onImportClick: () => Promise<void>,
 
-  succeededArtists: MinArtist[],
-  erroredArtists: MinArtist[],
+  succeededArtists: IArtist[],
+  erroredArtists: IArtist[],
   shouldImportArtists: boolean
   setShouldImportArtists: UseState<boolean>
 
-  succeededAlbums: MinAlbum[],
-  erroredAlbums: MinAlbum[],
+  succeededAlbums: IAlbum[],
+  erroredAlbums: IAlbum[],
   shouldImportAlbums: boolean
   setShouldImportAlbums: UseState<boolean>
 
-  succeededTracks: MinTrack[],
-  erroredTracks: MinTrack[],
+  succeededTracks: ITrack[],
+  erroredTracks: ITrack[],
   shouldImportTracks: boolean
   setShouldImportTracks: UseState<boolean>
 

@@ -1,7 +1,7 @@
 import type { tidalApi } from "../api-helpers/tidal";
-import type { MinArtist } from "../pages/EasyImport/ImportContext";
-import type { MinAlbum } from "../pages/EasyImport/useImportAlbums";
-import type { MinTrack } from "../pages/EasyImport/useImportTracks";
+import type { IArtist } from "../pages/EasyImport/ImportContext";
+import type { IAlbum } from "../pages/EasyImport/useImportAlbums";
+import type { ITrack } from "../pages/EasyImport/useImportTracks";
 
 type TidalGetTracksFn = typeof tidalApi.GET<
   '/searchResults/{id}/relationships/tracks',
@@ -24,7 +24,7 @@ export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGet
 
   const trackWithData = minTracks?.map(track => extraData?.find(a => a.id === track.id)) ?? [];
 
-  const tidalTracks = trackWithData.map((t): MinTrack | undefined => {
+  const tidalTracks = trackWithData.map((t): ITrack | undefined => {
     // Shouldn't happen (hopefully) - just for type coercion
     if (!t?.attributes || !('isrc' in t.attributes)) return;
 
@@ -46,7 +46,7 @@ export const mapTidalAlbumsToUniversalAlbums = (res: Awaited<ReturnType<TidalGet
   // This is sorted by relevance
   const orderedAlbums = minAlbums?.relationships?.albums.data ?? [];
 
-  const orderedAlbumsWithArtists = orderedAlbums.map((minAlbum): MinAlbum | undefined => {
+  const orderedAlbumsWithArtists = orderedAlbums.map((minAlbum): IAlbum | undefined => {
     const album = extraData?.find(a => a.id === minAlbum.id);
 
     if (!album?.attributes || !("albumType" in album.attributes)) return;
@@ -75,7 +75,7 @@ export const mapTidalArtistsToUniversalArtists = (res: Awaited<ReturnType<TidalG
   
   const orderedArtists = minArtists.map(d => extraData?.find(a => a.id === d.id));
 
-  const tidalArtists = orderedArtists.map((a): MinArtist => ({
+  const tidalArtists = orderedArtists.map((a): IArtist => ({
     id: a?.id ?? '',
     // @ts-expect-error - name does exist
     artistName: a?.attributes?.name as string

@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { MinTrack } from "./pages/EasyImport/useImportTracks";
+import type { ITrack } from "./pages/EasyImport/useImportTracks";
 
 export type SetNumberFn = Dispatch<SetStateAction<number>>;
 
@@ -8,20 +8,11 @@ export enum ImportStatus {
   InProgress = "In Progress",
   Completed = "Completed",
 }
-interface Track {
-  id: string;
-  title: string;
-  artists: string[];
-};
-export interface TrackForImport extends Track {
-  status: ImportStatus;
-}
-export interface Playlist {
+export interface IPlaylist {
   id: string;
   playlistName: string;
   trackCount: number;
   imageUrl: string;
+  tracks: ITrack[];
 }
-export interface PlaylistWithItems extends Playlist {
-  tracks: MinTrack[];
-}
+export type IBasePlaylist = Omit<IPlaylist, 'tracks'>;

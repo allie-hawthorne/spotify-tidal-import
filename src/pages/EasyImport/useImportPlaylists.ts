@@ -3,7 +3,7 @@ import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { chunk } from "lodash";
 import { matchTrack } from "./matching";
-import type { MinTrack } from "./useImportTracks";
+import type { ITrack } from "./useImportTracks";
 
 export interface MinPlaylist {
   id: string,
@@ -13,8 +13,8 @@ export interface MinPlaylist {
 const PLAYLISTS_CHUNK_SIZE = 2;
 const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time
 
-export type PlaylistTracksMap = Record<MinPlaylist['id'], {playlist: MinPlaylist, tracks: MinTrack[]}>
-const addToObject = (prev: PlaylistTracksMap, playlist: MinPlaylist, ...tracks: MinTrack[]) => ({...prev, [playlist.id]: {playlist, tracks: [...(prev[playlist.id].tracks ?? []), ...tracks]}})
+export type PlaylistTracksMap = Record<MinPlaylist['id'], {playlist: MinPlaylist, tracks: ITrack[]}>
+const addToObject = (prev: PlaylistTracksMap, playlist: MinPlaylist, ...tracks: ITrack[]) => ({...prev, [playlist.id]: {playlist, tracks: [...(prev[playlist.id].tracks ?? []), ...tracks]}})
 
 export const useImportPlaylists = () => {
   const {playlistData: {items: playlists}} = useSpotify();
@@ -36,7 +36,7 @@ export const useImportPlaylists = () => {
 
         if (!destPlaylistId) return;
 
-        const tidalTracksToAdd: MinTrack[] = [];
+        const tidalTracksToAdd: ITrack[] = [];
         for (const spotifyTrack of tracks) {
           const tidalTracks = await importer.searchForTrack(spotifyTrack.trackName, spotifyTrack.artists);
 
