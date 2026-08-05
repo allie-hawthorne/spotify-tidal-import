@@ -25,8 +25,3 @@ export interface Playlist {
 export interface PlaylistWithItems extends Playlist {
   tracks: MinTrack[];
 }
-export interface PlaylistForImport extends Playlist {
-  playlistName: string;
-  items: TrackForImport[];
-  status: ImportStatus;
-}
