@@ -41,13 +41,13 @@ export class SpotifyExporter {
     return allPlaylists;
   };
 
-  getPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setPlaylistState: (v: PlaylistStateValue) => void) => {    
+  getPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setPlaylistState: (v: PlaylistStateValue) => void) => {
     const allPlaylists: SpotifyPlaylist[] = [];
+    const { id: userId } = await pRetry(() => spotifyApi.currentUser.profile());
     let offset = 0;
     let next = '';
     do {
-      // TODO: get user id from spotify api instead of hardcoding it
-      const fn = () => spotifyApi.playlists.getUsersPlaylists('1121194900', undefined, offset);
+      const fn = () => spotifyApi.playlists.getUsersPlaylists(userId, undefined, offset);
       const playlists = await pRetry(fn);
       allPlaylists.push(...playlists.items);
       
