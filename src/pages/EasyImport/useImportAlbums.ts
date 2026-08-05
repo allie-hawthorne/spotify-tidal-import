@@ -10,7 +10,7 @@ export interface MinAlbum extends Id, ArtistArray {
 }
 
 export const useImportAlbums = () => {
-  const {albums} = useSpotify();
+  const {albumData: {items: albums}} = useSpotify();
 
   const [succeededAlbums, setSucceededAlbums] = useState<MinAlbum[]>([]);
   const [erroredAlbums, setErroredAlbums] = useState<MinAlbum[]>([]);

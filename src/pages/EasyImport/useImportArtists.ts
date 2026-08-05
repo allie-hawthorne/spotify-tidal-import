@@ -5,7 +5,7 @@ import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchArtist } from "./matching";
 
 export const useImportArtists = () => {
-  const {artists} = useSpotify();
+  const {artistData: {items: artists}} = useSpotify();
 
   const [succeededArtists, setSucceededArtists] = useState<MinArtist[]>([]);
   const [erroredArtists, setErroredArtists] = useState<MinArtist[]>([]);

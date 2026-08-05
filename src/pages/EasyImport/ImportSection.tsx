@@ -1,23 +1,23 @@
-import type { PropsWithChildren, ReactNode } from "react";
-import { AllAlbums } from "./AllAlbums";
-import { AllArtists } from "./AllArtists";
-import { AllPlaylists } from "./AllPlaylists";
-import { AllTracks } from "./AllTracks";
+import type { PropsWithChildren } from "react";
+import { ImportSummary } from "./ImportSummary";
 import { useImporterContext, type UseState } from "./ImportContext";
-import { useSpotify } from "../../api-helpers/SpotifyContext";
+import { PlaylistState, useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
 
 type ImportSectionProps = PropsWithChildren<{
-  loading: boolean;
+  resource: Resource<unknown>;
+  label: string;
+  succeededCount: number;
   checked: boolean;
   setShouldImport: UseState<boolean>;
-  summary: ReactNode;
 }>;
 
-export const ImportSection = ({ loading, checked, setShouldImport, summary, children }: ImportSectionProps) => {
+export const ImportSection = ({ resource, label, succeededCount, checked, setShouldImport, children }: ImportSectionProps) => {
+  const {loading} = resource;
+
   return <div className="flex flex-col gap-2">
     <div className="flex gap-2 touch-none cursor-pointer" onClick={() => loading ? undefined : setShouldImport(s => !s)}>
       <input type="checkbox" checked={loading ? false : checked} disabled={loading} readOnly className="pointer-events-none" />
-      {summary}
+      <ImportSummary resource={resource} label={label} succeededCount={succeededCount} />
     </div>
     {children}
   </div>;
@@ -46,15 +46,18 @@ export const PlaylistsImportSection = () => {
     shouldImportPlaylists,
     setShouldImportPlaylists
   } = useImporterContext();
-  const {playlistsLoading} = useSpotify();
+  const {playlistData, playlistState} = useSpotify();
 
   const erroredPlaylists = Object.entries(erroredPlaylistTracks);
+  const succeededPlaylistCount = Object.entries(succeededPlaylistTracks).length;
+  const label = `${playlistState === PlaylistState.Tracks ? "tracks from" : ""} playlists`;
 
   return <ImportSection
-    loading={playlistsLoading}
+    resource={playlistData}
+    label={label}
+    succeededCount={succeededPlaylistCount}
     checked={shouldImportPlaylists}
     setShouldImport={setShouldImportPlaylists}
-    summary={<AllPlaylists succeededPlaylistTracks={succeededPlaylistTracks} />}
   >
     <ImportErrorList count={erroredPlaylists.length} title="playlist(s) not added:">
       {erroredPlaylists.map(([pId, {tracks}]) => (
@@ -74,13 +77,14 @@ export const ArtistsImportSection = () => {
     shouldImportArtists,
     setShouldImportArtists
   } = useImporterContext();
-  const {artistsLoading} = useSpotify();
+  const {artistData} = useSpotify();
 
   return <ImportSection
-    loading={artistsLoading}
+    resource={artistData}
+    label="followed artists"
+    succeededCount={succeededArtists.length}
     checked={shouldImportArtists}
     setShouldImport={setShouldImportArtists}
-    summary={<AllArtists succeededArtists={succeededArtists} />}
   >
     <ImportErrorList count={erroredArtists.length} title="artist(s) not added:">
       {erroredArtists.map(a => <li key={a.id}>{a.artistName}</li>)}
@@ -95,13 +99,14 @@ export const AlbumsImportSection = () => {
     shouldImportAlbums,
     setShouldImportAlbums
   } = useImporterContext();
-  const {albumsLoading} = useSpotify();
+  const {albumData} = useSpotify();
 
   return <ImportSection
-    loading={albumsLoading}
+    resource={albumData}
+    label="saved albums"
+    succeededCount={succeededAlbums.length}
     checked={shouldImportAlbums}
     setShouldImport={setShouldImportAlbums}
-    summary={<AllAlbums succeededAlbums={succeededAlbums} />}
   >
     <ImportErrorList count={erroredAlbums.length} title="album(s) not added:">
       {erroredAlbums.map(a => <li key={a.id}>{a.albumName} by {a.artists}</li>)}
@@ -116,13 +121,14 @@ export const TracksImportSection = () => {
     shouldImportTracks,
     setShouldImportTracks
   } = useImporterContext();
-  const {tracksLoading} = useSpotify();
+  const {trackData} = useSpotify();
 
   return <ImportSection
-    loading={tracksLoading}
+    resource={trackData}
+    label="followed tracks"
+    succeededCount={succeededTracks.length}
     checked={shouldImportTracks}
     setShouldImport={setShouldImportTracks}
-    summary={<AllTracks succeededTracks={succeededTracks} />}
   >
     <ImportErrorList count={erroredTracks.length} title="track(s) not added:">
       {erroredTracks.map(a => <li key={a.id}>{a.trackName} by {a.artists}</li>)}

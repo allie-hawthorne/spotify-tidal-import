@@ -18,7 +18,7 @@ export type PlaylistTracksMap = Record<MinPlaylist['id'], {playlist: MinPlaylist
 const addToObject = (prev: PlaylistTracksMap, playlist: MinPlaylist, ...tracks: MinTrack[]) => ({...prev, [playlist.id]: {playlist, tracks: [...(prev[playlist.id].tracks ?? []), ...tracks]}})
 
 export const useImportPlaylists = () => {
-  const {playlists} = useSpotify();
+  const {playlistData: {items: playlists}} = useSpotify();
 
   // const [succeededPlaylistTracks, setSucceededTracks] = useState<[string, MinPlaylist, MinTrack][]>([]);
   const [succeededPlaylistTracks, setSucceededTracks] = useState<PlaylistTracksMap>({});

@@ -22,26 +22,7 @@ interface SpotifyContext {
   trackData: Resource<MinTrack>
   playlistData: Resource<PlaylistWithItems>
 
-  albums: MinAlbum[]
-  albumsLoading: boolean
-  albumTotal: number
-  albumProgress: number
-
-  artists: MinArtist[]
-  artistsLoading: boolean
-  artistTotal: number
-  artistProgress: number
-
-  playlists: PlaylistWithItems[]
-  playlistsLoading: boolean
   playlistState: PlaylistStateValue
-  playlistTotal: number
-  playlistProgress: number
-
-  tracks: MinTrack[]
-  tracksLoading: boolean
-  trackTotal: number
-  trackProgress: number
 
   isLoading: boolean
   haveTotalsReturned: boolean
@@ -49,26 +30,7 @@ interface SpotifyContext {
   overallProgress: number
 }
 const context = createContext<SpotifyContext>({
-  albums: [],
-  albumsLoading: false,
-  albumTotal: 0,
-  albumProgress: 0,
-
-  artists: [],
-  artistsLoading: false,
-  artistTotal: 0,
-  artistProgress: 0,
-
-  playlists: [],
-  playlistsLoading: false,
   playlistState: PlaylistState.Playlist,
-  playlistTotal: 0,
-  playlistProgress: 0,
-  
-  tracks: [],
-  tracksLoading: false,
-  trackTotal: 0,
-  trackProgress: 0,
 
   isLoading: false,
   haveTotalsReturned: false,
@@ -114,29 +76,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
   const albumData = useGetItem<MinAlbum>(albumFetcher);
   const trackData = useGetItem<MinTrack>(trackFetcher);
 
-  // TODO: Remove this shit as soon as possible (i am in a car rn)
-  const albums = albumData.items;
-  const albumsLoading = albumData.loading;
-  const albumTotal = albumData.total;
-  const albumProgress = albumData.progress;
-
-  const artists = artistData.items;
-  const artistsLoading = artistData.loading;
-  const artistTotal = artistData.total;
-  const artistProgress = artistData.progress;
-
-  const playlists = playlistData.items;
-  const playlistsLoading = playlistData.loading;
-  const playlistTotal = playlistData.total;
-  const playlistProgress = playlistData.progress;
-
-  const tracks = trackData.items;
-  const tracksLoading = trackData.loading;
-  const trackTotal = trackData.total;
-  const trackProgress = trackData.progress;
-
   const isLoading = trackData.loading || albumData.loading || artistData.loading || playlistData.loading;
-  // TODO: playlistTotal changes when we start getting the tracks - change to two states
   const overallTotal = trackData.total + albumData.total + artistData.total + playlistData.total;
   const overallProgress = trackData.progress + albumData.progress + artistData.progress + playlistData.progress;
   const haveTotalsReturned = Boolean(
@@ -151,27 +91,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
     artistData,
     playlistData,
     trackData,
-
-    albums,
-    albumsLoading,
-    albumTotal,
-    albumProgress,
-
-    artists,
-    artistsLoading,
-    artistTotal,
-    artistProgress,
-
-    playlists,
-    playlistsLoading,
     playlistState,
-    playlistTotal,
-    playlistProgress,
-
-    tracks,
-    tracksLoading,
-    trackTotal,
-    trackProgress,
 
     isLoading,
     haveTotalsReturned,
@@ -184,7 +104,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
 
 export const useSpotify = () => useContext(context);
 
-type Resource<T> = {
+export type Resource<T> = {
   items: T[]
   loading: boolean
   total: number

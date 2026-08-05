@@ -10,7 +10,7 @@ export interface MinTrack extends Id, ArtistArray {
 }
 
 export const useImportTracks = () => {
-  const {tracks} = useSpotify();
+  const {trackData: {items: tracks}} = useSpotify();
 
   const [succeededTracks, setSucceededTracks] = useState<MinTrack[]>([]);
   const [erroredTracks, setErroredTracks] = useState<MinTrack[]>([]);
