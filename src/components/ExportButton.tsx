@@ -10,9 +10,17 @@ export const ExportButton = () => {
     const zip = new JSZip();
     zip.file('saved-albums.csv', Papa.unparse(albumData.items));
     zip.file('saved-artists.csv', Papa.unparse(artistData.items));
-    zip.file('playlists.csv', Papa.unparse(playlistData.items));
     zip.file('saved-tracks.csv', Papa.unparse(trackData.items));
     zip.file('saved-podcasts.csv', Papa.unparse(podcastData.items));
+
+    const playlistsMeta = playlistData.items.map(({tracks, ...playlist}) => playlist);
+    zip.file('playlists.csv', Papa.unparse(playlistsMeta));
+
+    const playlistTracksFolder = zip.folder('playlist-tracks');
+    playlistData.items.forEach(playlist => {
+      const fileName = playlist.playlistName.replace(/[\\/:*?"<>|]/g, '_');
+      playlistTracksFolder?.file(`${fileName}-${playlist.id}.csv`, Papa.unparse(playlist.tracks));
+    });
 
     const blob = await zip.generateAsync({type: 'blob'});
     const encodedUri = window.URL.createObjectURL(blob);
