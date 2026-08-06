@@ -1,5 +1,5 @@
-import type { Artist, PlaylistedTrack, SavedAlbum, SavedTrack, SimplifiedPlaylist, Track } from "@spotify/web-api-ts-sdk";
-import type { IAlbum, IArtist, IBasePlaylist, ITrack } from "../types";
+import type { Artist, PlaylistedTrack, SavedAlbum, SavedShow, SavedTrack, SimplifiedPlaylist, Track } from "@spotify/web-api-ts-sdk";
+import type { IAlbum, IArtist, IBasePlaylist, IPodcast, ITrack } from "../types";
 import { TIDAL_PLACEHOLDER_IMAGE_URL } from "../api-helpers/tidal";
 
 export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | PlaylistedTrack<Track>)[]) => {
@@ -37,6 +37,18 @@ export const mapSpotifyArtistsToUniversalArtists = (artists: Artist[]) => {
   });
 
   return tidalArtists;
+};
+
+export const mapSpotifyShowsToUniversalPodcasts = (shows: SavedShow[]) => {
+  const spotifyPodcasts = shows.map(({show}): IPodcast | undefined => {
+    return {
+      id: show.id,
+      podcastName: show.name,
+      publisher: show.publisher
+    };
+  }).filter(p => !!p);
+
+  return spotifyPodcasts;
 };
 
 export const mapSpotifyPlaylistToUniversalPlaylist = (playlist: SimplifiedPlaylist): IBasePlaylist => {

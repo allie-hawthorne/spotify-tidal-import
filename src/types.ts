@@ -31,4 +31,9 @@ export interface ITrack extends Id, ArtistArray {
   isrc: string;
 }
 
+export interface IPodcast extends Id {
+  podcastName: string;
+  publisher: string;
+}
+
 export type SetNumberFn = Dispatch<SetStateAction<number>>;

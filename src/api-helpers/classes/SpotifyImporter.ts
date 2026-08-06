@@ -1,8 +1,8 @@
 import { chunk } from "lodash";
-import type { Artist, Playlist as SpotifyPlaylist, SavedAlbum, SavedTrack } from "@spotify/web-api-ts-sdk";
+import type { Artist, Playlist as SpotifyPlaylist, SavedAlbum, SavedShow, SavedTrack } from "@spotify/web-api-ts-sdk";
 import type { IBasePlaylist, IPlaylist, SetNumberFn } from "../../types";
 import { spotifyApi } from "../spotify";
-import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyArtistsToUniversalArtists, mapSpotifyPlaylistToUniversalPlaylist, mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
+import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyArtistsToUniversalArtists, mapSpotifyPlaylistToUniversalPlaylist, mapSpotifyShowsToUniversalPodcasts, mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
 import pRetry from "@n8n/p-retry";
 import { PlaylistState, type PlaylistStateValue } from "../SpotifyContext";
 
@@ -105,6 +105,24 @@ export class SpotifyExporter {
     } while (next);
 
     return mapSpotifyTracksToUniversalTracks(allTracks);
+  };
+
+  getSavedPodcasts = async (setPodcastTotal: SetNumberFn, setPodcastProgress: SetNumberFn) => {
+    const allShows: SavedShow[] = []
+    let offset = 0;
+    let next = '';
+    do {
+      const fn = () => spotifyApi.currentUser.shows.savedShows(50, offset);
+      const shows = await pRetry(fn);
+      allShows.push(...shows.items);
+
+      offset += shows.limit;
+      next = shows.next ?? '';
+      setPodcastTotal(shows.total);
+      setPodcastProgress(offset);
+    } while (next);
+
+    return mapSpotifyShowsToUniversalPodcasts(allShows);
   };
 
   getSavedArtists = async (setArtistTotal: SetNumberFn, setArtistProgress: SetNumberFn) => {

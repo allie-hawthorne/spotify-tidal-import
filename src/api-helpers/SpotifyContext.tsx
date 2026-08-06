@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type PropsWithChildren } from "react";
-import type { IAlbum, IArtist, IPlaylist, ITrack, SetNumberFn } from "../types";
+import type { IAlbum, IArtist, IPlaylist, IPodcast, ITrack, SetNumberFn } from "../types";
 import { SpotifyExporter } from "./classes/SpotifyImporter";
 
 type ValueOf<T extends object> = T[keyof T]
@@ -18,6 +18,7 @@ interface SpotifyContext {
   artistData: Resource<IArtist>
   trackData: Resource<ITrack>
   playlistData: Resource<IPlaylist>
+  podcastData: Resource<IPodcast>
 
   playlistState: PlaylistStateValue
 
@@ -38,6 +39,7 @@ const context = createContext<SpotifyContext>({
   artistData: makeDummyResource(),
   playlistData: makeDummyResource(),
   trackData: makeDummyResource(),
+  podcastData: makeDummyResource(),
 })
 
 export const SpotifyProvider = ({children}: PropsWithChildren) => {
@@ -68,19 +70,27 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
     [exporter]
   );
 
+  const podcastFetcher = useCallback(
+    (setTotal: SetNumberFn, setProgress: SetNumberFn) =>
+      exporter.current.getSavedPodcasts(setTotal, setProgress),
+    [exporter]
+  );
+
   const playlistData = useGetItem<IPlaylist>(playlistFetcher);
   const artistData = useGetItem<IArtist>(artistFetcher);
   const albumData = useGetItem<IAlbum>(albumFetcher);
   const trackData = useGetItem<ITrack>(trackFetcher);
+  const podcastData = useGetItem<IPodcast>(podcastFetcher);
 
-  const isLoading = trackData.loading || albumData.loading || artistData.loading || playlistData.loading;
-  const overallTotal = trackData.total + albumData.total + artistData.total + playlistData.total;
-  const overallProgress = trackData.progress + albumData.progress + artistData.progress + playlistData.progress;
+  const isLoading = trackData.loading || albumData.loading || artistData.loading || playlistData.loading || podcastData.loading;
+  const overallTotal = trackData.total + albumData.total + artistData.total + playlistData.total + podcastData.total;
+  const overallProgress = trackData.progress + albumData.progress + artistData.progress + playlistData.progress + podcastData.progress;
   const haveTotalsReturned = Boolean(
     (trackData.total || !trackData.loading) &&
     (albumData.total || !albumData.loading) &&
     (artistData.total || !artistData.loading) &&
-    (playlistData.total || !playlistData.loading)
+    (playlistData.total || !playlistData.loading) &&
+    (podcastData.total || !podcastData.loading)
   );
 
   return <context.Provider value={{
@@ -88,6 +98,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
     artistData,
     playlistData,
     trackData,
+    podcastData,
     playlistState,
 
     isLoading,

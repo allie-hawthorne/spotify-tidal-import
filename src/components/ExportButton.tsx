@@ -4,7 +4,7 @@ import JSZip from "jszip";
 import Papa from "papaparse";
 
 export const ExportButton = () => {
-  const {isLoading, albumData, artistData, playlistData, trackData} = useSpotify();
+  const {isLoading, albumData, artistData, playlistData, trackData, podcastData} = useSpotify();
 
   const onExportClick = async () => {
     const zip = new JSZip();
@@ -12,6 +12,7 @@ export const ExportButton = () => {
     zip.file('saved-artists.csv', Papa.unparse(artistData.items));
     zip.file('playlists.csv', Papa.unparse(playlistData.items));
     zip.file('saved-tracks.csv', Papa.unparse(trackData.items));
+    zip.file('saved-podcasts.csv', Papa.unparse(podcastData.items));
 
     const blob = await zip.generateAsync({type: 'blob'});
     const encodedUri = window.URL.createObjectURL(blob);
