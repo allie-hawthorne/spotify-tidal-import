@@ -20,7 +20,6 @@ const addToObject = (prev: PlaylistTracksMap, playlist: MinPlaylist, ...tracks: 
 export const useImportPlaylists = () => {
   const {playlistData: {items: playlists}} = useSpotify();
 
-  // const [succeededPlaylistTracks, setSucceededTracks] = useState<[string, MinPlaylist, MinTrack][]>([]);
   const [succeededPlaylistTracks, setSucceededTracks] = useState<PlaylistTracksMap>({});
   const [erroredPlaylistTracks, setErroredTracks] = useState<PlaylistTracksMap>({});
 
@@ -67,12 +66,10 @@ export const useImportPlaylists = () => {
             console.log(`Added batch ${batchIndex + 1}/${batches.length} of tracks to destination playlist:`, spotifyPlaylistName, batch);
           } else {
             setErroredTracks(prev => addToObject(prev, spotifyPlaylist, ...batch));
-            // setErroredPlaylists(prev => [...prev, {id: destPlaylistId, playlistName: spotifyPlaylistName}]);
             console.error(`Failed to add batch ${batchIndex + 1}/${batches.length} of tracks to destination playlist:`, spotifyPlaylistName, batch);
           }
         }
 
-        // setSucceededPlaylists(prev => [...prev, {id: destPlaylistId, playlistName: spotifyPlaylistName}]);
       }));
     }
   };
