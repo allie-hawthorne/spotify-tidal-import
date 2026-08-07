@@ -1,5 +1,5 @@
 import { createAPIClient } from '@tidal-music/api';
-import { credentialsProvider, init, initializeLogin } from '@tidal-music/auth';
+import { credentialsProvider, init, initializeLogin, logout } from '@tidal-music/auth';
 
 const TIDAL_API_KEY = 'OPapoZjLFp4nJoEM';
 const TIDAL_REDIRECT_URI = 'http://127.0.0.1:5500/tidal/';
@@ -31,4 +31,6 @@ export const authenticateTidal = async () => {
 
   window.open(loginUrl, '_self');
 }
+
+export const logoutTidal = logout;
 

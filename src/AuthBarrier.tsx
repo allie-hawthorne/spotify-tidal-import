@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { spotifyApi } from './api-helpers/spotify';
-import { checkIfTidalAuthed } from './api-helpers/tidal';
+import { checkIfTidalAuthed, logoutTidal } from './api-helpers/tidal';
 import { SpotifyLoginButton } from './components/SpotifyLoginButton';
 import { TidalLoginButton } from './components/TidalLoginButton';
 import { Home } from './pages/Home';
 import { SpotifyProvider } from './api-helpers/SpotifyContext';
 import { ImporterProvider } from './pages/EasyImport/ImportContext';
+import { LogoutButton } from './components/LogoutIconButton';
 
 export const AuthBarrier = () => {
   const [spotifyAuthed, setSpotifyAuthed] = useState(false);
@@ -20,25 +21,38 @@ export const AuthBarrier = () => {
       .catch(console.error);
   }, []);
 
-  if (spotifyAuthed && tidalAuthed) return <SpotifyProvider>
-    <ImporterProvider>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, eum!</p>
-      <Home />
-    </ImporterProvider>
-  </SpotifyProvider>;
+  const handleLogout = () => {
+    spotifyApi.logOut();
+    logoutTidal();
+    setSpotifyAuthed(false);
+    setTidalAuthed(false);
+  };
+
+  const isAuthed = spotifyAuthed && tidalAuthed;
 
   return <>
-    <div className='flex flex-col gap-2 mb-1'>
-      <div className='text-5xl font-playfair font-semibold'>
-        <h3>Free your music.</h3>
-        <h3>For free.</h3>
+    <div className="flex justify-between items-center">
+      <h1 className="text-2xl">Spotifree</h1>
+      {isAuthed && <LogoutButton onClick={handleLogout} />}
+    </div>
+    {isAuthed ? <SpotifyProvider>
+      <ImporterProvider>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, eum!</p>
+        <Home />
+      </ImporterProvider>
+    </SpotifyProvider> : <>
+      <div className='flex flex-col gap-2 mb-1'>
+        <div className='text-5xl font-playfair font-semibold'>
+          <h3>Free your music.</h3>
+          <h3>For free.</h3>
+        </div>
+        <p>Connect your Spotify and Tidal accounts to import your music collection.</p>
       </div>
-      <p>Connect your Spotify and Tidal accounts to import your music collection.</p>
-    </div>
-    <hr className='text-gray-700' />
-    <div className='flex flex-col gap-4 mt-2'>
-      {spotifyAuthed || <SpotifyLoginButton />}
-      {tidalAuthed || <TidalLoginButton />}
-    </div>
+      <hr className='text-gray-700' />
+      <div className='flex flex-col gap-4 mt-2'>
+        {spotifyAuthed || <SpotifyLoginButton />}
+        {tidalAuthed || <TidalLoginButton />}
+      </div>
+    </>}
   </>
 };
