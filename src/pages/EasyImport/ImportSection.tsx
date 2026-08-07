@@ -1,7 +1,8 @@
-import type { PropsWithChildren } from "react";
+import type { MouseEvent, PropsWithChildren } from "react";
 import { ImportSummary } from "./ImportSummary";
 import { useImporterContext, type UseState } from "./ImportContext";
 import { useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
+import { Checkbox } from "../../components/Checkbox";
 
 type ImportSectionProps = PropsWithChildren<{
   resource: Resource<unknown>;
@@ -15,11 +16,17 @@ type ImportSectionProps = PropsWithChildren<{
 export const ImportSection = ({ resource, preLabel, label, succeededCount, checked, setShouldImport, children }: ImportSectionProps) => {
   const {loading} = resource;
 
+  const toggle = (e: MouseEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setShouldImport(s => !s);
+  }
+  
+
   return <div className="flex flex-col gap-2">
-    <div className="flex gap-2 touch-none cursor-pointer" onClick={() => loading ? undefined : setShouldImport(s => !s)}>
-      <input type="checkbox" checked={loading ? false : checked} disabled={loading} readOnly className="pointer-events-none" />
+    <label className="flex gap-2 touch-none cursor-pointer" onClick={loading ? undefined : toggle}>
+      <Checkbox checked={loading ? false : checked} disabled={loading} />
       <ImportSummary resource={resource} preLabel={preLabel} label={label} succeededCount={succeededCount} />
-    </div>
+    </label>
     {children}
   </div>;
 };
