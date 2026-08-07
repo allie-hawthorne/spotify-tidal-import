@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { ImportSummary } from "./ImportSummary";
 import { useImporterContext, type UseState } from "./ImportContext";
-import { PlaylistState, useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
+import { useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
 
 type ImportSectionProps = PropsWithChildren<{
   resource: Resource<unknown>;
@@ -47,17 +47,15 @@ export const PlaylistsImportSection = () => {
     shouldImportPlaylists,
     setShouldImportPlaylists
   } = useImporterContext();
-  const {playlistData, playlistState} = useSpotify();
+  const {playlistData, totalPlaylistTracks} = useSpotify();
 
   const erroredPlaylists = Object.entries(erroredPlaylistTracks);
   const succeededPlaylistCount = Object.entries(succeededPlaylistTracks).length;
-  const trackCount = playlistData.items.reduce((sum, p) => sum + p.tracks.length, 0);
-  const isTracksStage = playlistState === PlaylistState.Tracks;
 
   return <ImportSection
     resource={playlistData}
     label='playlists'
-    preLabel={isTracksStage ? `${trackCount} tracks from` : undefined}
+    preLabel={totalPlaylistTracks ? `${totalPlaylistTracks} tracks from` : undefined}
     succeededCount={succeededPlaylistCount}
     checked={shouldImportPlaylists}
     setShouldImport={setShouldImportPlaylists}

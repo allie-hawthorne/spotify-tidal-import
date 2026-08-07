@@ -1,10 +1,9 @@
 import { chunk } from "lodash";
+import pRetry from "@n8n/p-retry";
 import type { Artist, SavedAlbum, SavedShow, SavedTrack, SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import type { IBasePlaylist, IPlaylist, SetNumberFn } from "../../types";
 import { spotifyApi } from "../spotify";
 import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyArtistsToUniversalArtists, mapSpotifyPlaylistToUniversalPlaylist, mapSpotifyShowsToUniversalPodcasts, mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
-import pRetry from "@n8n/p-retry";
-import { PlaylistState, type PlaylistStateValue } from "../SpotifyContext";
 
 // TODO: It'd be nice to dynamically maximise this for people with slow connections and minimise for those with fast, to avoid 429s
 // I'm pretty sure 3 is fine, but during repeated testing it did 429 me
@@ -40,7 +39,7 @@ export class SpotifyExporter {
     return allPlaylists;
   };
 
-  getPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setPlaylistState: (v: PlaylistStateValue) => void) => {
+  getPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setTotalPlaylistTracks: SetNumberFn) => {
     const allPlaylists: SimplifiedPlaylist[] = [];
     let offset = 0;
     let next = '';
@@ -54,14 +53,15 @@ export class SpotifyExporter {
       setPlaylistTotal(playlists.total);
       setPlaylistProgress(Math.min(playlists.total, offset));
     } while (next);
-    
-    setPlaylistProgress(0);
-    setPlaylistState(PlaylistState.Tracks);
 
     const mappedPlaylists = allPlaylists.map(mapSpotifyPlaylistToUniversalPlaylist);
+    const totalTracks = mappedPlaylists.reduce((sum, p) => sum + p.trackCount, 0);
+    
+    setPlaylistProgress(0);
+    setTotalPlaylistTracks(totalTracks);
     
     console.log('Spotify playlists:', allPlaylists);
-    console.log('Total Tracks:', allPlaylists.reduce((sum, p) => sum + (p.tracks?.total || 0), 0));
+    console.log('Total Tracks:', totalTracks);
 
     const playlistsWithTracks = await this.getTracksFromPlaylists(mappedPlaylists, setPlaylistProgress);
 

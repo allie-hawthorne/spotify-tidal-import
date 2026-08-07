@@ -8,7 +8,7 @@ type ImportSummaryProps = {
 };
 
 export const ImportSummary = ({resource: {items, loading, total, progress}, label, succeededCount, preLabel}: ImportSummaryProps) => {
-  if (loading) return <p>Loading {label}... ({progress}/{total})</p>;
+  if (loading) return <p>Loading {preLabel} {label}... ({progress}/{total})</p>;
 
   if (!items.length) return <p>We couldn't get your {label}</p>;
 

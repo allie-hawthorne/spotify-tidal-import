@@ -20,7 +20,7 @@ interface SpotifyContext {
   playlistData: Resource<IPlaylist>
   podcastData: Resource<IPodcast>
 
-  playlistState: PlaylistStateValue
+  totalPlaylistTracks: number
 
   isLoading: boolean
   haveTotalsReturned: boolean
@@ -28,7 +28,7 @@ interface SpotifyContext {
   overallProgress: number
 }
 const context = createContext<SpotifyContext>({
-  playlistState: PlaylistState.Playlist,
+  totalPlaylistTracks: 0,
 
   isLoading: false,
   haveTotalsReturned: false,
@@ -43,13 +43,13 @@ const context = createContext<SpotifyContext>({
 })
 
 export const SpotifyProvider = ({children}: PropsWithChildren) => {
-  const [playlistState, setPlaylistState] = useState<PlaylistStateValue>(PlaylistState.Playlist);
+  const [totalPlaylistTracks, setTotalPlaylistTracks] = useState(0);
   const exporter = useRef(new SpotifyExporter());
 
   const playlistFetcher = useCallback(
     (setTotal: SetNumberFn, setProgress: SetNumberFn) =>
-      exporter.current.getPlaylists(setTotal, setProgress, setPlaylistState),
-    [exporter, setPlaylistState]
+      exporter.current.getPlaylists(setTotal, setProgress, setTotalPlaylistTracks),
+    [exporter]
   );
 
   const artistFetcher = useCallback(
@@ -99,7 +99,7 @@ export const SpotifyProvider = ({children}: PropsWithChildren) => {
     playlistData,
     trackData,
     podcastData,
-    playlistState,
+    totalPlaylistTracks,
 
     isLoading,
     haveTotalsReturned,
