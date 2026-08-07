@@ -15,7 +15,7 @@ export type PlaylistTracksMap = Record<MinPlaylist['id'], {playlist: MinPlaylist
 const PLAYLISTS_CHUNK_SIZE = 2;
 const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time
 
-const addToObject = (prev: PlaylistTracksMap, playlist: MinPlaylist, ...tracks: ITrack[]) => ({...prev, [playlist.id]: {playlist, tracks: [...(prev[playlist.id].tracks ?? []), ...tracks]}})
+const addToObject = (prev: PlaylistTracksMap, playlist: MinPlaylist, ...tracks: ITrack[]) => ({...prev, [playlist.id]: {playlist, tracks: [...(prev[playlist.id]?.tracks ?? []), ...tracks]}})
 
 export const useImportPlaylists = () => {
   const {playlistData: {items: playlists}} = useSpotify();
