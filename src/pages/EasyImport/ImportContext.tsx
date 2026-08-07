@@ -68,7 +68,7 @@ export const ImporterProvider = ({children}: PropsWithChildren) => {
     if (shouldImportAlbums) importAlbums(tidal);
     if (shouldImportArtists) importArtists(tidal);
     if (shouldImportTracks) importTracks(tidal);
-    if (shouldImportPlaylists) importPlaylists(tidal)
+    if (shouldImportPlaylists) importPlaylists(tidal);
   }
 
   return <context.Provider value={{

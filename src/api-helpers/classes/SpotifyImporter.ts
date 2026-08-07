@@ -1,5 +1,5 @@
 import { chunk } from "lodash";
-import type { Artist, Playlist as SpotifyPlaylist, SavedAlbum, SavedShow, SavedTrack } from "@spotify/web-api-ts-sdk";
+import type { Artist, SavedAlbum, SavedShow, SavedTrack, SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import type { IBasePlaylist, IPlaylist, SetNumberFn } from "../../types";
 import { spotifyApi } from "../spotify";
 import { mapSpotifyAlbumsToUniversalAlbums, mapSpotifyArtistsToUniversalArtists, mapSpotifyPlaylistToUniversalPlaylist, mapSpotifyShowsToUniversalPodcasts, mapSpotifyTracksToUniversalTracks } from "../../mappers/spotifyMappers";
@@ -41,12 +41,11 @@ export class SpotifyExporter {
   };
 
   getPlaylists = async (setPlaylistTotal: SetNumberFn, setPlaylistProgress: SetNumberFn, setPlaylistState: (v: PlaylistStateValue) => void) => {
-    const allPlaylists: SpotifyPlaylist[] = [];
-    const { id: userId } = await pRetry(() => spotifyApi.currentUser.profile());
+    const allPlaylists: SimplifiedPlaylist[] = [];
     let offset = 0;
     let next = '';
     do {
-      const fn = () => spotifyApi.playlists.getUsersPlaylists(userId, undefined, offset);
+      const fn = () => spotifyApi.currentUser.playlists.playlists(undefined, offset);
       const playlists = await pRetry(fn);
       allPlaylists.push(...playlists.items);
       
