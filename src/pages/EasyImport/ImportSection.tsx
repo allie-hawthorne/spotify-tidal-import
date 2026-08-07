@@ -3,6 +3,7 @@ import { ImportSummary } from "./ImportSummary";
 import { useImporterContext, type UseState } from "./ImportContext";
 import { useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
 import { Checkbox } from "../../components/Checkbox";
+import { Spinner } from "../../components/Spinner";
 
 type ImportSectionProps = PropsWithChildren<{
   resource: Resource<unknown>;
@@ -21,10 +22,11 @@ export const ImportSection = ({ resource, preLabel, label, succeededCount, check
     setShouldImport(s => !s);
   }
   
-
   return <div className="flex flex-col gap-2">
-    <label className="flex gap-2 touch-none cursor-pointer" onClick={loading ? undefined : toggle}>
-      <Checkbox checked={loading ? false : checked} disabled={loading} />
+    <label className="flex gap-2 items-center touch-none cursor-pointer" onClick={loading ? undefined : toggle}>
+      {loading
+        ? <Spinner />
+        : <Checkbox checked={checked} />}
       <ImportSummary resource={resource} preLabel={preLabel} label={label} succeededCount={succeededCount} />
     </label>
     {children}
