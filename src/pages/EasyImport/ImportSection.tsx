@@ -5,19 +5,20 @@ import { PlaylistState, useSpotify, type Resource } from "../../api-helpers/Spot
 
 type ImportSectionProps = PropsWithChildren<{
   resource: Resource<unknown>;
+  preLabel?: string;
   label: string;
   succeededCount: number;
   checked: boolean;
   setShouldImport: UseState<boolean>;
 }>;
 
-export const ImportSection = ({ resource, label, succeededCount, checked, setShouldImport, children }: ImportSectionProps) => {
+export const ImportSection = ({ resource, preLabel, label, succeededCount, checked, setShouldImport, children }: ImportSectionProps) => {
   const {loading} = resource;
 
   return <div className="flex flex-col gap-2">
     <div className="flex gap-2 touch-none cursor-pointer" onClick={() => loading ? undefined : setShouldImport(s => !s)}>
       <input type="checkbox" checked={loading ? false : checked} disabled={loading} readOnly className="pointer-events-none" />
-      <ImportSummary resource={resource} label={label} succeededCount={succeededCount} />
+      <ImportSummary resource={resource} preLabel={preLabel} label={label} succeededCount={succeededCount} />
     </div>
     {children}
   </div>;
@@ -50,11 +51,13 @@ export const PlaylistsImportSection = () => {
 
   const erroredPlaylists = Object.entries(erroredPlaylistTracks);
   const succeededPlaylistCount = Object.entries(succeededPlaylistTracks).length;
-  const label = `${playlistState === PlaylistState.Tracks ? "tracks from" : ""} playlists`;
+  const trackCount = playlistData.items.reduce((sum, p) => sum + p.tracks.length, 0);
+  const isTracksStage = playlistState === PlaylistState.Tracks;
 
   return <ImportSection
     resource={playlistData}
-    label={label}
+    label='playlists'
+    preLabel={isTracksStage ? `${trackCount} tracks from` : undefined}
     succeededCount={succeededPlaylistCount}
     checked={shouldImportPlaylists}
     setShouldImport={setShouldImportPlaylists}
