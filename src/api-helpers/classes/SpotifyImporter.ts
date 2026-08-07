@@ -1,4 +1,4 @@
-import { chunk } from "lodash";
+import chunk from "lodash/chunk";
 import pRetry from "@n8n/p-retry";
 import type { Artist, SavedAlbum, SavedShow, SavedTrack, SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import type { IBasePlaylist, IPlaylist, SetNumberFn } from "../../types";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
-import { chunk } from "lodash";
+import chunk from "lodash/chunk";
 import { matchTrack } from "./matching";
 import type { ITrack } from "../../types";
 
