@@ -34,8 +34,8 @@ export class TidalImporter {
     // TODO: Is this better than just removing the character?
     const encodedQuery = query.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
   
-    const fn = () => tidalApi.GET('/searchResults/{id}/relationships/tracks', {
-      params: {path: {id: encodedQuery}, query: {include: ['tracks']}},
+    const fn = () => tidalApi.GET('/searchResults/{id}', {
+      params: {path: {id: encodedQuery}, query: {include: ['tracks', 'tracks.artists']}},
     });
     const res = await callTidal(fn);
 
