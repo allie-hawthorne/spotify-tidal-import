@@ -10,6 +10,8 @@ export type UseState<T> = Dispatch<SetStateAction<T>>
 
 export interface EasyImportContextValue {
   onImportClick: () => Promise<void>,
+  isImporting: boolean,
+  importError: string | null,
 
   succeededArtists: IArtist[],
   erroredArtists: IArtist[],
@@ -34,6 +36,8 @@ export interface EasyImportContextValue {
 
 const context = createContext<EasyImportContextValue>({
   onImportClick: async () => {},
+  isImporting: false,
+  importError: null,
   succeededArtists: [],
   erroredArtists: [],
   succeededAlbums: [],
@@ -58,21 +62,43 @@ export const ImporterProvider = ({children}: PropsWithChildren) => {
   const [shouldImportPlaylists, setShouldImportPlaylists] = useState(true);
   const [shouldImportTracks, setShouldImportTracks] = useState(true);
 
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+
   const {importAlbums, ...restAlbums} = useImportAlbums();
   const {importArtists, ...restArtists} = useImportArtists();
   const {importTracks, ...restTracks} = useImportTracks();
   const {importPlaylists, ...restPlaylists} = useImportPlaylists();
 
   const onImportClick = async () => {
+    if (isImporting) return;
+
+    setIsImporting(true);
+    setImportError(null);
+
     const tidal = new TidalImporter();
-    if (shouldImportAlbums) importAlbums(tidal);
-    if (shouldImportArtists) importArtists(tidal);
-    if (shouldImportTracks) importTracks(tidal);
-    if (shouldImportPlaylists) importPlaylists(tidal);
+    const imports = [
+      shouldImportAlbums && importAlbums(tidal),
+      shouldImportArtists && importArtists(tidal),
+      shouldImportTracks && importTracks(tidal),
+      shouldImportPlaylists && importPlaylists(tidal),
+    ].filter((p): p is Promise<void> => p !== false);
+
+    const results = await Promise.allSettled(imports);
+    const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+
+    failures.forEach(({reason}) => console.error('Import step failed:', reason));
+    setImportError(failures.length
+      ? `${failures.length} import ${failures.length === 1 ? 'step' : 'steps'} failed unexpectedly. Check the console for details.`
+      : null);
+
+    setIsImporting(false);
   }
 
   return <context.Provider value={{
     onImportClick,
+    isImporting,
+    importError,
     ...restTracks,
     ...restAlbums,
     ...restArtists,

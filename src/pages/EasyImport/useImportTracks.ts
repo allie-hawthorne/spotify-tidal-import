@@ -18,7 +18,7 @@ export const useImportTracks = () => {
       if (!tidalTracks) {
         console.log("No results on Tidal - Spotify:", spotifyTrack);
         setErroredTracks(prev => [...prev, spotifyTrack]);
-        return;
+        continue;
       }
 
       const matchedTrack = matchTrack(spotifyTrack, tidalTracks);

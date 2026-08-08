@@ -16,7 +16,8 @@ export const useImportAlbums = () => {
 
       if (!tidalAlbums) {
         console.log("No result on Tidal - Spotify:", spotifyAlbum);
-        return;
+        setErroredAlbums(prev => [...prev, spotifyAlbum]);
+        continue;
       }
 
       const matchedAlbum = matchAlbum(spotifyAlbum, tidalAlbums);

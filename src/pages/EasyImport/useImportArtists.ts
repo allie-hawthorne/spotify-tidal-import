@@ -16,7 +16,8 @@ export const useImportArtists = () => {
 
       if (!tidalArtists) {
         console.log("No result on Tidal - Spotify:", spotifyName);
-        return;
+        setErroredArtists(prev => [...prev, {id: '', artistName: spotifyName}]);
+        continue;
       }
 
       const matchedArtist = matchArtist(spotifyName, tidalArtists);
