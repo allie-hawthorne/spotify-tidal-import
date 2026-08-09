@@ -1,4 +1,5 @@
-import { Button } from "./Button";
+import DownloadIcon from "mdi-react/DownloadIcon";
+import { IconButton } from "./IconButton";
 import { useSpotify } from "../api-helpers/SpotifyContext";
 import JSZip from "jszip";
 import Papa from "papaparse";
@@ -33,6 +34,5 @@ export const ExportButton = () => {
 
     link.click();
   };
-  
-  return <Button disabled={isLoading} onClick={onExportClick}>Export</Button>;
+  return <IconButton disabled={isLoading} onClick={onExportClick} icon={DownloadIcon} />;
 };

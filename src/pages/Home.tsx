@@ -7,15 +7,15 @@ import { ExportButton } from "../components/ExportButton";
 import { SyncStatus } from "../components/SyncStatus";
 
 export const Home = () => {
-  const {isLoading, syncedAt, refresh} = useSpotify();
+  const {isLoading} = useSpotify();
   const [showMore, setShowMore] = useState(false);
 
   if (isLoading && !showMore) return <LoadingArea setShowMore={setShowMore} />;
 
   return <div className="flex gap-2 flex-col">
     {/* TODO: Add import from dropdown etc */}
-    <div className="flex justify-between items-center">
-      <SyncStatus syncedAt={syncedAt} isSyncing={isLoading} onRefresh={refresh} />
+    <div className="flex justify-end items-center gap-2 text-gray-400 text-sm">
+      <SyncStatus />
       <ExportButton />
     </div>
     <PlaylistsImportSection />

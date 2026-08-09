@@ -6,7 +6,8 @@ import { TidalLoginButton } from './components/TidalLoginButton';
 import { Home } from './pages/Home';
 import { SpotifyProvider } from './api-helpers/SpotifyContext';
 import { ImporterProvider } from './pages/EasyImport/ImportContext';
-import { LogoutButton } from './components/LogoutIconButton';
+import { IconButton } from './components/IconButton';
+import LogoutIcon from 'mdi-react/LogoutIcon';
 
 export const AuthBarrier = () => {
   const [spotifyAuthed, setSpotifyAuthed] = useState(false);
@@ -33,7 +34,7 @@ export const AuthBarrier = () => {
   return <>
     <div className="flex justify-between items-center">
       <h1 className="text-2xl">Spotifree</h1>
-      {isAuthed && <LogoutButton onClick={handleLogout} />}
+      {isAuthed && <IconButton className='enabled:text-red-400' icon={LogoutIcon} onClick={handleLogout} />}
     </div>
     {isAuthed ? <SpotifyProvider>
       <ImporterProvider>

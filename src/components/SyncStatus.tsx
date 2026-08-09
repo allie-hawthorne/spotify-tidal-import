@@ -1,4 +1,6 @@
 import RefreshIcon from 'mdi-react/RefreshIcon';
+import { useSpotify } from '../api-helpers/SpotifyContext';
+import { IconButton } from './IconButton';
 
 const formatRelativeTime = (timestamp: number): string => {
   const diffSec = Math.round((Date.now() - timestamp) / 1000);
@@ -14,16 +16,13 @@ const formatRelativeTime = (timestamp: number): string => {
   return `${diffDay}d ago`;
 };
 
-type SyncStatusProps = {
-  syncedAt: number | null;
-  isSyncing: boolean;
-  onRefresh: () => void;
-};
 
-export const SyncStatus = ({ syncedAt, isSyncing, onRefresh }: SyncStatusProps) => {
+export const SyncStatus = () => {
+  const {isLoading, syncedAt, refresh} = useSpotify();
+  
   if (!syncedAt) return null;
-  return <div className="flex items-center gap-2 text-sm text-gray-400">
-    <button className="enabled:cursor-pointer enabled:text-purple-300" disabled={isSyncing} onClick={isSyncing ? undefined : onRefresh}><RefreshIcon /></button>
+  return <>
     <span>Synced {formatRelativeTime(syncedAt)}</span>
-  </div>;
+    <IconButton icon={RefreshIcon} onClick={refresh} disabled={isLoading} />
+  </>;
 };
