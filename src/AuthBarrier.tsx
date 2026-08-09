@@ -38,7 +38,6 @@ export const AuthBarrier = () => {
     </div>
     {isAuthed ? <SpotifyProvider>
       <ImporterProvider>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, eum!</p>
         <Home />
       </ImporterProvider>
     </SpotifyProvider> : <>
