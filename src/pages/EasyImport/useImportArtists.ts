@@ -1,17 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { IArtist } from "../../types";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { matchArtist } from "./matching";
+import { getCached, setCached } from "../../api-helpers/db";
+
+interface CachedProgress {
+  succeeded: IArtist[];
+  errored: IArtist[];
+}
 
 export const useImportArtists = () => {
-  const {artistData: {items: artists}} = useSpotify();
+  const {artistData: {items: artists}, userId} = useSpotify();
+  const cacheKey = userId ? `import:artists:${userId}` : null;
 
   const [succeededArtists, setSucceededArtists] = useState<IArtist[]>([]);
   const [erroredArtists, setErroredArtists] = useState<IArtist[]>([]);
 
+  useEffect(() => {
+    if (!cacheKey) return;
+    getCached<CachedProgress>(cacheKey).then(cached => {
+      if (!cached) return;
+      setSucceededArtists(cached.succeeded);
+      setErroredArtists(cached.errored);
+    });
+  }, [cacheKey]);
+
+  useEffect(() => {
+    if (!cacheKey) return;
+    setCached(cacheKey, { succeeded: succeededArtists, errored: erroredArtists });
+  }, [cacheKey, succeededArtists, erroredArtists]);
+
   const importArtists = async (importer: TidalImporter) => {
-    for (const {artistName: spotifyName} of artists) {
+    const alreadySucceededNames = new Set(succeededArtists.map(a => a.artistName));
+    const artistsToImport = artists.filter(a => !alreadySucceededNames.has(a.artistName));
+
+    setErroredArtists([]);
+
+    for (const {artistName: spotifyName} of artistsToImport) {
       const tidalArtists = await importer.searchForArtist(spotifyName);
 
       if (!tidalArtists) {
