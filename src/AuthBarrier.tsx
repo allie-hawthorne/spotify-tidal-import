@@ -8,6 +8,7 @@ import { SpotifyProvider } from './api-helpers/SpotifyContext';
 import { ImporterProvider } from './pages/EasyImport/ImportContext';
 import { IconButton } from './components/buttons/IconButton';
 import LogoutIcon from 'mdi-react/LogoutIcon';
+import { Walkthrough } from './components/Walkthrough';
 
 export const AuthBarrier = () => {
   const [spotifyAuthed, setSpotifyAuthed] = useState(false);
@@ -38,6 +39,7 @@ export const AuthBarrier = () => {
     </div>
     {isAuthed ? <SpotifyProvider>
       <ImporterProvider>
+        <Walkthrough />
         <Home />
       </ImporterProvider>
     </SpotifyProvider> : <>
