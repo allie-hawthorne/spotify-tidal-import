@@ -18,19 +18,16 @@ export const ErrorSection = ({categoriesWithErrors}: ErrorSectionProps) => {
     </div>
     <div className="flex gap-1 min-w-0 overflow-x-auto">
       {categoriesWithErrors.map(c => (
-        <button
+        <button className={`shrink-0 text-xs font-medium rounded-full px-2.5 py-1 transition-colors duration-200 cursor-pointer ${c.key === activeCategory.key ? "bg-red-500/15 text-red-300" : "text-red-300/60 hover:text-red-300"}`}
           key={c.key}
           type="button"
           onClick={() => setActiveTab(c.key)}
-          className={`shrink-0 text-xs font-medium rounded-full px-2.5 py-1 transition-colors duration-200 cursor-pointer ${
-            c.key === activeCategory.key ? "bg-red-500/15 text-red-300" : "text-red-300/60 hover:text-red-300"
-          }`}
         >
           {c.name} · {c.erroredCount}
         </button>
       ))}
     </div>
-    <ul className="flex flex-col gap-1.5 min-w-0 max-h-48 overflow-y-auto text-sm text-red-300/80 list-none">
+    <ul className="max-h-48 overflow-y-auto text-sm text-red-300/80">
       {activeCategory.errorItems}
     </ul>
   </div>
