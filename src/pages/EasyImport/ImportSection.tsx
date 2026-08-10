@@ -8,6 +8,11 @@ import { useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
 import { Checkbox } from "../../components/Checkbox";
 import { Spinner } from "../../components/Spinner";
 
+const pluralize = (word: string, count: number) => {
+  if (count === 1) return word;
+  return `${word}s`;
+};
+
 type ImportSectionProps = PropsWithChildren<{
   resource: Resource<unknown>;
   preLabel?: string;
@@ -36,10 +41,10 @@ export const ImportSection = ({ resource, preLabel, label, succeededCount, check
 
 type ImportErrorListProps = PropsWithChildren<{
   count: number;
-  title: string;
+  label: string;
 }>;
 
-export const ImportErrorList = ({ count, title, children }: ImportErrorListProps) => {
+export const ImportErrorList = ({ count, label, children }: ImportErrorListProps) => {
   const [open, setOpen] = useState(false);
   const toggle = (e: MouseEvent) => {
     e.preventDefault();
@@ -50,7 +55,7 @@ export const ImportErrorList = ({ count, title, children }: ImportErrorListProps
 
   return <details className="flex flex-col bg-red-500/5 border border-red-500/20 rounded-xl px-3" open={open}>
     <summary className="flex justify-between py-3 text-sm font-medium text-red-400 cursor-pointer" onClick={toggle}>
-      <div className="flex items-center gap-1.5"><AlertCircleOutlineIcon /> {count} {title}</div>
+      <div className="flex items-center gap-1.5"><AlertCircleOutlineIcon /> {count} {pluralize(label, count)} not added</div>
       {open ? <MinusIcon /> : <PlusIcon />}
     </summary>
     <ul className="flex flex-col gap-1.5 max-h-48 overflow-y-auto text-sm text-red-300/80 list-none">
@@ -79,7 +84,7 @@ export const PlaylistsImportSection = () => {
     checked={shouldImportPlaylists}
     setShouldImport={setShouldImportPlaylists}
   >
-    <ImportErrorList count={erroredPlaylists.length} title="playlist(s) not added">
+    <ImportErrorList count={erroredPlaylists.length} label="playlist">
       {erroredPlaylists.map(([pId, {playlist, tracks}]) => (
         <li key={pId} className="flex flex-col gap-1">
           <span className="font-medium text-red-300 truncate">{playlist.playlistName}</span>
@@ -108,7 +113,7 @@ export const ArtistsImportSection = () => {
     checked={shouldImportArtists}
     setShouldImport={setShouldImportArtists}
   >
-    <ImportErrorList count={erroredArtists.length} title="artist(s) not added">
+    <ImportErrorList count={erroredArtists.length} label="artist">
       {erroredArtists.map(a => <li key={a.id} className="truncate">{a.artistName}</li>)}
     </ImportErrorList>
   </ImportSection>;
@@ -130,7 +135,7 @@ export const AlbumsImportSection = () => {
     checked={shouldImportAlbums}
     setShouldImport={setShouldImportAlbums}
   >
-    <ImportErrorList count={erroredAlbums.length} title="album(s) not added">
+    <ImportErrorList count={erroredAlbums.length} label="album">
       {erroredAlbums.map(a => <li key={a.id} className="truncate">{a.albumName} by {a.artists.join(', ')}</li>)}
     </ImportErrorList>
   </ImportSection>;
@@ -152,7 +157,7 @@ export const TracksImportSection = () => {
     checked={shouldImportTracks}
     setShouldImport={setShouldImportTracks}
   >
-    <ImportErrorList count={erroredTracks.length} title="track(s) not added">
+    <ImportErrorList count={erroredTracks.length} label="track">
       {erroredTracks.map(a => <li key={a.id} className="truncate">{a.trackName} by {a.artists.join(', ')}</li>)}
     </ImportErrorList>
   </ImportSection>;
