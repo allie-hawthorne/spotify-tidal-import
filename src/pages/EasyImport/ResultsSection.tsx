@@ -2,8 +2,9 @@ import { useState, type ReactNode } from "react";
 import AlertCircleOutlineIcon from "mdi-react/AlertCircleOutlineIcon";
 import { useImporterContext } from "./ImportContext";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
+import { ItemResult } from "./ItemResult";
 
-interface Category {
+export interface Category {
   key: string;
   name: string;
   total: number;
@@ -12,7 +13,7 @@ interface Category {
   errorItems: ReactNode;
 }
 
-export const ImportResults = () => {
+export const ResultsSection = () => {
   const {
     succeededAlbums, erroredAlbums,
     succeededArtists, erroredArtists,
@@ -62,23 +63,7 @@ export const ImportResults = () => {
 
   return <div className="flex flex-col gap-3 min-w-0">
     <div className="flex flex-col gap-2.5 min-w-0">
-      {categories.map(c => {
-        const attempted = c.succeededCount + c.erroredCount;
-        const succeededPct = c.total ? Math.min(100, Math.round((c.succeededCount / c.total) * 100)) : 0;
-        const errorPct = c.total ? Math.min(100, Math.round((c.erroredCount / c.total) * 100)) : 0;
-        return <div key={c.key} className="flex flex-col gap-1 min-w-0">
-          <div className="flex justify-between items-baseline gap-2 text-sm min-w-0">
-            <span className="font-medium truncate">{c.name}</span>
-            <span className="text-xs tabular-nums flex items-center gap-1 shrink-0">
-              {attempted} / {c.total}
-            </span>
-          </div>
-          <div className="flex h-1 rounded-full bg-white/10 overflow-hidden">
-            <div className="h-full rounded-l-full bg-purple-300 transition-[width] duration-300" style={{width: `${succeededPct}%`}} />
-            <div className="h-full rounded-r-full bg-red-400 transition-[width] duration-300" style={{width: `${errorPct}%`}} />
-          </div>
-        </div>;
-      })}
+      {categories.map(c => <ItemResult key={c.key} category={c} />)}
     </div>
 
     {categoriesWithErrors.length > 0 && activeCategory && <div className="flex flex-col gap-2.5 min-w-0 bg-red-500/5 border border-red-500/20 rounded-xl p-3">

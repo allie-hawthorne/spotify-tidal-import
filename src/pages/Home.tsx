@@ -1,6 +1,6 @@
 import { ImportButton } from "../components/buttons/ImportButton";
 import { AlbumsImportSection, ArtistsImportSection, PlaylistsImportSection, TracksImportSection } from "./EasyImport/ImportSection";
-import { ImportResults } from "./EasyImport/ImportResults";
+import { ResultsSection } from "./EasyImport/ResultsSection";
 import { useSpotify } from "../api-helpers/SpotifyContext";
 import { useState } from "react";
 import { LoadingArea } from "../components/LoadingArea";
@@ -19,7 +19,7 @@ export const Home = () => {
   return <div className="flex gap-2 flex-col">
     {/* TODO: Add import from dropdown etc */}
     <Toolbar />
-    {hasStartedImporting ? <ImportResults /> : <ImportOptions />}
+    {hasStartedImporting ? <ResultsSection /> : <ImportOptions />}
     <ImportButton />
   </div>;
 }
