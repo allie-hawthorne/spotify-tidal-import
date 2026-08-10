@@ -12,9 +12,6 @@ interface Category {
   errorItems: ReactNode;
 }
 
-// Selection is locked in once import has started, so this replaces the checkbox
-// sections with progress rows plus one consolidated, tabbed error panel - rather
-// than four separate always-open error boxes, one per category.
 export const ImportResults = () => {
   const {
     succeededAlbums, erroredAlbums,
@@ -67,7 +64,8 @@ export const ImportResults = () => {
     <div className="flex flex-col gap-2.5 min-w-0">
       {categories.map(c => {
         const attempted = c.succeededCount + c.erroredCount;
-        const pct = c.total ? Math.min(100, Math.round((attempted / c.total) * 100)) : 0;
+        const succeededPct = c.total ? Math.min(100, Math.round((c.succeededCount / c.total) * 100)) : 0;
+        const errorPct = c.total ? Math.min(100, Math.round((c.erroredCount / c.total) * 100)) : 0;
         return <div key={c.key} className="flex flex-col gap-1 min-w-0">
           <div className="flex justify-between items-baseline gap-2 text-sm min-w-0">
             <span className="font-medium truncate">{c.name}</span>
@@ -76,8 +74,9 @@ export const ImportResults = () => {
               {c.erroredCount > 0 && <AlertCircleOutlineIcon size={13} />}
             </span>
           </div>
-          <div className="h-1 rounded-full bg-white/10 overflow-hidden">
-            <div className="h-full rounded-full bg-linear-to-r from-purple-400 to-indigo-600 transition-[width] duration-300" style={{width: `${pct}%`}} />
+          <div className="flex h-1 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-full rounded-l-full bg-purple-300 transition-[width] duration-300" style={{width: `${succeededPct}%`}} />
+            <div className="h-full rounded-r-full bg-red-400 transition-[width] duration-300" style={{width: `${errorPct}%`}} />
           </div>
         </div>;
       })}
