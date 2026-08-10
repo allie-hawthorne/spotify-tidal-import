@@ -69,9 +69,8 @@ export const ImportResults = () => {
         return <div key={c.key} className="flex flex-col gap-1 min-w-0">
           <div className="flex justify-between items-baseline gap-2 text-sm min-w-0">
             <span className="font-medium truncate">{c.name}</span>
-            <span className={`text-xs tabular-nums flex items-center gap-1 shrink-0 ${c.erroredCount ? "text-amber-400" : "text-gray-400"}`}>
+            <span className="text-xs tabular-nums flex items-center gap-1 shrink-0">
               {attempted} / {c.total}
-              {c.erroredCount > 0 && <AlertCircleOutlineIcon size={13} />}
             </span>
           </div>
           <div className="flex h-1 rounded-full bg-white/10 overflow-hidden">
