@@ -1,9 +1,9 @@
-import { ImportButton } from "../components/ImportButton";
+import { ImportButton } from "../components/buttons/ImportButton";
 import { AlbumsImportSection, ArtistsImportSection, PlaylistsImportSection, TracksImportSection } from "./EasyImport/ImportSection";
 import { useSpotify } from "../api-helpers/SpotifyContext";
 import { useState } from "react";
 import { LoadingArea } from "../components/LoadingArea";
-import { ExportButton } from "../components/ExportButton";
+import { ExportButton } from "../components/buttons/ExportButton";
 import { SyncStatus } from "../components/SyncStatus";
 import { Walkthrough } from "../components/Walkthrough";
 

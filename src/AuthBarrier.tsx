@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { spotifyApi } from './api-helpers/spotify';
 import { checkIfTidalAuthed, logoutTidal } from './api-helpers/tidal';
-import { SpotifyLoginButton } from './components/SpotifyLoginButton';
-import { TidalLoginButton } from './components/TidalLoginButton';
+import { SpotifyLoginButton } from './components/buttons/SpotifyLoginButton';
+import { TidalLoginButton } from './components/buttons/TidalLoginButton';
 import { Home } from './pages/Home';
 import { SpotifyProvider } from './api-helpers/SpotifyContext';
 import { ImporterProvider } from './pages/EasyImport/ImportContext';
-import { IconButton } from './components/IconButton';
+import { IconButton } from './components/buttons/IconButton';
 import LogoutIcon from 'mdi-react/LogoutIcon';
 
 export const AuthBarrier = () => {

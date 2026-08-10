@@ -1,6 +1,6 @@
-import { spotifyApi } from "../api-helpers/spotify"
+import { spotifyApi } from "../../api-helpers/spotify"
 import { LoginButton, Service } from "./LoginButton"
-import spotifyIcon from '../assets/spotify-icon.svg'
+import spotifyIcon from '../../assets/spotify-icon.svg'
 
 export const SpotifyLoginButton = () => {
   return <LoginButton

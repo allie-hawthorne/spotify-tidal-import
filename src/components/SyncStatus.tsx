@@ -1,7 +1,7 @@
 import RefreshIcon from 'mdi-react/RefreshIcon';
 import { useSpotify } from '../api-helpers/SpotifyContext';
 import { useImporterContext } from '../pages/EasyImport/ImportContext';
-import { IconButton } from './IconButton';
+import { IconButton } from './buttons/IconButton';
 
 const formatRelativeTime = (timestamp: number): string => {
   const diffSec = Math.round((Date.now() - timestamp) / 1000);
