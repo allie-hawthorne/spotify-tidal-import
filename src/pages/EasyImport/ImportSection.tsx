@@ -25,9 +25,7 @@ export const ImportSection = ({ resource, preLabel, label, succeededCount, check
   
   return <div className="flex flex-col gap-2">
     <label className="flex gap-2 items-center touch-none cursor-pointer" onClick={loading ? undefined : toggle}>
-      {loading
-        ? <Spinner />
-        : <Checkbox checked={checked} />}
+      {loading ? <Spinner /> : <Checkbox checked={checked} />}
       <ImportSummary resource={resource} preLabel={preLabel} label={label} succeededCount={succeededCount} />
     </label>
     {children}
@@ -40,9 +38,7 @@ type ImportErrorListProps = PropsWithChildren<{
 }>;
 
 export const ImportErrorList = ({ count, title, children }: ImportErrorListProps) => {
-  if (!count) {
-    return null;
-  }
+  if (!count) return null;
 
   return <div className="flex flex-col gap-2 bg-red-500/5 border border-red-500/20 rounded-xl p-3">
     <p className="flex items-center gap-1.5 text-sm font-medium text-red-400">
@@ -80,7 +76,7 @@ export const PlaylistsImportSection = () => {
         <li key={pId} className="flex flex-col gap-1">
           <span className="font-medium text-red-300 truncate">{playlist.playlistName}</span>
           <ul className="flex flex-col gap-0.5 pl-3 border-l border-red-500/20 list-none">
-            {tracks.map(t => <li className="truncate" key={`${pId}-${t.trackName}-${t.artists}`}>{t.trackName} by {t.artists}</li>)}
+            {tracks.map(t => <li className="truncate" key={`${pId}-${t.trackName}-${t.artists}`}>{t.trackName} by {t.artists.join(', ')}</li>)}
           </ul>
         </li>
       ))}
@@ -127,7 +123,7 @@ export const AlbumsImportSection = () => {
     setShouldImport={setShouldImportAlbums}
   >
     <ImportErrorList count={erroredAlbums.length} title="album(s) not added:">
-      {erroredAlbums.map(a => <li key={a.id} className="truncate">{a.albumName} by {a.artists}</li>)}
+      {erroredAlbums.map(a => <li key={a.id} className="truncate">{a.albumName} by {a.artists.join(', ')}</li>)}
     </ImportErrorList>
   </ImportSection>;
 };
@@ -149,7 +145,7 @@ export const TracksImportSection = () => {
     setShouldImport={setShouldImportTracks}
   >
     <ImportErrorList count={erroredTracks.length} title="track(s) not added:">
-      {erroredTracks.map(a => <li key={a.id} className="truncate">{a.trackName} by {a.artists}</li>)}
+      {erroredTracks.map(a => <li key={a.id} className="truncate">{a.trackName} by {a.artists.join(', ')}</li>)}
     </ImportErrorList>
   </ImportSection>;
 };
