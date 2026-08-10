@@ -2,6 +2,8 @@ import RefreshIcon from 'mdi-react/RefreshIcon';
 import { useSpotify } from '../api-helpers/SpotifyContext';
 import { useImporterContext } from '../pages/EasyImport/ImportContext';
 import { IconButton } from './buttons/IconButton';
+import { useExport } from '../local/useExport';
+import DownloadIcon from 'mdi-react/DownloadIcon';
 
 const formatRelativeTime = (timestamp: number): string => {
   const diffSec = Math.round((Date.now() - timestamp) / 1000);
@@ -18,9 +20,10 @@ const formatRelativeTime = (timestamp: number): string => {
 };
 
 
-export const SyncStatus = () => {
+export const Toolbar = () => {
   const {isLoading, syncedAt, refresh} = useSpotify();
   const {clearImportProgress} = useImporterContext();
+  const onExportClick = useExport();
 
   if (!syncedAt) return null;
 
@@ -31,8 +34,9 @@ export const SyncStatus = () => {
     refresh();
   };
 
-  return <>
+  return <div className="flex justify-end items-center gap-2 text-gray-400 text-sm">
     <span>Synced {formatRelativeTime(syncedAt)}</span>
     <IconButton icon={RefreshIcon} onClick={handleRefresh} disabled={isLoading} />
-  </>;
+    <IconButton icon={DownloadIcon} onClick={onExportClick} disabled={isLoading} />
+  </div>;
 };

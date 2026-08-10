@@ -3,8 +3,7 @@ import { AlbumsImportSection, ArtistsImportSection, PlaylistsImportSection, Trac
 import { useSpotify } from "../api-helpers/SpotifyContext";
 import { useState } from "react";
 import { LoadingArea } from "../components/LoadingArea";
-import { ExportButton } from "../components/buttons/ExportButton";
-import { SyncStatus } from "../components/SyncStatus";
+import { Toolbar } from "../components/Toolbar";
 import { Walkthrough } from "../components/Walkthrough";
 
 export const Home = () => {
@@ -15,10 +14,7 @@ export const Home = () => {
     <Walkthrough />
     {isLoading && !showMore ? <LoadingArea setShowMore={setShowMore} /> : <>
       {/* TODO: Add import from dropdown etc */}
-      <div className="flex justify-end items-center gap-2 text-gray-400 text-sm">
-        <SyncStatus />
-        <ExportButton />
-      </div>
+      <Toolbar />
       <PlaylistsImportSection />
       <ArtistsImportSection />
       <AlbumsImportSection />
