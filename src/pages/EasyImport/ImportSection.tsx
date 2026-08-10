@@ -1,5 +1,7 @@
-import type { MouseEvent, PropsWithChildren } from "react";
+import { useState, type MouseEvent, type PropsWithChildren } from "react";
 import AlertCircleOutlineIcon from "mdi-react/AlertCircleOutlineIcon";
+import PlusIcon from "mdi-react/PlusIcon";
+import MinusIcon from "mdi-react/MinusIcon";
 import { ImportSummary } from "./ImportSummary";
 import { useImporterContext, type UseState } from "./ImportContext";
 import { useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
@@ -38,17 +40,23 @@ type ImportErrorListProps = PropsWithChildren<{
 }>;
 
 export const ImportErrorList = ({ count, title, children }: ImportErrorListProps) => {
+  const [open, setOpen] = useState(false);
+  const toggle = (e: MouseEvent) => {
+    e.preventDefault();
+    setOpen(s => !s);
+  };
+
   if (!count) return null;
 
-  return <div className="flex flex-col gap-2 bg-red-500/5 border border-red-500/20 rounded-xl p-3">
-    <p className="flex items-center gap-1.5 text-sm font-medium text-red-400">
-      <AlertCircleOutlineIcon size={16} />
-      {count} {title}
-    </p>
+  return <details className="flex flex-col bg-red-500/5 border border-red-500/20 rounded-xl px-3" open={open}>
+    <summary className="flex justify-between py-3 text-sm font-medium text-red-400 cursor-pointer" onClick={toggle}>
+      <div className="flex items-center gap-1.5"><AlertCircleOutlineIcon /> {count} {title}</div>
+      {open ? <MinusIcon /> : <PlusIcon />}
+    </summary>
     <ul className="flex flex-col gap-1.5 max-h-48 overflow-y-auto text-sm text-red-300/80 list-none">
       {children}
     </ul>
-  </div>;
+  </details>;
 };
 
 export const PlaylistsImportSection = () => {
@@ -71,7 +79,7 @@ export const PlaylistsImportSection = () => {
     checked={shouldImportPlaylists}
     setShouldImport={setShouldImportPlaylists}
   >
-    <ImportErrorList count={erroredPlaylists.length} title="playlist(s) not added:">
+    <ImportErrorList count={erroredPlaylists.length} title="playlist(s) not added">
       {erroredPlaylists.map(([pId, {playlist, tracks}]) => (
         <li key={pId} className="flex flex-col gap-1">
           <span className="font-medium text-red-300 truncate">{playlist.playlistName}</span>
@@ -100,7 +108,7 @@ export const ArtistsImportSection = () => {
     checked={shouldImportArtists}
     setShouldImport={setShouldImportArtists}
   >
-    <ImportErrorList count={erroredArtists.length} title="artist(s) not added:">
+    <ImportErrorList count={erroredArtists.length} title="artist(s) not added">
       {erroredArtists.map(a => <li key={a.id} className="truncate">{a.artistName}</li>)}
     </ImportErrorList>
   </ImportSection>;
@@ -122,7 +130,7 @@ export const AlbumsImportSection = () => {
     checked={shouldImportAlbums}
     setShouldImport={setShouldImportAlbums}
   >
-    <ImportErrorList count={erroredAlbums.length} title="album(s) not added:">
+    <ImportErrorList count={erroredAlbums.length} title="album(s) not added">
       {erroredAlbums.map(a => <li key={a.id} className="truncate">{a.albumName} by {a.artists.join(', ')}</li>)}
     </ImportErrorList>
   </ImportSection>;
@@ -144,7 +152,7 @@ export const TracksImportSection = () => {
     checked={shouldImportTracks}
     setShouldImport={setShouldImportTracks}
   >
-    <ImportErrorList count={erroredTracks.length} title="track(s) not added:">
+    <ImportErrorList count={erroredTracks.length} title="track(s) not added">
       {erroredTracks.map(a => <li key={a.id} className="truncate">{a.trackName} by {a.artists.join(', ')}</li>)}
     </ImportErrorList>
   </ImportSection>;
