@@ -1,14 +1,14 @@
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import { useImporterContext } from "./ImportContext";
 
-export const WalkthroughStep = {
+export const WalkthroughSteps = {
   Sync: 'sync',
   Select: 'select',
   Importing: 'importing',
   Paused: 'paused',
   Done: 'done',
 } as const;
-export type WalkthroughStepValue = typeof WalkthroughStep[keyof typeof WalkthroughStep];
+export type WalkthroughStepValue = typeof WalkthroughSteps[keyof typeof WalkthroughSteps];
 
 // A category with nothing selected doesn't block completion; otherwise "done" means every
 // item has an outcome (succeeded or errored) - anything left unattempted means it was
@@ -29,8 +29,8 @@ export const useWalkthroughStep = (): WalkthroughStepValue => {
     succeededPlaylistTracks, erroredPlaylistTracks,
   } = useImporterContext();
 
-  if (isLoading) return WalkthroughStep.Sync;
-  if (isImporting) return WalkthroughStep.Importing;
+  if (isLoading) return WalkthroughSteps.Sync;
+  if (isImporting) return WalkthroughSteps.Importing;
 
   const hasAnyResult =
     succeededAlbums.length > 0 || erroredAlbums.length > 0 ||
@@ -40,7 +40,7 @@ export const useWalkthroughStep = (): WalkthroughStepValue => {
 
   // Note: results persist across sessions now, so a returning user who already
   // completed an import will land on "Done"/"Paused" immediately rather than "Select".
-  if (!hasAnyResult) return WalkthroughStep.Select;
+  if (!hasAnyResult) return WalkthroughSteps.Select;
 
   const succeededPlaylistTrackCount = Object.values(succeededPlaylistTracks).reduce((sum, p) => sum + p.tracks.length, 0);
   const erroredPlaylistTrackCount = Object.values(erroredPlaylistTracks).reduce((sum, p) => sum + p.tracks.length, 0);
@@ -51,5 +51,5 @@ export const useWalkthroughStep = (): WalkthroughStepValue => {
     isCategoryComplete(shouldImportTracks, succeededTracks.length, erroredTracks.length, trackData.items.length) &&
     isCategoryComplete(shouldImportPlaylists, succeededPlaylistTrackCount, erroredPlaylistTrackCount, totalPlaylistTracks);
 
-  return allComplete ? WalkthroughStep.Done : WalkthroughStep.Paused;
+  return allComplete ? WalkthroughSteps.Done : WalkthroughSteps.Paused;
 };
