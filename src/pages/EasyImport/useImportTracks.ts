@@ -69,9 +69,15 @@ export const useImportTracks = () => {
     }
   }
 
+  const clearProgress = () => {
+    setSucceededTracks([]);
+    setErroredTracks([]);
+  };
+
   return {
     importTracks,
     succeededTracks,
-    erroredTracks
+    erroredTracks,
+    clearProgress,
   }
 }

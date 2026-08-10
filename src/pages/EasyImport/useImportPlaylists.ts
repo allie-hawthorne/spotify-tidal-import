@@ -114,9 +114,16 @@ export const useImportPlaylists = () => {
     }
   };
 
+  const clearProgress = () => {
+    setSucceededTracks({});
+    setErroredTracks({});
+    setDestPlaylistIds({});
+  };
+
   return {
     importPlaylists,
     succeededPlaylistTracks,
-    erroredPlaylistTracks
+    erroredPlaylistTracks,
+    clearProgress,
   }
 }

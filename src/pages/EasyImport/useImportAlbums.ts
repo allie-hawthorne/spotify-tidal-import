@@ -65,9 +65,15 @@ export const useImportAlbums = () => {
     }
   }
 
+  const clearProgress = () => {
+    setSucceededAlbums([]);
+    setErroredAlbums([]);
+  };
+
   return {
     importAlbums,
     succeededAlbums,
-    erroredAlbums
+    erroredAlbums,
+    clearProgress,
   }
 }

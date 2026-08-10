@@ -1,5 +1,6 @@
 import RefreshIcon from 'mdi-react/RefreshIcon';
 import { useSpotify } from '../api-helpers/SpotifyContext';
+import { useImporterContext } from '../pages/EasyImport/ImportContext';
 import { IconButton } from './IconButton';
 
 const formatRelativeTime = (timestamp: number): string => {
@@ -19,10 +20,19 @@ const formatRelativeTime = (timestamp: number): string => {
 
 export const SyncStatus = () => {
   const {isLoading, syncedAt, refresh} = useSpotify();
-  
+  const {clearImportProgress} = useImporterContext();
+
   if (!syncedAt) return null;
+
+  const handleRefresh = () => {
+    // A resync means "start fresh from what Spotify has now" - old import results were
+    // keyed off the previous snapshot and could be misleading (or skip items that changed).
+    clearImportProgress();
+    refresh();
+  };
+
   return <>
     <span>Synced {formatRelativeTime(syncedAt)}</span>
-    <IconButton icon={RefreshIcon} onClick={refresh} disabled={isLoading} />
+    <IconButton icon={RefreshIcon} onClick={handleRefresh} disabled={isLoading} />
   </>;
 };

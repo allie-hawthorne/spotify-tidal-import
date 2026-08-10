@@ -65,9 +65,15 @@ export const useImportArtists = () => {
     }
   }
 
+  const clearProgress = () => {
+    setSucceededArtists([]);
+    setErroredArtists([]);
+  };
+
   return {
     importArtists,
     succeededArtists,
-    erroredArtists
+    erroredArtists,
+    clearProgress,
   }
 }

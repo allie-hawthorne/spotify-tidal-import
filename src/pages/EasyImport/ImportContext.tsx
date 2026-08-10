@@ -11,6 +11,7 @@ export type UseState<T> = Dispatch<SetStateAction<T>>
 export interface EasyImportContextValue {
   onImportClick: () => Promise<void>,
   isImporting: boolean,
+  clearImportProgress: () => void,
 
   succeededArtists: IArtist[],
   erroredArtists: IArtist[],
@@ -36,6 +37,7 @@ export interface EasyImportContextValue {
 const context = createContext<EasyImportContextValue>({
   onImportClick: async () => {},
   isImporting: false,
+  clearImportProgress: () => {},
   succeededArtists: [],
   erroredArtists: [],
   succeededAlbums: [],
@@ -61,10 +63,10 @@ export const ImporterProvider = ({children}: PropsWithChildren) => {
   const [shouldImportTracks, setShouldImportTracks] = useState(true);
   const [isImporting, setIsImporting] = useState(false);
 
-  const {importAlbums, ...restAlbums} = useImportAlbums();
-  const {importArtists, ...restArtists} = useImportArtists();
-  const {importTracks, ...restTracks} = useImportTracks();
-  const {importPlaylists, ...restPlaylists} = useImportPlaylists();
+  const {importAlbums, clearProgress: clearAlbumsProgress, ...restAlbums} = useImportAlbums();
+  const {importArtists, clearProgress: clearArtistsProgress, ...restArtists} = useImportArtists();
+  const {importTracks, clearProgress: clearTracksProgress, ...restTracks} = useImportTracks();
+  const {importPlaylists, clearProgress: clearPlaylistsProgress, ...restPlaylists} = useImportPlaylists();
 
   const onImportClick = async () => {
     const tidal = new TidalImporter();
@@ -78,9 +80,17 @@ export const ImporterProvider = ({children}: PropsWithChildren) => {
     setIsImporting(false);
   }
 
+  const clearImportProgress = () => {
+    clearAlbumsProgress();
+    clearArtistsProgress();
+    clearTracksProgress();
+    clearPlaylistsProgress();
+  };
+
   return <context.Provider value={{
     onImportClick,
     isImporting,
+    clearImportProgress,
     ...restTracks,
     ...restAlbums,
     ...restArtists,
