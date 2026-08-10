@@ -21,8 +21,8 @@ export const Walkthrough = () => {
   // A paused import is still visually "at" the Import step, just not actively running
   const currentIndex = STEPS.findIndex(s => s.key === (isPaused ? WalkthroughSteps.Importing : step));
 
-  return <div className="flex flex-col gap-2">
-    <div className="flex items-center">
+  return <div className="flex flex-col gap-2 min-w-0">
+    <div className="flex items-center w-full min-w-0 overflow-x-auto">
       {STEPS.map((s, i) => <WalkthroughStep
         key={s.key}
         step={s}
@@ -58,11 +58,11 @@ const WalkthroughStep = ({ step, index, currentIndex, isPaused }: WalkthroughSte
     return "border-white/20 text-gray-500";
   }, [currentIndex, index, isCurrent, showPaused]);
 
-  return <div className="flex items-center">
+  return <div className="flex items-center min-w-0">
     <div className={`flex items-center justify-center w-6 h-6 rounded-full shrink-0 text-xs transition-colors duration-300 border-2 ${stepNumberStyle}`}>
       {showPaused ? "⏸" : index + 1}
     </div>
-    <span className={`ml-2 text-sm ${labelTextColor}`}>{step.label}</span>
-    {index < STEPS.length - 1 && <div className="w-6 h-px mx-2 bg-white/20" />}
+    <span className={`ml-1 sm:ml-2 text-xs sm:text-sm truncate ${labelTextColor}`}>{step.label}</span>
+    {index < STEPS.length - 1 && <div className="flex-1 min-w-2 sm:min-w-4 h-px mx-1 sm:mx-2 bg-white/20" />}
   </div>;
 }
