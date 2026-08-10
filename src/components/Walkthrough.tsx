@@ -27,7 +27,7 @@ export const Walkthrough = () => {
               : isCurrent ? "border-2 border-purple-400 text-purple-300"
               : "border border-white/20 text-gray-500"
           }`}>{showPaused ? "⏸" : i + 1}</div>
-          <span className={`ml-2 text-sm ${!isCurrent ? "text-gray-500" : showPaused ? "text-amber-200" : "text-white"}`}>{s.label}</span>
+          <span className={`ml-2 text-sm ${!isCurrent ? "text-gray-500" : showPaused ? "text-amber-200" : "text-purple-100"}`}>{s.label}</span>
           {i < STEPS.length - 1 && <div className="w-6 h-px mx-2 bg-white/20" />}
         </div>;
       })}
