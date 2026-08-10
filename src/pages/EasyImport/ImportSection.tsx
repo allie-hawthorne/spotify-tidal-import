@@ -1,4 +1,5 @@
 import type { MouseEvent, PropsWithChildren } from "react";
+import AlertCircleOutlineIcon from "mdi-react/AlertCircleOutlineIcon";
 import { ImportSummary } from "./ImportSummary";
 import { useImporterContext, type UseState } from "./ImportContext";
 import { useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
@@ -43,9 +44,14 @@ export const ImportErrorList = ({ count, title, children }: ImportErrorListProps
     return null;
   }
 
-  return <div className="text-red-500 text-sm">
-    <p>{count} {title}</p>
-    <ul>{children}</ul>
+  return <div className="flex flex-col gap-2 bg-red-500/5 border border-red-500/20 rounded-xl p-3">
+    <p className="flex items-center gap-1.5 text-sm font-medium text-red-400">
+      <AlertCircleOutlineIcon size={16} />
+      {count} {title}
+    </p>
+    <ul className="flex flex-col gap-1.5 max-h-48 overflow-y-auto text-sm text-red-300/80 list-none">
+      {children}
+    </ul>
   </div>;
 };
 
@@ -70,10 +76,12 @@ export const PlaylistsImportSection = () => {
     setShouldImport={setShouldImportPlaylists}
   >
     <ImportErrorList count={erroredPlaylists.length} title="playlist(s) not added:">
-      {erroredPlaylists.map(([pId, {tracks}]) => (
-        <li key={pId}>
-          <span>{pId}</span>
-          {tracks.map(t => <div className="ml-2" key={`${pId}-${t.trackName}-${t.artists}`}>{t.trackName} by {t.artists}</div>)}
+      {erroredPlaylists.map(([pId, {playlist, tracks}]) => (
+        <li key={pId} className="flex flex-col gap-1">
+          <span className="font-medium text-red-300 truncate">{playlist.playlistName}</span>
+          <ul className="flex flex-col gap-0.5 pl-3 border-l border-red-500/20 list-none">
+            {tracks.map(t => <li className="truncate" key={`${pId}-${t.trackName}-${t.artists}`}>{t.trackName} by {t.artists}</li>)}
+          </ul>
         </li>
       ))}
     </ImportErrorList>
@@ -97,7 +105,7 @@ export const ArtistsImportSection = () => {
     setShouldImport={setShouldImportArtists}
   >
     <ImportErrorList count={erroredArtists.length} title="artist(s) not added:">
-      {erroredArtists.map(a => <li key={a.id}>{a.artistName}</li>)}
+      {erroredArtists.map(a => <li key={a.id} className="truncate">{a.artistName}</li>)}
     </ImportErrorList>
   </ImportSection>;
 };
@@ -119,7 +127,7 @@ export const AlbumsImportSection = () => {
     setShouldImport={setShouldImportAlbums}
   >
     <ImportErrorList count={erroredAlbums.length} title="album(s) not added:">
-      {erroredAlbums.map(a => <li key={a.id}>{a.albumName} by {a.artists}</li>)}
+      {erroredAlbums.map(a => <li key={a.id} className="truncate">{a.albumName} by {a.artists}</li>)}
     </ImportErrorList>
   </ImportSection>;
 };
@@ -141,7 +149,7 @@ export const TracksImportSection = () => {
     setShouldImport={setShouldImportTracks}
   >
     <ImportErrorList count={erroredTracks.length} title="track(s) not added:">
-      {erroredTracks.map(a => <li key={a.id}>{a.trackName} by {a.artists}</li>)}
+      {erroredTracks.map(a => <li key={a.id} className="truncate">{a.trackName} by {a.artists}</li>)}
     </ImportErrorList>
   </ImportSection>;
 };
