@@ -22,7 +22,7 @@ export const Walkthrough = () => {
   const currentIndex = STEPS.findIndex(s => s.key === (isPaused ? WalkthroughSteps.Importing : step));
 
   return <div className="flex flex-col gap-2 min-w-0">
-    <div className="flex items-center w-full min-w-0 overflow-x-auto">
+    <div className="flex items-center justify-center min-w-0 overflow-x-auto -mx-8 sm:mx-0">
       {STEPS.map((s, i) => <WalkthroughStep
         key={s.key}
         step={s}
@@ -62,7 +62,7 @@ const WalkthroughStep = ({ step, index, currentIndex, isPaused }: WalkthroughSte
     <div className={`flex items-center justify-center w-6 h-6 rounded-full shrink-0 text-xs transition-colors duration-300 border-2 ${stepNumberStyle}`}>
       {showPaused ? "⏸" : index + 1}
     </div>
-    <span className={`ml-1 sm:ml-2 text-xs sm:text-sm truncate ${labelTextColor}`}>{step.label}</span>
+    <span className={`ml-1 sm:ml-2 text-xs sm:text-sm ${labelTextColor}`}>{step.label}</span>
     {index < STEPS.length - 1 && <div className="flex-1 min-w-2 sm:min-w-4 h-px mx-1 sm:mx-2 bg-white/20" />}
   </div>;
 }

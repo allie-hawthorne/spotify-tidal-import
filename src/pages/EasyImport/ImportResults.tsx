@@ -34,7 +34,7 @@ export const ImportResults = () => {
       errorItems: erroredPlaylists.map(([pId, {playlist, tracks}]) => (
         <li key={pId} className="flex flex-col gap-1">
           <span className="font-medium text-red-300 truncate">{playlist.playlistName}</span>
-          <ul className="flex flex-col gap-0.5 pl-3 border-l border-red-500/20 list-none">
+          <ul className="flex flex-col gap-0.5 min-w-0 pl-3 border-l border-red-500/20 list-none">
             {tracks.map(t => <li className="truncate" key={`${pId}-${t.trackName}-${t.artists}`}>{t.trackName} by {t.artists.join(', ')}</li>)}
           </ul>
         </li>
@@ -63,15 +63,15 @@ export const ImportResults = () => {
   const [activeTab, setActiveTab] = useState<string | undefined>(() => categoriesWithErrors[0]?.key);
   const activeCategory = categoriesWithErrors.find(c => c.key === activeTab) ?? categoriesWithErrors[0];
 
-  return <div className="flex flex-col gap-3">
-    <div className="flex flex-col gap-2.5">
+  return <div className="flex flex-col gap-3 min-w-0">
+    <div className="flex flex-col gap-2.5 min-w-0">
       {categories.map(c => {
         const attempted = c.succeededCount + c.erroredCount;
         const pct = c.total ? Math.min(100, Math.round((attempted / c.total) * 100)) : 0;
-        return <div key={c.key} className="flex flex-col gap-1">
-          <div className="flex justify-between items-baseline text-sm">
-            <span className="font-medium">{c.name}</span>
-            <span className={`text-xs tabular-nums flex items-center gap-1 ${c.erroredCount ? "text-amber-400" : "text-gray-400"}`}>
+        return <div key={c.key} className="flex flex-col gap-1 min-w-0">
+          <div className="flex justify-between items-baseline gap-2 text-sm min-w-0">
+            <span className="font-medium truncate">{c.name}</span>
+            <span className={`text-xs tabular-nums flex items-center gap-1 shrink-0 ${c.erroredCount ? "text-amber-400" : "text-gray-400"}`}>
               {attempted} / {c.total}
               {c.erroredCount > 0 && <AlertCircleOutlineIcon size={13} />}
             </span>
@@ -83,12 +83,12 @@ export const ImportResults = () => {
       })}
     </div>
 
-    {categoriesWithErrors.length > 0 && activeCategory && <div className="flex flex-col gap-2.5 bg-red-500/5 border border-red-500/20 rounded-xl p-3">
+    {categoriesWithErrors.length > 0 && activeCategory && <div className="flex flex-col gap-2.5 min-w-0 bg-red-500/5 border border-red-500/20 rounded-xl p-3">
       <div className="flex items-center gap-1.5 text-sm font-medium text-red-400">
         <AlertCircleOutlineIcon size={16} />
         {totalErrors} item{totalErrors === 1 ? '' : 's'} not added
       </div>
-      <div className="flex gap-1 overflow-x-auto">
+      <div className="flex gap-1 min-w-0 overflow-x-auto">
         {categoriesWithErrors.map(c => (
           <button
             key={c.key}
@@ -102,7 +102,7 @@ export const ImportResults = () => {
           </button>
         ))}
       </div>
-      <ul className="flex flex-col gap-1.5 max-h-48 overflow-y-auto text-sm text-red-300/80 list-none">
+      <ul className="flex flex-col gap-1.5 min-w-0 max-h-48 overflow-y-auto text-sm text-red-300/80 list-none">
         {activeCategory.errorItems}
       </ul>
     </div>}
