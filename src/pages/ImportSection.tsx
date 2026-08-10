@@ -1,9 +1,9 @@
 import { type MouseEvent } from "react";
 import { ImportSummary } from "./ImportSummary";
-import { useImporterContext, type UseState } from "./ImportContext";
-import { useSpotify, type Resource } from "../../api-helpers/SpotifyContext";
-import { Checkbox } from "../../components/Checkbox";
-import { Spinner } from "../../components/Spinner";
+import { useImporterContext, type UseState } from "./import-logic/ImportContext";
+import { useSpotify, type Resource } from "../api-helpers/SpotifyContext";
+import { Checkbox } from "../components/Checkbox";
+import { Spinner } from "../components/Spinner";
 
 type ImportSectionProps = {
   resource: Resource<unknown>;

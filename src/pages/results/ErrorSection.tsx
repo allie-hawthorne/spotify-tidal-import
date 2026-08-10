@@ -2,10 +2,10 @@ import AlertCircleOutlineIcon from "mdi-react/AlertCircleOutlineIcon";
 import { useState } from "react";
 import type { Category } from "./ResultsSection";
 
-interface ImportErrorSectionProps {
+interface ErrorSectionProps {
   categoriesWithErrors: Category[];
 }
-export const ImportErrorSection = ({categoriesWithErrors}: ImportErrorSectionProps) => {
+export const ErrorSection = ({categoriesWithErrors}: ErrorSectionProps) => {
   const totalErrors = categoriesWithErrors.reduce((sum, c) => sum + c.erroredCount, 0);
   
   const [activeTab, setActiveTab] = useState<string | undefined>(() => categoriesWithErrors[0]?.key);

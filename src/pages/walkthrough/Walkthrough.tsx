@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { WalkthroughSteps, useWalkthroughStep } from "../pages/EasyImport/useWalkthroughStep";
+import { useWalkthroughStep, WalkthroughSteps } from "./useWalkthroughStep";
 
 interface Step {
   key: string;

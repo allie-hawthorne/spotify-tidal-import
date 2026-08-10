@@ -1,11 +1,11 @@
 import { ImportButton } from "../components/buttons/ImportButton";
-import { AlbumsImportSection, ArtistsImportSection, PlaylistsImportSection, TracksImportSection } from "./EasyImport/ImportSection";
-import { ResultsSection } from "./EasyImport/ResultsSection";
+import { AlbumsImportSection, ArtistsImportSection, PlaylistsImportSection, TracksImportSection } from "./ImportSection";
+import { ResultsSection } from "./results/ResultsSection";
 import { useSpotify } from "../api-helpers/SpotifyContext";
 import { useState } from "react";
 import { LoadingArea } from "../components/LoadingArea";
 import { Toolbar } from "../components/Toolbar";
-import { WalkthroughSteps, useWalkthroughStep } from "./EasyImport/useWalkthroughStep";
+import { useWalkthroughStep, WalkthroughSteps } from "./walkthrough/useWalkthroughStep";
 
 export const Home = () => {
   const {isLoading} = useSpotify();

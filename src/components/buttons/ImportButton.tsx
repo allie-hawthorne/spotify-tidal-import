@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 import { Button } from "./Button";
 import type { Service } from "./LoginButton";
-import { useImporterContext } from "../../pages/EasyImport/ImportContext";
+import { useImporterContext } from "../../pages/import-logic/ImportContext";
 
 interface ImportButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   importSource?: Service;

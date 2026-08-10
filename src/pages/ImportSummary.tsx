@@ -1,4 +1,4 @@
-import type { Resource } from "../../api-helpers/SpotifyContext";
+import type { Resource } from "../api-helpers/SpotifyContext";
 
 type ImportSummaryProps = {
   resource: Resource<unknown>;

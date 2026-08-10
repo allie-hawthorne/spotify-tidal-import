@@ -1,6 +1,6 @@
 import RefreshIcon from 'mdi-react/RefreshIcon';
 import { useSpotify } from '../api-helpers/SpotifyContext';
-import { useImporterContext } from '../pages/EasyImport/ImportContext';
+import { useImporterContext } from '../pages/import-logic/ImportContext';
 import { IconButton } from './buttons/IconButton';
 import { useExport } from '../local/useExport';
 import DownloadIcon from 'mdi-react/DownloadIcon';

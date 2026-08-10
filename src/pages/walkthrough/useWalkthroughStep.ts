@@ -1,5 +1,5 @@
 import { useSpotify } from "../../api-helpers/SpotifyContext";
-import { useImporterContext } from "./ImportContext";
+import { useImporterContext } from "../import-logic/ImportContext";
 
 export const WalkthroughSteps = {
   Sync: 'sync',

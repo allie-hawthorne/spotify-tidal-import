@@ -5,10 +5,10 @@ import { SpotifyLoginButton } from './components/buttons/SpotifyLoginButton';
 import { TidalLoginButton } from './components/buttons/TidalLoginButton';
 import { Home } from './pages/Home';
 import { SpotifyProvider } from './api-helpers/SpotifyContext';
-import { ImporterProvider } from './pages/EasyImport/ImportContext';
+import { ImporterProvider } from './pages/import-logic/ImportContext';
 import { IconButton } from './components/buttons/IconButton';
 import LogoutIcon from 'mdi-react/LogoutIcon';
-import { Walkthrough } from './components/Walkthrough';
+import { Walkthrough } from './pages/walkthrough/Walkthrough';
 
 export const AuthBarrier = () => {
   const [spotifyAuthed, setSpotifyAuthed] = useState(false);

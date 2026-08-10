@@ -1,8 +1,8 @@
 import { type ReactNode } from "react";
-import { useImporterContext } from "./ImportContext";
+import { useImporterContext } from "../import-logic/ImportContext";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import { ItemResult } from "./ItemResult";
-import { ImportErrorSection } from "./ImportErrorSection";
+import { ErrorSection } from "./ErrorSection";
 
 export interface Category {
   key: string;
@@ -62,6 +62,6 @@ export const ResultsSection = () => {
       {categories.map(c => <ItemResult key={c.key} category={c} />)}
     </div>
 
-    {categoriesWithErrors.length > 0 && <ImportErrorSection categoriesWithErrors={categoriesWithErrors} />}
+    {categoriesWithErrors.length > 0 && <ErrorSection categoriesWithErrors={categoriesWithErrors} />}
   </div>;
 };
