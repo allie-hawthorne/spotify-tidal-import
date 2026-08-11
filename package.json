@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "cd dist && live-server --port=5500",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build --mode=development",
+    "build-prod": "tsc -b && vite build",
     "autobuild": "watch 'pnpm build' ./src",
     "lint": "eslint .",
     "preview": "vite preview"

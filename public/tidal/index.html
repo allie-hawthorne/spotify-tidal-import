@@ -8,7 +8,8 @@
   <script>    
     const loadHandler = async () => {
       const clientId = localStorage.getItem('tidalClientId');
-      const redirectUri = localStorage.getItem('tidalRedirectUri');
+      const baseRedirectUri = localStorage.getItem('redirectUri');
+      const redirectUri = `${baseRedirectUri}/tidal/`;
 
       if (clientId && redirectUri) {
         await init({
@@ -18,7 +19,7 @@
 
         if (window.location.search.length > 0) {
           await finalizeLogin(window.location.search);
-          window.location.replace('/');
+          window.location.href = baseRedirectUri;
         } else {
           await getUserInfo();
           document.getElementById('searchField').style.display = 'block';
