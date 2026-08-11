@@ -4,6 +4,10 @@ import { useSpotify } from "../../api-helpers/SpotifyContext";
 import { ItemResult } from "./ItemResult";
 import { ErrorSection } from "./ErrorSection";
 
+// TODO: Switch this if you add other destinations
+const TIDAL_SEARCH_URL = 'https://listen.tidal.com/search?q=';
+const getTidalSearch = (query: string) => `${TIDAL_SEARCH_URL}${encodeURIComponent(query)}`;
+
 export interface Category {
   key: string;
   name: string;
@@ -33,7 +37,7 @@ export const ResultsSection = () => {
         <li key={pId} className="flex flex-col gap-1">
           <span className="font-medium text-red-300 truncate">{playlist.playlistName}</span>
           <ul className="flex flex-col gap-0.5 min-w-0 pl-3 border-l border-red-500/20 list-none">
-            {tracks.map(t => <li className="truncate" key={`${pId}-${t.trackName}-${t.artists}`}>{t.trackName} by {t.artists.join(', ')}</li>)}
+            {tracks.map(t => <ItemLink item={t.trackName} artists={t.artists} key={t.id} />)}
           </ul>
         </li>
       )),
@@ -41,17 +45,17 @@ export const ResultsSection = () => {
     {
       key: 'artists', name: 'Artists',
       total: artistData.items.length, succeededCount: succeededArtists.length, erroredCount: erroredArtists.length,
-      errorItems: erroredArtists.map(a => <li key={a.id} className="truncate">{a.artistName}</li>),
+      errorItems: erroredArtists.map(a => <ItemLink item={a.artistName} key={a.id} />),
     },
     {
       key: 'albums', name: 'Albums',
       total: albumData.items.length, succeededCount: succeededAlbums.length, erroredCount: erroredAlbums.length,
-      errorItems: erroredAlbums.map(a => <li key={a.id} className="truncate">{a.albumName} by {a.artists.join(', ')}</li>),
+      errorItems: erroredAlbums.map(a => <ItemLink item={a.albumName} artists={a.artists} key={a.id} />),
     },
     {
       key: 'tracks', name: 'Tracks',
       total: trackData.items.length, succeededCount: succeededTracks.length, erroredCount: erroredTracks.length,
-      errorItems: erroredTracks.map(a => <li key={a.id} className="truncate">{a.trackName} by {a.artists.join(', ')}</li>),
+      errorItems: erroredTracks.map(t => <ItemLink item={t.trackName} artists={t.artists} key={t.id} />),
     },
   ];
 
@@ -65,3 +69,12 @@ export const ResultsSection = () => {
     {categoriesWithErrors.length > 0 && <ErrorSection categoriesWithErrors={categoriesWithErrors} />}
   </div>;
 };
+
+function ItemLink({item, artists}: {item: string, artists?: string[]}) {
+  const artistString = (artists ?? []).join(', ');
+  return <li  className="truncate">
+    <a className="hover:underline hover:text-red-200" href={getTidalSearch(`${item} ${artistString}`)} target="_blank" rel="noopener noreferrer">
+      {item} {!!artistString.length && `by ${artistString}`}
+    </a>
+  </li>;
+}
