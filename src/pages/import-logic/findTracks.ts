@@ -1,0 +1,52 @@
+import chunk from "lodash/chunk";
+import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
+import type { ITrack } from "../../types";
+import { matchTrack } from "./matching";
+import { MAX_ITEMS_PER_BATCH } from "../../api-helpers/tidal";
+
+interface ImportTracksParams {
+  importer: TidalImporter,
+  tracks: ITrack[],
+  onFail: (tracks: ITrack[]) => void,
+  onMatch: (tracks: ITrack[]) => void
+}
+
+// Resolves Spotify tracks to their Tidal equivalents: batch ISRC lookup first (fast, exact),
+// falling back to search + name matching for whatever the ISRC batch didn't find.
+export const findTracks = async ({tracks, ...rest}: ImportTracksParams) => {
+  const {importer, onMatch} = rest;
+
+  const chunks = chunk(tracks, MAX_ITEMS_PER_BATCH);
+  for (const trackChunk of chunks) {
+    const isrcMatches = await importer.getTracksByIsrc(trackChunk.map(t => t.isrc));
+    onMatch(isrcMatches);
+
+    if (isrcMatches.length === trackChunk.length) continue;
+
+    const matchedIsrcs = isrcMatches.map(t => t.isrc);
+    const missingTracks = trackChunk.filter(t => !matchedIsrcs.includes(t.isrc));    
+
+    findMissingTracks({tracks: missingTracks, ...rest})
+  };
+};
+
+const findMissingTracks = async ({importer, onFail, onMatch, tracks}: ImportTracksParams) => {
+  for (const track of tracks) {
+    const searchResults = await importer.searchForTrack(track);
+
+    if (!searchResults) {
+      onFail([track]);
+      continue;
+    }
+
+    const matchedTrack = matchTrack(track, searchResults);
+
+    if (matchedTrack) {
+      console.log("Missing track matched:", track, "found:", matchedTrack);
+      onMatch([matchedTrack]);
+    } else { 
+      console.log("Missing track NOT matched:", track);
+      onFail([track]);
+    }
+  }
+}

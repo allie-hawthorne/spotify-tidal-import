@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import chunk from "lodash/chunk";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import type { ITrack } from "../../types";
 import { getCached, setCached } from "../../api-helpers/db";
-import { matchTrack } from "./matching";
-
-export const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time (if adding by ISRC)
+import { findTracks } from "./findTracks";
 
 interface CachedProgress {
   succeeded: ITrack[];
@@ -42,47 +39,18 @@ export const useImportTracks = () => {
     // previous run rather than accumulating duplicate entries across import attempts.
     setErroredTracks([]);
 
-    const chunkedTracks = chunk(tracksToImport, MAX_TRACKS_PER_BATCH);
+    const onFail = (tracks: ITrack[]) => {
+      setErroredTracks(prev => [...prev, ...tracks]);
+    };
+
+    const onMatch = async (tracks: ITrack[]) => {
+      const ok = await importer.addTracks(tracks);
+
+      if (ok) setSucceededTracks(prev => [...prev, ...tracks]);
+      else setErroredTracks(prev => [...prev, ...tracks]);
+    };
     
-    for (const chunk of chunkedTracks) {
-      const tidalTracks = await importer.getTracksByIsrc(chunk.map(t => t.isrc));
-
-      if (tidalTracks.length !== chunk.length) {
-        const tidalIsrcs = tidalTracks.map(t => t.isrc);
-        const missingTracks = chunk.filter(t => !tidalIsrcs.includes(t.isrc));
-
-        for (const track of missingTracks) {
-          const tidalTracks = await importer.searchForTrack(track);
-
-          if (!tidalTracks) {
-            setErroredTracks(prev => [...prev, track]);
-            return;
-          }
-
-          const matchedTrack = matchTrack(track, tidalTracks);
-
-          if (!matchedTrack) {
-            console.log('Missing track NOT matched:', matchedTrack)
-            setErroredTracks(prev => [...prev, track]);
-            continue;
-          }
-          console.log('Missing track matched:', matchedTrack)
-          // TODO: Add found tracks to tidalTracks in their original index to maintain order
-          const res = await importer.addTrack(matchedTrack.id);
-          
-          if (res) setSucceededTracks(prev => [...prev, track]);
-          else setErroredTracks(prev => [...prev, track]);
-        };
-      }
-
-      const res = await importer.addTracks(tidalTracks);
-
-      if (!res) {
-        setErroredTracks(prev => [...prev, ...tidalTracks]);
-        continue;
-      }
-      setSucceededTracks(prev => [...prev, ...tidalTracks]);
-    }
+    await findTracks({importer, tracks: tracksToImport, onFail, onMatch});
   }
 
   const clearProgress = () => {

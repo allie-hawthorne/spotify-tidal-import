@@ -4,7 +4,7 @@ import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { IAlbum } from "../../types";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 import { getCached, setCached } from "../../api-helpers/db";
-import { MAX_TRACKS_PER_BATCH as MAX_ITEMS_PER_BATCH } from "./useImportTracks";
+import { MAX_ITEMS_PER_BATCH } from "../../api-helpers/tidal";
 import { matchAlbum } from "./matching";
 
 interface CachedProgress {

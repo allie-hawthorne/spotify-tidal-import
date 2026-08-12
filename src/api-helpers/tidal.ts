@@ -1,6 +1,8 @@
 import { createAPIClient } from '@tidal-music/api';
 import { credentialsProvider, init, initializeLogin, logout } from '@tidal-music/auth';
 
+export const MAX_ITEMS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time
+
 const TIDAL_API_KEY = 'OPapoZjLFp4nJoEM';
 const TIDAL_REDIRECT_URI = `${import.meta.env.VITE_REDIRECT_URL}/tidal/`;
 // Use this as placeholder image everywhere to ensure consistency
