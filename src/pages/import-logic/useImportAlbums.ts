@@ -52,27 +52,25 @@ export const useImportAlbums = () => {
           const tidalAlbums = await importer.searchForAlbum(album.albumName, album.artists);
 
           if (!tidalAlbums) {
-            console.log("No result on Tidal - Spotify:", album);
             return;
           }
 
           const matchedAlbum = matchAlbum(album, tidalAlbums);
 
           if (!matchedAlbum) {
-            console.log("No match on Tidal - Spotify:", album, "Tidal results:", tidalAlbums);
+            console.log('Missing album NOT matched:', matchedAlbum)
             setErroredAlbums(prev => [...prev, album]);
             continue;
           }
-
+          
+          console.log('Missing album matched:', matchedAlbum)
           // TODO: Add found albums to tidalAlbums in their original index to maintain order
           const res = await importer.addAlbum(matchedAlbum.id);
 
           if (!res) {
-            console.log("Error adding album on Tidal - Spotify:", album, "Tidal:", matchedAlbum.artists);
             setErroredAlbums(prev => [...prev, album]);
             continue;
           }
-          console.log("ALBUM MATCHED! Spotify:", album, "Tidal:", matchedAlbum);
           setSucceededAlbums(prev => [...prev, matchedAlbum]);
         }
       }

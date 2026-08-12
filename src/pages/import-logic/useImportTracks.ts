@@ -55,7 +55,6 @@ export const useImportTracks = () => {
           const tidalTracks = await importer.searchForTrack(track);
 
           if (!tidalTracks) {
-            console.log("No results on Tidal - Spotify:", track);
             setErroredTracks(prev => [...prev, track]);
             return;
           }
@@ -63,7 +62,7 @@ export const useImportTracks = () => {
           const matchedTrack = matchTrack(track, tidalTracks);
 
           if (!matchedTrack) {
-            console.log("No match on Tidal - Spotify:", track, "Tidal results:", tidalTracks);
+            console.log('Missing track NOT matched:', matchedTrack)
             setErroredTracks(prev => [...prev, track]);
             continue;
           }
