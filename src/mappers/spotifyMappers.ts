@@ -4,6 +4,8 @@ import { TIDAL_PLACEHOLDER_IMAGE_URL } from "../api-helpers/tidal";
 
 export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | PlaylistedTrack<Track>)[]) => {
   const spotifyTracks = tracks.map(({track}): ITrack | undefined => {
+    // During testing I found a single track in like 10,000 that was blank, might have been deleted? Should be removed
+    if (!track.external_ids.isrc) return;
     return {
       id: track.id,
       artists: track.artists.map(a => a.name),
