@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import chunk from "lodash/chunk";
 import { useSpotify } from "../../api-helpers/SpotifyContext";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
-import { matchTrack } from "./matching";
 import type { ITrack } from "../../types";
 import { getCached, setCached } from "../../api-helpers/db";
+
+const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time (if adding by ISRC)
 
 interface CachedProgress {
   succeeded: ITrack[];
@@ -39,33 +41,24 @@ export const useImportTracks = () => {
     // previous run rather than accumulating duplicate entries across import attempts.
     setErroredTracks([]);
 
-    for (const spotifyTrack of tracksToImport) {
+    const chunkedTracks = chunk(tracksToImport, MAX_TRACKS_PER_BATCH);
+    
+    for (const chunk of chunkedTracks) {
+      const tidalTracks = await importer.getTracksByIsrc(chunk.map(t => t.isrc));
 
-      const tidalTracks = await importer.searchForTrack(spotifyTrack.trackName, spotifyTrack.artists);
-
-      if (!tidalTracks) {
-        console.log("No results on Tidal - Spotify:", spotifyTrack);
-        setErroredTracks(prev => [...prev, spotifyTrack]);
-        return;
+      if (tidalTracks.length !== chunk.length) {
+        const tidalIsrcs = tidalTracks.map(t => t.isrc);
+        const missingTracks = chunk.filter(t => !tidalIsrcs.includes(t.isrc));
+        setErroredTracks(prev => [...prev, ...missingTracks]);
       }
 
-      const matchedTrack = matchTrack(spotifyTrack, tidalTracks);
-
-      if (!matchedTrack) {
-        console.log("No match on Tidal - Spotify:", spotifyTrack, "Tidal results:", tidalTracks);
-        setErroredTracks(prev => [...prev, spotifyTrack]);
-        continue;
-      }
-
-      const res = await importer.addTrack(matchedTrack.id);
+      const res = await importer.addTracks(tidalTracks);
 
       if (!res) {
-        console.log("Error adding track on Tidal - Spotify:", spotifyTrack, "Tidal:", matchedTrack);
-        setErroredTracks(prev => [...prev, matchedTrack]);
+        setErroredTracks(prev => [...prev, ...tidalTracks]);
         continue;
       }
-      console.log("TRACK MATCHED! Spotify:", spotifyTrack, "Tidal:", matchedTrack);
-      setSucceededTracks(prev => [...prev, matchedTrack]);
+      setSucceededTracks(prev => [...prev, ...tidalTracks]);
     }
   }
 

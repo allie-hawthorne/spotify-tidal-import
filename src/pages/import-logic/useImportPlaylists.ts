@@ -78,7 +78,7 @@ export const useImportPlaylists = () => {
 
         const tidalTracksToAdd: ITrack[] = [];
         for (const spotifyTrack of tracksToImport) {
-          const tidalTracks = await importer.searchForTrack(spotifyTrack.trackName, spotifyTrack.artists);
+          const tidalTracks = await importer.searchForTrack(spotifyTrack);
 
           if (!tidalTracks) {
             setErroredTracks(prev => addToObject(prev, spotifyPlaylist, spotifyTrack));

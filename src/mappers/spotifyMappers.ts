@@ -8,7 +8,7 @@ export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | Playlist
       id: track.id,
       artists: track.artists.map(a => a.name),
       trackName: track.name,
-      isrc: track.external_ids.isrc
+      isrc: track.external_ids.isrc.toLocaleUpperCase()
     }
   }).filter(t => !!t);
 

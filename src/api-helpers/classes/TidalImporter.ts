@@ -29,13 +29,24 @@ export class TidalImporter {
   };
   
   
-  searchForTrack = async (title: string, artists: string[]) => {
-    const query = `${title} ${artists.join(', ')}`;
+  searchForTrack = async (sourceTrack: ITrack) => {
+    const { trackName, artists } = sourceTrack;
+
+    const query = `${trackName} ${artists.join(', ')}`;
     // TODO: Is this better than just removing the character?
     const encodedQuery = query.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
   
     const fn = () => tidalApi.GET('/searchResults/{id}/relationships/tracks', {
       params: {path: {id: encodedQuery}, query: {include: ['tracks']}},
+    });
+    const res = await callTidal(fn);
+
+    return mapTidalTracksToUniversalTracks(res);
+  };
+
+  getTracksByIsrc = async (isrcs: string[]) => {
+    const fn = () => tidalApi.GET('/tracks', {
+      params: {query: {'filter[isrc]': isrcs}},
     });
     const res = await callTidal(fn);
 
@@ -80,6 +91,14 @@ export class TidalImporter {
 
   addTrack = async (id: string) => {
     const fn = () => tidalApi.POST(`/userCollectionTracks/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data: [{id, type: 'tracks'}]}});
+    const {response} = await callTidal(fn);
+
+    return response.ok;
+  }
+
+  addTracks = async (tracks: ITrack[]) => {
+    const data = tracks.map(t => ({id: t.id, type: 'tracks' as const}));
+    const fn = () => tidalApi.POST(`/userCollectionTracks/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data}});
     const {response} = await callTidal(fn);
 
     return response.ok;

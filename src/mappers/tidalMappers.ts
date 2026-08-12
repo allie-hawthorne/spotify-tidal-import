@@ -2,6 +2,11 @@ import type { tidalApi } from "../api-helpers/tidal";
 import type { IAlbum, IArtist, ITrack } from "../types";
 
 type TidalGetTracksFn = typeof tidalApi.GET<
+  '/tracks',
+  {params: {query: {'filter[isrc]': string[]}}}
+>;
+
+type TidalSearchTracksFn = typeof tidalApi.GET<
   '/searchResults/{id}/relationships/tracks',
   {params: {path: {id: string}, query: {include: ['tracks']}}}
 >;
@@ -16,11 +21,14 @@ type TidalGetArtistsFn = typeof tidalApi.GET<
   {params: {path: {id: string}, query: {include: ['artists']}}}
 >;
 
-export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGetTracksFn>>) => {
+export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGetTracksFn | TidalSearchTracksFn>>) => {
   const minTracks = res.data?.data;
   const extraData = res.data?.included;
 
-  const trackWithData = minTracks?.map(track => extraData?.find(a => a.id === track.id)) ?? [];
+  const trackWithData = minTracks?.map(track => {
+    if ("attributes" in track) return track;
+    return extraData?.find(a => a.id === track.id);
+  }) ?? [];
 
   const tidalTracks = trackWithData.map((t): ITrack | undefined => {
     // Shouldn't happen (hopefully) - just for type coercion
@@ -33,7 +41,7 @@ export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGet
       isrc: t.attributes.isrc
     }
   }).filter(t => !!t);
-
+  
   return tidalTracks;
 }
 
