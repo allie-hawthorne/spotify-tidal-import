@@ -30,7 +30,6 @@
     async function exchangeCodeForToken(code, verifier) {
       const params = new URLSearchParams();
 
-      // TODO: Store client ID and redirect URI in localStorage on main page?
       params.append("client_id", clientId);
       params.append("grant_type", "authorization_code");
       params.append("code", code);

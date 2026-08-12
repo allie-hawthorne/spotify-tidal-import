@@ -6,7 +6,7 @@ import type { ITrack } from "../../types";
 import { getCached, setCached } from "../../api-helpers/db";
 import { matchTrack } from "./matching";
 
-const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time (if adding by ISRC)
+export const MAX_TRACKS_PER_BATCH = 20; // Tidal API allows adding max 20 tracks at a time (if adding by ISRC)
 
 interface CachedProgress {
   succeeded: ITrack[];
@@ -68,6 +68,7 @@ export const useImportTracks = () => {
             continue;
           }
           console.log('Missing track matched:', matchedTrack)
+          // TODO: Add found tracks to tidalTracks in their original index to maintain order
           const res = await importer.addTrack(matchedTrack.id);
           
           if (res) setSucceededTracks(prev => [...prev, track]);

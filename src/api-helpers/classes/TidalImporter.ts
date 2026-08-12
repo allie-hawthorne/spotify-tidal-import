@@ -1,6 +1,6 @@
 import pRetry from "@n8n/p-retry";
-import { mapTidalAlbumsToUniversalAlbums, mapTidalArtistsToUniversalArtists, mapTidalTracksToUniversalTracks } from "../../mappers/tidalMappers";
-import type { ITrack } from "../../types";
+import { mapTidalAlbumsByBarcodeToUniversalAlbums, mapTidalAlbumsToUniversalAlbums, mapTidalArtistsToUniversalArtists, mapTidalTracksToUniversalTracks } from "../../mappers/tidalMappers";
+import type { IAlbum, ITrack } from "../../types";
 import { tidalApi } from "../tidal";
 
 // tidalApi resolves (rather than rejects) on non-2xx responses, so pRetry never sees a
@@ -64,6 +64,15 @@ export class TidalImporter {
     return mapTidalArtistsToUniversalArtists(res);
   }
 
+  getAlbumsByBarcode = async (barcodes: string[]) => {
+    const fn = () => tidalApi.GET('/albums', {
+      params: {query: {'filter[barcodeId]': barcodes, include: ['artists']}},
+    });
+    const res = await callTidal(fn);
+
+    return mapTidalAlbumsByBarcodeToUniversalAlbums(res);
+  }
+
   searchForAlbum = async (album: string, artists: string[]) => {
     const encodedQuery = `${artists.join(' ')} ${album}`.replace(/[!'()*]/g,(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
 
@@ -84,6 +93,14 @@ export class TidalImporter {
 
   addAlbum = async (id: string) => {
     const fn = () => tidalApi.POST(`/userCollectionAlbums/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data: [{id, type: 'albums'}]}});
+    const {response} = await callTidal(fn);
+
+    return response.ok;
+  }
+
+  addAlbums = async (albums: IAlbum[]) => {
+    const data = albums.map(t => ({id: t.id, type: 'albums' as const}));
+    const fn = () => tidalApi.POST(`/userCollectionAlbums/{id}/relationships/items`, {params: {path: {id: 'me'}}, body: {data}});
     const {response} = await callTidal(fn);
 
     return response.ok;

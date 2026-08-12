@@ -12,6 +12,11 @@ type TidalSearchTracksFn = typeof tidalApi.GET<
 >;
 
 type TidalGetAlbumsFn = typeof tidalApi.GET<
+  '/albums',
+  {params: {query: {'filter[barcodeId]': string[], include: ['artists']}}}
+>;
+
+type TidalSearchAlbumsFn = typeof tidalApi.GET<
   '/searchResults/{id}',
   {params: {path: {id: string}, query: {include: ['albums', 'albums.artists']}}}
 >;
@@ -45,11 +50,32 @@ export const mapTidalTracksToUniversalTracks = (res: Awaited<ReturnType<TidalGet
   return tidalTracks;
 }
 
-export const mapTidalAlbumsToUniversalAlbums = (res: Awaited<ReturnType<TidalGetAlbumsFn>>) => {
+export const mapTidalAlbumsByBarcodeToUniversalAlbums = (res: Awaited<ReturnType<TidalGetAlbumsFn>>) => {  
   const minAlbums = res.data?.data;
   const extraData = res.data?.included;
+  
+  const orderedAlbumsWithArtists = (minAlbums ?? []).map(({id, attributes, relationships}): IAlbum | undefined => {
+    if (!attributes || !relationships) return;
 
-  // This is sorted by relevance
+    const artists = relationships.artists.data?.flatMap(minArtist => extraData?.filter(a => a.id === minArtist.id));
+
+    return {
+      id,
+      // @ts-expect-error - name does exist
+      artists: artists?.map(artist => artist?.attributes?.name) ?? [],
+      albumName: attributes.title,
+      barcode: attributes.barcodeId
+    };
+  }).filter(a => !!a);
+  
+  return orderedAlbumsWithArtists;
+}
+
+export const mapTidalAlbumsToUniversalAlbums = (res: Awaited<ReturnType<TidalSearchAlbumsFn>>) => {  
+  const minAlbums = res.data?.data;
+  const extraData = res.data?.included;
+  
+  // relationships.albums.data is sorted by relevance so keeping this order is preferable over using included
   const orderedAlbums = minAlbums?.relationships?.albums.data ?? [];
 
   const orderedAlbumsWithArtists = orderedAlbums.map((minAlbum): IAlbum | undefined => {
@@ -66,7 +92,7 @@ export const mapTidalAlbumsToUniversalAlbums = (res: Awaited<ReturnType<TidalGet
     return {
       id: album?.id ?? '',
       // @ts-expect-error - name does exist
-      artists: artists?.map(artist => artist?.attributes?.name).join(' ') ?? '',
+      artists: artists?.map(artist => artist?.attributes?.name) ?? [],
       albumName: album.attributes.title,
       barcode: album.attributes.barcodeId
     };
