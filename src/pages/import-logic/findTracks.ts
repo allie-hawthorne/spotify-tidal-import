@@ -4,7 +4,7 @@ import type { ITrack } from "../../types";
 import { MAX_ITEMS_PER_BATCH } from "../../api-helpers/tidal";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 
-type CacheMap = [string, ITrack][]
+type CacheMap = [string, ITrack | string][]
 
 const CACHE_KEY_PREFIX = 'spotify-track-cache'
 const getKey = (id: string) => `${CACHE_KEY_PREFIX}:${id}`;
@@ -27,11 +27,8 @@ export const findTracks = async ({ tracks, ...rest }: ImportTracksParams) => {
 
   const chunks = chunk(tracks, MAX_ITEMS_PER_BATCH);
   for (const trackChunk of chunks) {
-    const { cachedTracks, tracksToImport } = searchCache(trackChunk);
-    if (cachedTracks.length) {
-      console.debug("Adding due to cache", cachedTracks)
-      await onMatch(cachedTracks);
-    }
+    const { cachedTracks, tracksToImport } = searchCache({tracks: trackChunk, ...rest});
+    if (cachedTracks.length) await onMatch(cachedTracks);
 
     // I found two spotify tracks with the same ISRC: 45Vil8xFfibJfxbiAwFnb2 and 1sO676Anpdv0Y1wW6kxwvo
     // This highlights a bigger problem: ISRC isn't guaranteed to be trustworthy. I have no idea how to deal with this
@@ -42,10 +39,7 @@ export const findTracks = async ({ tracks, ...rest }: ImportTracksParams) => {
     if (!uniqueIsrcTracks.length) continue;
 
     const matchedTidalTracks = await importer.getTracksByIsrc(uniqueIsrcTracks.map(t => t.isrc));
-    console.debug("Adding due to ISRC", matchedTidalTracks, uniqueIsrcTracks);
     if (matchedTidalTracks.length) await onMatch(matchedTidalTracks);
-
-    const tidalIsrcs = matchedTidalTracks.map(t => t.isrc);
 
     const cacheMap: CacheMap = [];
     matchedTidalTracks.forEach(tt => {
@@ -56,6 +50,7 @@ export const findTracks = async ({ tracks, ...rest }: ImportTracksParams) => {
 
     cache(cacheMap);
 
+    const tidalIsrcs = matchedTidalTracks.map(t => t.isrc);
     const missingSpotifyTracks = tracksToImport.filter(t => !tidalIsrcs.includes(t.isrc));    
     if (missingSpotifyTracks.length) findMissingTracks({ tracks: missingSpotifyTracks, ...rest })
   };
@@ -74,23 +69,24 @@ const findMissingTracks = async ({ importer, onFail, onMatch, tracks }: ImportTr
 
     if (matchedTrack) {
       console.log("Missing track matched:", track, "found:", matchedTrack);
-      console.debug("Adding due to searching", matchedTrack)
       await onMatch([matchedTrack]);
       cache([[track.id, matchedTrack]]);
     } else {
       console.log("Missing track NOT matched:", track);
+      cache([[track.id, 'undefined']]);
       onFail([track]);
     }
   }
 }
 
-const searchCache = (tracks: ITrack[]) => {
+const searchCache = ({tracks, onFail}: ImportTracksParams) => {
   const cachedTracks: ITrack[] = [];
   const tracksToImport: ITrack[] = [];
   tracks.forEach(t => {
     const data = localStorage.getItem(`${CACHE_KEY_PREFIX}:${t.id}`);
 
-    if (data) cachedTracks.push(JSON.parse(data));
+    if (data === 'undefined') onFail([t]);
+    else if (data) cachedTracks.push(JSON.parse(data));
     else tracksToImport.push(t);
   });
   return { cachedTracks, tracksToImport };
