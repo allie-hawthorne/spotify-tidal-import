@@ -3,28 +3,9 @@ import { matchTrack } from "./matching";
 import type { ITrack } from "../../types";
 import { MAX_ITEMS_PER_BATCH } from "../../api-helpers/tidal";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
+import { cache, cacheFromIsrc, searchCache } from "./trackCache";
 
-type CacheMap = [string, ITrack | string][]
-
-const CACHE_KEY_PREFIX = 'spotify-track-cache'
-const getKey = (id: string) => `${CACHE_KEY_PREFIX}:${id}`;
-const cache = (cacheMap: CacheMap) => {
-  cacheMap.forEach(([sId, tTrack]) => localStorage.setItem(getKey(sId), JSON.stringify(tTrack)))
-  console.log("Storing in cache:", cacheMap);
-}
-
-const cacheFromIsrc = (tidalTracks: ITrack[], spotifyTracks: ITrack[]) => {
-  const cacheMap: CacheMap = [];
-  tidalTracks.forEach(tt => {
-    const spotifyTrack = spotifyTracks.find(st => st.isrc === tt.isrc);
-    if (!spotifyTrack) return;
-    cacheMap.push([spotifyTrack.id, tt])
-  });
-
-  cache(cacheMap);
-}
-
-interface ImportTracksParams {
+export interface ImportTracksParams {
   importer: TidalImporter,
   tracks: ITrack[],
   onFail: (tracks: ITrack[]) => void,
@@ -81,17 +62,4 @@ const findMissingTracks = async ({ importer, onFail, onMatch, tracks }: ImportTr
       onFail([track]);
     }
   }
-}
-
-const searchCache = ({tracks, onFail}: ImportTracksParams) => {
-  const cachedTracks: ITrack[] = [];
-  const tracksToImport: ITrack[] = [];
-  tracks.forEach(t => {
-    const data = localStorage.getItem(`${CACHE_KEY_PREFIX}:${t.id}`);
-
-    if (data === 'undefined') onFail([t]);
-    else if (data) cachedTracks.push(JSON.parse(data));
-    else tracksToImport.push(t);
-  });
-  return { cachedTracks, tracksToImport };
 }
