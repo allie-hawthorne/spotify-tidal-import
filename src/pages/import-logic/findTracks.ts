@@ -13,6 +13,17 @@ const cache = (cacheMap: CacheMap) => {
   console.log("Storing in cache:", cacheMap);
 }
 
+const cacheFromIsrc = (tidalTracks: ITrack[], spotifyTracks: ITrack[]) => {
+  const cacheMap: CacheMap = [];
+  tidalTracks.forEach(tt => {
+    const spotifyTrack = spotifyTracks.find(st => st.isrc === tt.isrc);
+    if (!spotifyTrack) return;
+    cacheMap.push([spotifyTrack.id, tt])
+  });
+
+  cache(cacheMap);
+}
+
 interface ImportTracksParams {
   importer: TidalImporter,
   tracks: ITrack[],
@@ -41,14 +52,7 @@ export const findTracks = async ({ tracks, ...rest }: ImportTracksParams) => {
     const matchedTidalTracks = await importer.getTracksByIsrc(uniqueIsrcTracks.map(t => t.isrc));
     if (matchedTidalTracks.length) await onMatch(matchedTidalTracks);
 
-    const cacheMap: CacheMap = [];
-    matchedTidalTracks.forEach(tt => {
-      const spotifyTrack = tracksToImport.find(st => st.isrc === tt.isrc);
-      if (!spotifyTrack) return;
-      cacheMap.push([spotifyTrack.id, tt])
-    })
-
-    cache(cacheMap);
+    cacheFromIsrc(matchedTidalTracks, tracksToImport);
 
     const tidalIsrcs = matchedTidalTracks.map(t => t.isrc);
     const missingSpotifyTracks = tracksToImport.filter(t => !tidalIsrcs.includes(t.isrc));    
