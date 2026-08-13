@@ -1,8 +1,8 @@
 import chunk from "lodash/chunk";
-import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
-import type { ITrack } from "../../types";
 import { matchTrack } from "./matching";
+import type { ITrack } from "../../types";
 import { MAX_ITEMS_PER_BATCH } from "../../api-helpers/tidal";
+import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
 
 interface ImportTracksParams {
   importer: TidalImporter,
@@ -18,12 +18,18 @@ export const findTracks = async ({tracks, ...rest}: ImportTracksParams) => {
 
   const chunks = chunk(tracks, MAX_ITEMS_PER_BATCH);
   for (const trackChunk of chunks) {
-    const isrcMatches = await importer.getTracksByIsrc(trackChunk.map(t => t.isrc));
+    // I found two spotify tracks with the same ISRC: 45Vil8xFfibJfxbiAwFnb2 and 1sO676Anpdv0Y1wW6kxwvo
+    // This highlights a bigger problem: ISRC isn't guaranteed to be trustworthy. I have no idea how to deal with this
+    // TODO: We can at least move this check up, into SpotifyContext, and set ISRCs to null where there's duplication. This doesn't solve the case where an ISRC is shared with a track not also on the import however
+    const uniqueIsrcTracks = trackChunk.filter(ti => trackChunk.filter(tj => tj.isrc === ti.isrc).length === 1);
+
+    const isrcMatches = await importer.getTracksByIsrc(uniqueIsrcTracks.map(t => t.isrc));
     onMatch(isrcMatches);
 
     if (isrcMatches.length === trackChunk.length) continue;
 
     const matchedIsrcs = isrcMatches.map(t => t.isrc);
+    // This will include the ones we filtered out above
     const missingTracks = trackChunk.filter(t => !matchedIsrcs.includes(t.isrc));    
 
     findMissingTracks({tracks: missingTracks, ...rest})
