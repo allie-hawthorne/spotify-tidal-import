@@ -10,7 +10,8 @@ export const mapSpotifyTracksToUniversalTracks = (tracks: (SavedTrack | Playlist
       id: track.id,
       artists: track.artists.map(a => a.name),
       trackName: track.name,
-      isrc: track.external_ids.isrc.toLocaleUpperCase()
+      // Spotify's ISRCs are a little inconsistent
+      isrc: track.external_ids.isrc.toLocaleUpperCase().replaceAll('-', '')
     }
   }).filter(t => !!t);
 
