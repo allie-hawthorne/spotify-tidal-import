@@ -3,7 +3,7 @@ import { matchTrack } from "./matching";
 import type { ITrack } from "../../types";
 import { MAX_ITEMS_PER_BATCH } from "../../api-helpers/tidal";
 import type { TidalImporter } from "../../api-helpers/classes/TidalImporter";
-import { cache, cacheFromIsrc, searchCache } from "./trackCache";
+import { cacheFail, cacheFromIsrc, cacheTrack, searchCache } from "./trackCache";
 
 export interface ImportTracksParams {
   importer: TidalImporter,
@@ -55,10 +55,10 @@ const findMissingTracks = async ({ importer, onFail, onMatch, tracks }: ImportTr
     if (matchedTrack) {
       console.log("Missing track matched:", track, "found:", matchedTrack);
       await onMatch([matchedTrack]);
-      cache([[track.id, matchedTrack]]);
+      cacheTrack(track.id, matchedTrack);
     } else {
       console.log("Missing track NOT matched:", track);
-      cache([[track.id, 'undefined']]);
+      cacheFail(track.id);
       onFail([track]);
     }
   }
